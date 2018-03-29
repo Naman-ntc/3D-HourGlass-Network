@@ -84,7 +84,6 @@ class HourGlass(object):
 		self.res_up1 = Residual(in_channels,out_channels)
 		self.pool = nn.MaxPool2d(2,2)
 		self.res_low1 = Residual(out_channels,out_channels)
-		self.hg = Hourglass(self.out_channels,self.out_channels,self.pool_padding,self.num_reductions-1)
 		self.res_low2 = Residual(out_channels,out_channels)
 		self.res_low3 = Residual(out_channels,out_channels)
 		self.nn_up2 = nn.Upsample(scale_factor=2)
@@ -92,7 +91,8 @@ class HourGlass(object):
 	def forward(self,inputs):
 		out = inputs
 		out = self.res_up1(out)
-		if num_reductions > 0 :
+		if num_reductions > 1 :
+			self.hg = Hourglass(self.out_channels,self.out_channels,self.pool_padding,self.num_reductions-1)
 			out = self.hg(out)
 		out = self.res_low3(out)
 		out = self.nn_up2(out)	

@@ -30,7 +30,7 @@ class Hourglass3D(nn.Module):
 
 		self.mp = nn.MaxPool3d(self.poolKernel, self.poolStride)
 		if (numReductions > 1):
-			self.hg = Hourglass3D(self.numReductions-1, self.nModules, self.nChannels, self.poolKernel, self.poolStride)
+			self.hg = Hourglass3D(self.nChannels, self.numReductions-1, self.nModules, self.poolKernel, self.poolStride)
 		else:
 			_num1res = []
 			for _ in range(self.nModules):

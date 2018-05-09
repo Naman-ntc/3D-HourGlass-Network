@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-from Layers-3D import *
+from Layers3D import *
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, numReductions = 3, nModules = 1, nChannels, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = (1,2,2)):
+	def __init__(self, nChannels, numReductions = 3, nModules = 1, poolKernel = (2,2,2), poolStride = (2,2,2), upSampleKernel = (2,2,2)):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules
@@ -13,19 +13,19 @@ class Hourglass3D(nn.Module):
 		self.poolStride = poolStride
 		self.upSampleKernel = upSampleKernel
 		"""
-		For the skip connection, a residual module (or sequence of residuaql modules)
+		For the skip connection, a residual3D module (or sequence of residuaql modules)
 		"""
 		
 		_skip = []
 		for _ in range(self.nModules):
-			skip.append(Residual(self.nChannels,self.nChannels))
+			_skip.append(Residual3D(self.nChannels,self.nChannels))
 
 		self.skip = nn.Sequential(*_skip)
 		
 		"""
 		Hourglass3D pooling to go to smaller dimension and subsequent cases:
 			either pass through Hourglass3D of numReductions-1
-			or pass through Residual Module or sequence of Modules
+			or pass through Residual3D Module or sequence of Modules
 		"""
 
 		self.mp = nn.MaxPool3d(self.poolKernel, self.poolStride)
@@ -34,17 +34,17 @@ class Hourglass3D(nn.Module):
 		else:
 			_num1res = []
 			for _ in range(self.nModules):
-				_num1res.append(Residual(self.nChannels,self.nChannels))
+				_num1res.append(Residual3D(self.nChannels,self.nChannels))
 			
 			self.num1res = nn.Sequential(*_num1res)  # doesnt seem that important ?
 		
 		"""
-		Now another Residual Module or sequence of Residual Modules
+		Now another Residual3D Module or sequence of Residual3D Modules
 		"""
 		
 		_lowres = []
 		for _ in range(self.nModules):
-			_lowres.append(Residual(self.nChannels,self.nChannels))
+			_lowres.append(Residual3D(self.nChannels,self.nChannels))
 
 		self.lowres = nn.Sequential(*_lowres)
 

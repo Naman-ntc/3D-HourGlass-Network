@@ -25,7 +25,7 @@ class ConvBnRelu3D(nn.Module):
 class ConvBlock3D(nn.Module):
 	"""docstring for convBlock3D"""
 	def __init__(self, inChannels, outChannels):
-		super(convBlock3D, self).__init__()
+		super(ConvBlock3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
 		self.cbr1 = ConvBnRelu3D(inChannels, self.outChannels//2, 1, 1, 0)

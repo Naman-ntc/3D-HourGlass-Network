@@ -13,8 +13,8 @@ for idx, frame in enumerate(all_frames):
 frames_seq = torch.from_numpy(frames_seq).float() /256
 frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
-hg = HourglassNet3D(63).cuda()
-
+hg = HourglassNet3D(32)
+hg = hg.cuda()
 hg(frames_var)
 
 

@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import cv2
 from HourGlassNet3D import *
-
+import time
 all_frames = os.listdir('../train_frames/train927')
 n_frames = len(all_frames)
 frames_seq = np.zeros((1, 3, n_frames, 256, 256))
@@ -15,8 +15,13 @@ frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
 hg = HourglassNet3D(64,2,1,4)
 hg = hg.cuda()
+
+start_time = time.time()
+
 while(True):
 	print(hg(frames_var)[-1].shape)
+	print("--- %s seconds ---" % (time.time() - start_time))
+	start_time = time.time()
 
 
 """

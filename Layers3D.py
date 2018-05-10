@@ -28,7 +28,7 @@ class ConvBlock3D(nn.Module):
 		super(ConvBlock3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
-		self.cbr1 = ConvBnRelu3D(inChannels, self.outChannels//2, 1, 1, 0)
+		self.cbr1 = ConvBnRelu3D(self.inChannels, self.outChannels//2, 1, 1, 0)
 		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, 3, 1, 1)
 		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, 1, 1, 0)
 

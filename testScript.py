@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from HourGlassNet3D import *
 import time
+
 all_frames = os.listdir('../train_frames/train927')
 n_frames = len(all_frames)
 frames_seq = np.zeros((1, 3, n_frames, 256, 256))
@@ -13,7 +14,7 @@ for idx, frame in enumerate(all_frames):
 frames_seq = torch.from_numpy(frames_seq).float() /256
 frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
-hg = HourglassNet3D(64,1,2,4)
+hg = HourglassNet3D(64,2,2,4)
 hg = hg.cuda()
 
 start_time = time.time()

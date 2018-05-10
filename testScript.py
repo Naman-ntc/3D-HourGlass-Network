@@ -10,6 +10,7 @@ argumentList = sys.argv[1:]
 
 assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolder Flag"
 
+argumentList[1] += "/"
 all_frames = os.listdir(argumentList[1])
 
 n_frames = len(all_frames)

@@ -18,15 +18,22 @@ class Hourglass3D(nn.Module):
 		
 		_skip = []
 		for _ in range(self.nModules):
-			_skip.append(Residual3D(self.nChannels,self.nChannels))
+			_skip.append(Residual3D(self.nChannels, self.nChannels))
 
 		self.skip = nn.Sequential(*_skip)
 		
 		"""
-		Hourglass3D pooling to go to smaller dimension and subsequent cases:
+		First pass input through Residual Module or sequence of Modules 
+		then pooling to go to smaller dimension and subsequent cases:
 			either pass through Hourglass3D of numReductions-1
 			or pass through Residual3D Module or sequence of Modules
 		"""
+
+		_beforepool = []
+		for _ in range(self.nModules):
+			_beforepool.append(Residual3D(self.nChannels, self.nChannels))
+
+		self.beforepool = nn.Sequential(*_beforepool)	
 
 		self.mp = nn.MaxPool3d(self.poolKernel, self.poolStride)
 		if (numReductions > 1):

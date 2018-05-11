@@ -1,9 +1,9 @@
 import torch
 
 
-nChannels = 
-nStack = 
-nModules =
+nChannels = 256
+nStack = 2
+nModules = 2
 
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.cbrStart.conv, model.conv1_)

@@ -9,12 +9,12 @@ def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.cbrStart.conv, model.conv1_)
 	inflatebn(model3d.cbrStart.bn, model.bn1)
 	inflaterelu(model3d.cbrStart.relu, model.relu)
-	inflateResidual(model3d.r1, model.res1)
-	inflateResidual(model3d.r4, model.res2)
-	inflateResidual(model3d.r5, model.res3)
+	inflateResidual(model3d.res1, model.r1)
+	inflateResidual(model3d.res2, model.r4)
+	inflateResidual(model3d.res3, model.r5)
 	inflateMaxPool(model3d.mp, model.maxpool)
 	for i in range(nStack):
-		inflatehourglass(model3d.hourglass, model.hourglass)
+		inflatehourglass(model3d.hourglass[i], model.hourglass[i])
 	for i in range(nStack):
 		for j in range(nModules):
 			inflateResidual(model3d.Residual[i][j],model.Residual[nModules*i+j])
@@ -49,15 +49,15 @@ def inflatehourglass(model3d, model):
 	return
 
 def inflateconv(conv3d, conv):
-	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(torch.size())
+	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size())
 	conv3d.bias.data = conv.bias.data
 	return
 
 def inflatebn(bn3d, bn):
 	bn3d.weight.data = bn.weight.data
 	bn3d.bias.data = bn.bias.data
-	bn3d.running_mean.data = bn.running_mean.data
-	bn3d.running_var.data = bn.running_var.data
+	bn3d.running_mean = bn.running_mean
+	bn3d.running_var = bn.running_var
 	return
 
 def inflaterelu(relu3d, relu):
@@ -65,3 +65,20 @@ def inflaterelu(relu3d, relu):
 
 def inflateMaxPool(mp3d, mp):
 	return		
+
+def inflateResidual(res3d, res):
+	inflatebn(res3d.cb.cbr1.bn, res.bn)
+	inflaterelu(res3d.cb.cbr1.relu, res.relu)
+	inflateconv(res3d.cb.cbr1.conv, res.conv1)
+	inflatebn(res3d.cb.cbr2.bn, res.bn1)
+	inflaterelu(res3d.cb.cbr2.relu, res.relu)
+	inflateconv(res3d.cb.cbr2.conv, res.conv2)	
+	inflatebn(res3d.cb.cbr3.bn, res.bn2)
+	inflaterelu(res3d.cb.cbr3.relu, res.relu)
+	inflateconv(res3d.cb.cbr3.conv, res.conv3)
+	if (res3d.inChannels != res3d.outChannels):
+		inflateconv(res3d.skip.conv, res.conv4)
+	return
+
+def inflateupsampling(up3d, up):
+	return	

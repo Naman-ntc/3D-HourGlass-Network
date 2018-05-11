@@ -10,9 +10,9 @@ class ConvBnRelu3D(nn.Module):
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
-		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 		self.bn = nn.BatchNorm3d(self.outChannels)
 		self.relu = nn.LeakyReLU()
+		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
 	def forward(self, input):
 		out = input

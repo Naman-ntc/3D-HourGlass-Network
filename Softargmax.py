@@ -11,7 +11,8 @@ class SoftArgMax(nn.Module):
 		N,C,W,H,W = input.size()
 		reshapedInput = input.view(N,C,W,-1)
 		weights = self.softmaxLayer(reshapedInput)
-		semiIndices = (weights * (torch.arange(H*W.unsqueeze(0).unsqueeze(0)).expand(weights.size()))).sum(dim=-1)
+		semiIndices = (weights * (torch.arange(H*W).unsqueeze(0).unsqueeze(0).expand(weights.size()))).sum(dim=-1)
 		indicesX = semiIndices % H
 		indicesY = semiIndices / H
-		return (indicesY,indicesY)
+		indices = torch.cat(indicesX.unsqueeze(-1), indicesY.unsqueeze(-1))
+		return indices

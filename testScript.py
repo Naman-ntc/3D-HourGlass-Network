@@ -19,7 +19,7 @@ for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
 frames_seq = torch.from_numpy(frames_seq).float() /256
-frames_var = torch.autograd.Variable(frames_seq).float().cuda()
+frames_var = torch.autograd.Variable(frames_seq[:,:,1:25,:,:]).float().cuda()
 
 hg = HourglassNet3D(256,1,2,4)
 hg = hg.cuda()

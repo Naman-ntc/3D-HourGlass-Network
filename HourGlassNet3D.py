@@ -16,7 +16,7 @@ class HourglassNet3D(nn.Module):
 		self.cbrStart = ConvBnRelu3D(3, 64, (1,7,7), (1,2,2), (0,3,3)) ## self.convStart = nn.ConvBnRelu3D(3, 64, (3,7,7), (1,2,2), (1,3,3))
 		
 		self.res1 = Residual3D(64,128)
-		self.mp = nn.MaxPool3d(2,2)
+		self.mp = nn.MaxPool3d((1,2,2),(1,2,2))
 
 		self.res2 = Residual3D(128,128)
 		self.res3 = Residual3D(128,self.nChannels)

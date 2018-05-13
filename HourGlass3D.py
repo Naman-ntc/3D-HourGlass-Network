@@ -60,6 +60,12 @@ class Hourglass3D(nn.Module):
 		As per Newell's paper upsamping recommended
 		"""
 		self.up = nn.Upsample(scale_factor = self.upSampleKernel)
+		
+		"""
+		If temporal dimension is odd then after upsampling add a dimension temporally
+		doing this via 2 kernel 1D convolution with 1 padding along the temporal direction
+		"""
+		self.addTemporal = nn.Conv3d(self.nChannels, self.nChannels, (2,1,1), 1, (1,0,0))
 
 	def forward(self, input):
 		out1 = input
@@ -76,4 +82,7 @@ class Hourglass3D(nn.Module):
 		out2 = self.lowres(out2)
 		out2 = self.up(out2)
 
-		return out2
+		if (out2.size()[2]%2 != out1.size()[2]):
+			out2 = self.addTemporal(out2)
+		
+		return out2 + out1	

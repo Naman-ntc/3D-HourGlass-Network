@@ -58,6 +58,8 @@ class HourglassNet3D(nn.Module):
 			x1 = self.lin1[i](x1)
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
+			print("x1 size = " + str(x1.size()))
+			print("x size = " + str(x.size()))
 			x = x + x1 + self.jointstochan[i](out[i])
-
+		print("done our of stack loop")
 		return out

@@ -82,7 +82,7 @@ class Hourglass3D(nn.Module):
 		out2 = self.lowres(out2)
 		out2 = self.up(out2)
 
-		if (out2.size()[2]%2 != out1.size()[2]):
+		if (out2.size()[2] != out1.size()[2]):
 			out2 = self.addTemporal(out2)
 		
 		return out2 + out1	

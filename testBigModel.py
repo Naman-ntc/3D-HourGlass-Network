@@ -38,10 +38,7 @@ loss = 0
 
 for i in range(heatmapsLen):
 	temp = SoftArgMax(heatmaps[i])
-	print(temp.size())
 	temp1 += (torch.randn(temp.size()) + 1)*256
-	print(temp1.size())
 	loss  += JointSquaredError(temp, temp1)
-	print(loss)
-
+	
 loss.backward()

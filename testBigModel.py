@@ -5,10 +5,11 @@ import cv2
 import torch
 from HourGlassNet3D import *
 from Loss import *
-from SoftArgmax import *
+from Softargmax import *
 
 argumentList = sys.argv[1:]
 
+assert len(argumentList) > 0, "Give an Image Folder with -imageFolder Flag"
 assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolder Flag"
 
 
@@ -21,11 +22,14 @@ for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
 frames_seq = torch.from_numpy(frames_seq[:,:,1:25,:,:]).float() /256
+print("Frames Developed\n")
 frames_var = torch.autograd.Variable(frames_seq).float().cuda()
+print("Frames in cuda\n")
 
 hg = HourglassNet3D(256,1,2,4, 16)
+print("Model Developed\n")
 hg = hg.cuda()
-
+print("Model in cuda\n")
 heatmaps = hg(frames_var)
 
 heatmapsLen = len(heatmaps)

@@ -43,10 +43,8 @@ SoftArgMaxLayer = SoftArgMax()
 
 for i in range(heatmapsLen):
 	temp = SoftArgMaxLayer(heatmaps[i])
-	print(temp.size())
+	temp = SoftArgMax(heatmaps[i])
 	temp1 += (torch.randn(temp.size()) + 1)*256
-	print(temp1.size())
 	loss  += JointSquaredError(temp, temp1)
-	print(loss)
-
+	
 loss.backward()

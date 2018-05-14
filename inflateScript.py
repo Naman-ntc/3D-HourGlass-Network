@@ -4,8 +4,9 @@ from models.hg_3d import *
 from HourGlassNet3D import *
 from HourGlass3D import *
 from Layers3D import *
-from inflate import *
+from Inflate import *
 import torch
+
 
 
 model3d = torch.load('models/model3d.pth')

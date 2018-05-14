@@ -51,6 +51,8 @@ def inflatehourglass(model3d, model):
 def inflateconv(conv3d, conv):
 	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size())
 	conv3d.bias.data = conv.bias.data
+        conv3d.weight.data = conv3d.weight.data.contigous()
+        conv3d.bias.data = conv3d.bias.data.contigous()
 	return
 
 def inflatebn(bn3d, bn):

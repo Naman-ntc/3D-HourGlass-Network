@@ -31,8 +31,9 @@ frames_seq = np.zeros((1, 3, n_frames, 256, 256))
 for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
+
 frames_seq = torch.from_numpy(frames_seq).float() /256
-print("Frames Develope")
+print("Frames Developed\n")
 frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 print("Frames in cuda")
 
@@ -46,19 +47,21 @@ print("Model Loaded")
 """
 
 
-heatmaps = hg(frames_var)
+while True :
 
-heatmapsLen = len(heatmaps)
+	heatmaps = hg(frames_var)
 
-loss = 0
+	heatmapsLen = len(heatmaps)
 
-SoftArgMaxLayer = SoftArgMax()
+	loss = 0
 
-for i in range(heatmapsLen):
-	temp = SoftArgMaxLayer(heatmaps[i])
-	#temp = SoftArgMax(heatmaps[i])
-	#temp1 += (torch.randn(temp.size()) + 1)*256
-	#loss  += JointSquaredError(temp, temp1)
-	print(temp)
 
-loss.backward()
+	SoftArgMaxLayer = SoftArgMax()
+
+	for i in range(heatmapsLen):
+		temp = SoftArgMaxLayer(heatmaps[i])
+		#temp1 = (Variable(torch.randn(temp.size())).cuda() + 1)*256
+		#loss  += JointSquaredError(temp, temp1)
+                print(temp)
+        #print(loss)
+	#loss.backward()

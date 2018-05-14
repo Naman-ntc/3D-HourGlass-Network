@@ -23,7 +23,7 @@ for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
 
-frames_seq = torch.from_numpy(frames_seq[:,:,:16,:,:]).float() /256
+frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
 print("Frames Developed\n")
 
 frames_seq = frames_seq.cuda()
@@ -42,7 +42,7 @@ while True :
 	SoftArgMaxLayer = SoftArgMax()
 	for i in range(heatmapsLen):
 		temp = SoftArgMaxLayer(heatmaps[i])
-		print(temp)
+		print(temp.size())
         #temp1 = (Variable(torch.randn(temp.size())).cuda() + 1)*256
 		#loss  += JointSquaredError(temp, temp1)
 

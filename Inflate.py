@@ -6,9 +6,9 @@ nStack = 2
 nModules = 2
 
 def inflateHourglassNet(model3d, model):
-	inflateconv(model3d.cbrStart.conv, model.conv1_)
-	inflatebn(model3d.cbrStart.bn, model.bn1)
-	inflaterelu(model3d.cbrStart.relu, model.relu)
+	inflateconv(model3d.convStart, model.conv1_)
+	inflatebn(model3d.bnStart, model.bn1)
+	inflaterelu(model3d.reluStart, model.relu)
 	inflateResidual(model3d.res1, model.r1)
 	inflateResidual(model3d.res2, model.r4)
 	inflateResidual(model3d.res3, model.r5)
@@ -51,8 +51,8 @@ def inflatehourglass(model3d, model):
 def inflateconv(conv3d, conv):
 	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size())
 	conv3d.bias.data = conv.bias.data
-        conv3d.weight.data = conv3d.weight.data.contigous()
-        conv3d.bias.data = conv3d.bias.data.contigous()
+	conv3d.weight.data = conv3d.weight.data.contiguous()
+	conv3d.bias.data = conv3d.bias.data.contiguous()
 	return
 
 def inflatebn(bn3d, bn):
@@ -60,6 +60,10 @@ def inflatebn(bn3d, bn):
 	bn3d.bias.data = bn.bias.data
 	bn3d.running_mean = bn.running_mean
 	bn3d.running_var = bn.running_var
+	bn3d.weight.data = bn3d.weight.data.contiguous()
+	bn3d.weight.data = bn3d.weight.data.contiguous()
+	bn3d.running_mean = bn3d.running_mean.contiguous()
+	bn3d.running_var = bn3d.running_var.contiguous()
 	return
 
 def inflaterelu(relu3d, relu):

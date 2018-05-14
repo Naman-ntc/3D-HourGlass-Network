@@ -13,8 +13,11 @@ class HourglassNet3D(nn.Module):
 		self.numReductions = numReductions
 		self.nJoints = nJoints
 
-		self.cbrStart = ConvBnRelu3D(3, 64, (1,7,7), (1,2,2), (0,3,3)) ## self.convStart = nn.ConvBnRelu3D(3, 64, (3,7,7), (1,2,2), (1,3,3))
-		
+		#self.cbrStart = ConvBnRelu3D(3, 64, (1,7,7), (1,2,2), (0,3,3)) ## self.convStart = nn.ConvBnRelu3D(3, 64, (3,7,7), (1,2,2), (1,3,3))
+		self.convStart = nn.Conv3d(3, 64, (1,7,7), (1,2,2), (0,3,3))
+		self.bnStart = nn.BatchNorm3d(64)
+		self.reluStart = nn.LeakyReLU()
+
 		self.res1 = Residual3D(64,128)
 		self.mp = nn.MaxPool3d((1,2,2),(1,2,2))
 
@@ -44,7 +47,9 @@ class HourglassNet3D(nn.Module):
 
 	def forward(self, input):
 		x = input
-		x = self.cbrStart(x)
+		x = self.convStart(x)
+		x = self.bnStart(x)
+		x = self.reluStart(x)
 		x = self.res1(x)
 		x = self.mp(x)
 		x = self.res2(x)

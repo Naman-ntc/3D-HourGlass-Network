@@ -8,7 +8,9 @@ import time
 
 argumentList = sys.argv[1:]
 
+assert len(argumentList) > 0, "Give an Image Folder with -imageFolder Flag"
 assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolder Flag"
+
 
 argumentList[1] += "/"
 all_frames = os.listdir(argumentList[1])

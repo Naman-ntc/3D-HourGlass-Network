@@ -17,21 +17,14 @@ assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolde
 argumentList[1] += "/"
 all_frames = os.listdir(argumentList[1])
 
-
 n_frames = len(all_frames)
 frames_seq = np.zeros((1, 3, n_frames, 256, 256))
 for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
-
 frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
-print("Frames Developed\n")
-
 frames_seq = torch.autograd.Variable(frames_seq).float().cuda()
-print("Frames in CUDA\n")
 
-
-#hg = torch.load('inflatedModel.pth').cuda()
 hg = HourglassNet3D()
 hg = hg.cuda()
 dr = DepthRegressor()
@@ -40,9 +33,11 @@ print("Models Loaded in CUDA")
 
 
 while True :
-	heatmaps,forDepth = hg(frames_seq)
-	heatmapsLen = len(heatmaps)
-	loss = 0
+	#heatmaps,forDepth = hg(frames_seq)
+	print(hg(frames_var)[-1].shape)
+	
+	#heatmapsLen = len(heatmaps)
+	#loss = 0
 	"""
 	SoftArgMaxLayer = SoftArgMax()
 	for i in range(int(heatmapsLen)):
@@ -52,3 +47,4 @@ while True :
 	zs = dr(forDepth)
 	print(zs.size())
 	"""
+#hg = torch.load('inflatedModel.pth').cuda()

@@ -27,13 +27,15 @@ for idx, frame in enumerate(all_frames):
 frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
 print("Frames Developed\n")
 
-frames_seq = torch.autograd.Variable(frames_seq).cuda()
+frames_seq = torch.autograd.Variable(frames_seq).float().cuda()
 print("Frames in CUDA\n")
 
 
 #hg = torch.load('inflatedModel.pth').cuda()
-hg = HourglassNet3D().cuda()
-dr = DepthRegressor().cuda()
+hg = HourglassNet3D()
+hg = hg.cuda()
+dr = DepthRegressor()
+dr = dr.cuda()
 print("Models Loaded in CUDA")
 
 

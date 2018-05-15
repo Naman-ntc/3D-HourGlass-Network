@@ -4,12 +4,8 @@ from Layers3D import *
 
 class DepthRegressor(nn.Module):
 	"""docstring for DepthRegressor"""
-	def __init__(self, nChannels = 128, nRegModules = 4, nFrames = 16, nJoints = 16):
+	def __init__(self, self.nChannels, self.nRegModules, self.nFrames, self.nJoints):
 		super(DepthRegressor, self).__init__()
-		self.nChannels = nChannels
-		self.nRegModules = nRegModules
-		self.nFrames = nFrames
-		self.nJoints = nJoints
 		reg_ = []
 		for _ in range(4):
 			for _ in range(self.nRegModules):

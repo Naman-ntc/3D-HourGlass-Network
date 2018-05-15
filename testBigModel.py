@@ -6,6 +6,7 @@ import torch
 from HourGlassNet3D import *
 from Loss import *
 from Softargmax import *
+from Depthregressor import *
 
 argumentList = sys.argv[1:]
 
@@ -30,19 +31,21 @@ frames_seq = frames_seq.cuda()
 print("Frames in CUDA\n")
 
 
-hg = torch.load('inflatedModel.pth').cuda()
-print("Model Loaded in CUDA")
+#hg = torch.load('inflatedModel.pth').cuda()
+hg = HourglassNet3D().cuda()
+dr = DepthRegressor().cuda()
+print("Models Loaded in CUDA")
 
 
 while True :
 	heatmaps = hg(frames_seq)
-	heatmapsLen = len(heatmaps)
+	heatmapsLen,forDepth = len(heatmaps)
 	loss = 0
 
 	SoftArgMaxLayer = SoftArgMax()
 	for i in range(heatmapsLen):
 		temp = SoftArgMaxLayer(heatmaps[i])
 		print(temp.size())
-        #temp1 = (Variable(torch.randn(temp.size())).cuda() + 1)*256
-		#loss  += JointSquaredError(temp, temp1)
 
+	zs = dr(forDepth)
+	print(zs.size())

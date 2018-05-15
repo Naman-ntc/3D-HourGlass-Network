@@ -22,7 +22,7 @@ frames_seq = np.zeros((1, 3, n_frames, 256, 256))
 for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
-frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
+frames_seq = torch.from_numpy(frames_seq[:,:,:30,:,:]).float() /256
 frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
 hg = HourglassNet3D()
@@ -32,6 +32,15 @@ dr = dr.cuda()
 print("Models Loaded in CUDA")
 
 
+
+heatmaps,forDepth = hg(frames_var)
+zs = dr(forDepth)
+SoftArgMaxLayer = SoftArgMax()
+for i in range(int(len(heatmaps))):
+	temp = SoftArgMaxLayer(heatmaps[i])
+	print(temp.size())
+
+"""
 while True :
 	
 	#heatmaps,forDepth = hg(frames_var)
@@ -42,7 +51,7 @@ while True :
 	
 	#heatmapsLen = len(heatmaps)
 	#loss = 0
-	"""
+	
 	SoftArgMaxLayer = SoftArgMax()
 	for i in range(int(heatmapsLen)):
 		temp = SoftArgMaxLayer(heatmaps[i])

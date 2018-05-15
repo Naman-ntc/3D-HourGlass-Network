@@ -64,4 +64,4 @@ class HourglassNet3D(nn.Module):
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
 			x = x + x1 + self.jointstochan[i](out[i])
-		return out
+		return (out,x)

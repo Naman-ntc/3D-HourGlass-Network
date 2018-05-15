@@ -23,7 +23,7 @@ for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
 frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
-frames_seq = torch.autograd.Variable(frames_seq).float().cuda()
+frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
 hg = HourglassNet3D()
 hg = hg.cuda()
@@ -33,8 +33,12 @@ print("Models Loaded in CUDA")
 
 
 while True :
-	#heatmaps,forDepth = hg(frames_seq)
-	print(hg(frames_var)[-1].shape)
+	
+	#heatmaps,forDepth = hg(frames_var)
+	#heatmaps = (heatmaps).float()
+	#forDepth = (forDepth)
+	print(len(hg(frames_var)))
+	#print(hg(frames_var)[-1].shape)
 	
 	#heatmapsLen = len(heatmaps)
 	#loss = 0

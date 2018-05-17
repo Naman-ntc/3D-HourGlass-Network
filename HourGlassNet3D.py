@@ -5,7 +5,7 @@ from HourGlass3D import *
 
 class HourglassNet3D(nn.Module):
 	"""docstring for HourglassNet3D"""
-	def __init__(self, nChannels, nStack = 1, nModules = 1, numReductions = 3, nJoints = 25):
+	def __init__(self, nChannels = 128, nStack = 2, nModules = 2, numReductions = 4, nJoints = 16):
 		super(HourglassNet3D, self).__init__()
 		self.nChannels = nChannels
 		self.nStack = nStack
@@ -64,4 +64,4 @@ class HourglassNet3D(nn.Module):
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
 			x = x + x1 + self.jointstochan[i](out[i])
-		return out
+		return (out,x)

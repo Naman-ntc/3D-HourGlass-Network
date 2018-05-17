@@ -8,7 +8,9 @@ import time
 
 argumentList = sys.argv[1:]
 
+assert len(argumentList) > 0, "Give an Image Folder with -imageFolder Flag"
 assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolder Flag"
+
 
 argumentList[1] += "/"
 all_frames = os.listdir(argumentList[1])
@@ -21,7 +23,7 @@ for idx, frame in enumerate(all_frames):
 frames_seq = torch.from_numpy(frames_seq).float() /256
 frames_var = torch.autograd.Variable(frames_seq[:,:,1:25,:,:]).float().cuda()
 
-hg = HourglassNet3D(256,1,2,4)
+hg = HourglassNet3D(128,2,2,4)
 hg = hg.cuda()
 
 start_time = time.time()

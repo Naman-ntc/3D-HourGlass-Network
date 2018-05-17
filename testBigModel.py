@@ -6,6 +6,7 @@ import torch
 from HourGlassNet3D import *
 from Loss import *
 from Softargmax import *
+from DepthRegressor import *
 
 argumentList = sys.argv[1:]
 
@@ -16,33 +17,47 @@ assert argumentList[0] == "-imageFolder", "Give an Image Folder with -imageFolde
 argumentList[1] += "/"
 all_frames = os.listdir(argumentList[1])
 
-
 n_frames = len(all_frames)
 frames_seq = np.zeros((1, 3, n_frames, 256, 256))
 for idx, frame in enumerate(all_frames):
 	frames_seq[0,:,idx,:,:] = cv2.imread(argumentList[1] + frame).transpose(2,0,1)
 
+frames_seq = torch.from_numpy(frames_seq[:,:,:30,:,:]).float() /256
+frames_var = torch.autograd.Variable(frames_seq).float().cuda()
 
-frames_seq = torch.from_numpy(frames_seq[:,:,:,:,:]).float() /256
-print("Frames Developed\n")
-
-frames_seq = frames_seq.cuda()
-print("Frames in CUDA\n")
-
-
-hg = torch.load('inflatedModel.pth').cuda()
-print("Model Loaded in CUDA")
+hg = HourglassNet3D()
+hg = hg.cuda()
+dr = DepthRegressor()
+dr = dr.cuda()
+print("Models Loaded in CUDA")
 
 
+
+heatmaps,forDepth = hg(frames_var)
+zs = dr(forDepth)
+SoftArgMaxLayer = SoftArgMax()
+for i in range(int(len(heatmaps))):
+	temp = SoftArgMaxLayer(heatmaps[i])
+	print(temp.size())
+
+"""
 while True :
-	heatmaps = hg(frames_seq)
-	heatmapsLen = len(heatmaps)
-	loss = 0
-
+	
+	#heatmaps,forDepth = hg(frames_var)
+	#heatmaps = (heatmaps).float()
+	#forDepth = (forDepth)
+	print(len(hg(frames_var)))
+	#print(hg(frames_var)[-1].shape)
+	
+	#heatmapsLen = len(heatmaps)
+	#loss = 0
+	
 	SoftArgMaxLayer = SoftArgMax()
-	for i in range(heatmapsLen):
+	for i in range(int(heatmapsLen)):
 		temp = SoftArgMaxLayer(heatmaps[i])
 		print(temp.size())
-        #temp1 = (Variable(torch.randn(temp.size())).cuda() + 1)*256
-		#loss  += JointSquaredError(temp, temp1)
 
+	zs = dr(forDepth)
+	print(zs.size())
+	"""
+#hg = torch.load('inflatedModel.pth').cuda()

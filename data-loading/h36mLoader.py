@@ -15,7 +15,8 @@ class h36m(data.dataset):
 		self.split = split
 		self.nFramesLoad = nFramesLoad
 		self.loadConsecutive = loadConsecutive
-
+		self.vidFolders = np.load(ref.h36mdir + "/vid_" + split + ".npy")
+		self.countFrames = np.load(ref.h36mdir + "/cnt_" + split + ".npy")
 		"""
 		LOAD self.vidFolders and self.countFrames for the given split 
 		"""
@@ -89,7 +90,7 @@ class h36m(data.dataset):
 			outPts_3d_monos = np.zeros(self.nFramesLoad,ref.nJoints,3)
 
 			for i in range(self.nFrames):
-				frameIndex = "{:06d}.jpg".format(6*startPt-5)
+				frameIndex = "{:06d}.jpg".format(5*startPt-4)
 				frame,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outptss[i,:,:] = pts_2d
@@ -106,7 +107,7 @@ class h36m(data.dataset):
 			outPts_3d_monos = np.zeros(self.nFramesLoad,ref.nJoints,3)
 			
 			for i in range(self.nFramesLoad):
-				ithFrameIndex = "{:06d}.jpg".format(selectedFrameIndices[i])
+				ithFrameIndex = "{:06d}.jpg".format(5*selectedFrameIndices[i] - 4)
 				frame,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outptss[i,:,:] = pts_2d

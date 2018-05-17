@@ -71,12 +71,12 @@ for i in range(length):
 for i in train_vids:
 	parsed = list(map(int, re.findall(r'\d+', i)))
 	train_cnt.append(len(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]]))
-	pickle.dump(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]], open('i/data.pkl','wb'))
+	pickle.dump(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]], open(i + '/data.pkl','wb'))
 
 for i in val_vids:
 	parsed = list(map(int, re.findall(r'\d+', i)))
 	val_cnt.append(len(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]]))
-	pickle.dump(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]], open('i/data.pkl', 'wb'))
+	pickle.dump(data[parsed[0]][parsed[1]][parsed[2]][parsed[3]], open(i + '/data.pkl', 'wb'))
 
 
 

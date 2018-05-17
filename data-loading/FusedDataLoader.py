@@ -11,19 +11,19 @@ class FusionDataset(data.Dataset):
 		self.opts = opts
 		self.split = split
 
-		self.dataseth36m = h36m(opts, split)
-		self.datasetmpii = mpii(opts, split, True)
+		self.dataset_h36m = h36m(opts, split)
+		self.dataset_ntu = ntu(opts, split)
 
-		self.nImagesh36m = len(self.dataseth36m)
-		self.nImagesmpii = len(self.datasetmpii)
+		self.nVideos_h36m = len(self.dataset_h36m)
+		self.nVideos_ntu = len(self.dataset_ntu)
 
 		print("Built h36m and mpii dataset containing %d and %d samples")
 
 	def __getitem__(self, index):
 		if (index < self.nImagesh36m):
-			return self.dataseth36m[index]
+			return self.dataset_h36m[index]
 		else :
-			return self.datasetmpii[index - self.nImagesh36m]
+			return self.dataset_ntu[index - self.nVideos_h36m]
 
 	def __len__(self):
-		return self.nImagesh36m + self.nImagesmpii
+		return self.nVideos_h36m + self.nVideos_mpii

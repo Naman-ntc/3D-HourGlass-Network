@@ -17,9 +17,7 @@ class h36m(data.dataset):
 		self.loadConsecutive = loadConsecutive
 		self.vidFolders = np.load(ref.h36mdir + "/vid_" + split + ".npy")
 		self.countFrames = np.load(ref.h36mdir + "/cnt_" + split + ".npy")
-		"""
-		LOAD self.vidFolders and self.countFrames for the given split 
-		"""
+		
 		self.root = 7
 		self.split = split
 		self.opts = opts

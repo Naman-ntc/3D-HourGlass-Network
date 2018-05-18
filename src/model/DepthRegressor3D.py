@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from Layers3D import *
 
-class DepthRegressor(nn.Module):
+class DepthRegressor3D(nn.Module):
 	"""docstring for DepthRegressor"""
 	def __init__(self, nChannels = 128, nRegModules = 4, nFrames = 16, nJoints = 16):
 		super(DepthRegressor, self).__init__()

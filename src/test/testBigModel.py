@@ -3,9 +3,9 @@ import sys
 import numpy as np
 import cv2
 import torch
-from HourGlassNet3D import *
 from Loss import *
 from Softargmax import *
+from HourGlassNet3D import *
 from DepthRegressor import *
 
 argumentList = sys.argv[1:]

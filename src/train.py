@@ -6,7 +6,7 @@ from progress.bar import Bar
 
 from utils.utils import AverageMeter
 
-from utils.debugger import Debugger
+#from utils.debugger import Debugger
 
 from Losses import *
 
@@ -24,7 +24,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		input_var = (input).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
-		
+
 		output = model(input_var)
 
 		reg = output[opt.nStack]
@@ -39,7 +39,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.showImg()
 			debugger.saveImg('debug/{}.png'.format(i))
 
-		loss = opt.regWeight * JointsDepthSquaredError(reg,target3D)
+		loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 		
 		Loss3D.update(loss.data[0], input.size(0))
 		for k in range(opt.nStack):

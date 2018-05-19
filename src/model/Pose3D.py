@@ -22,4 +22,4 @@ class Pose3D(nn.Module):
 	def forward(self, input):
 		heatmaps, regInput = self.hg(input)
 		z = self.dr(regInput)
-		return (heatmaps, z)
+		return heatmaps + [z]

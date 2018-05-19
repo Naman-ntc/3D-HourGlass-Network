@@ -3,6 +3,8 @@ import torch.nn as nn
 
 lossfunc = nn.MSELoss().cuda()
 
+#@torch.set_default_tensor_type('torch.cuda.FloatTensor')
+
 def Joints2DHeatMapsSquaredError(input, target):
 	global lossfunc
 	"""
@@ -18,7 +20,7 @@ def Joints2DArgMaxSquaredError(input, target):
 	"""
 	Takes input as (N,C,D,2) and similar target (Here C is number of channels equivalent to number of joints)
 	"""
-	assert len(input.shape) == 4 & input.shape[3] == 2, "Joints2DArgMaxSquaredError"
+	#assert len(input.shape) == 4 & input.shape[3] == 2, "Joints2DArgMaxSquaredError"
 	N = input.size()[0]
 	return lossfunc(input.view(N,-1), target.view(N,-1))
 
@@ -27,6 +29,8 @@ def JointsDepthSquaredError(input, target):
 	"""
 	Takes input as (N,C,D,1) and similar target (Here C is number of channels equivalent to number of joints)
 	"""	
-	assert len(input.shape) == 4 & input.shape[3] == 2, "JointsDepthSquaredError"
+	print(input.size())
+	print(target.size())
+	#assert len(input.shape) == 4 & input.size()[3] == 2, "JointsDepthSquaredError"
 	N = input.size()[0]
 	return lossfunc(input.view(N,-1), target.view(N,-1))

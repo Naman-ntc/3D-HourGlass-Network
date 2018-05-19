@@ -26,7 +26,7 @@ def main():
 	if opt.loadModel != 'none':
 		model = torch.load(opt.loadModel).cuda()
 	else :
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
+		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(
@@ -43,7 +43,7 @@ def main():
 		
 	train_loader = torch.utils.data.DataLoader(
 		h36m('train', opt),
-		batch_size = opt.trainBatch,
+		batch_size = 1,
 		shuffle = True if opt.DEBUG == 0 else False,
 		num_workers = int(ref.nThreads)
 	)
@@ -57,7 +57,7 @@ def main():
 	)
 
 	for epoch in range(1, opt.nEpochs + 1):
-		loss_train, loss3d_train = train(epoch, opt, train_loader, model, criterion, optimizer)
+		loss_train, loss3d_train = train(epoch, opt, train_loader, model, optimizer)
 		logger.scalar_summary('loss_train', loss_train, epoch)
 		#logger.scalar_summary('acc_train', acc_train, epoch)
 		#logger.scalar_summary('mpjpe_train', mpjpe_train, epoch)

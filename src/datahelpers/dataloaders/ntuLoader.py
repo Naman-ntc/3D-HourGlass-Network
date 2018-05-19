@@ -1,9 +1,14 @@
+import cv2
 import ref
 import torch
 import random
 import numpy as np
 import torch.utils.data as data
 import pickle
+
+
+from utils.utils import Rnd, Flip, ShuffleLR
+from utils.img import Crop, DrawGaussian, Transform3D
 
 
 class ntu(data.Dataset):
@@ -112,4 +117,7 @@ class ntu(data.Dataset):
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		
 
-		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)	
+		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)
+
+	def __len__(self):
+		return self.nVideos	

@@ -1,3 +1,4 @@
+import cv2
 import ref
 import torch
 import random
@@ -5,6 +6,8 @@ import numpy as np
 import torch.utils.data as data
 import pickle
 
+from utils.utils import Rnd, Flip, ShuffleLR
+from utils.img import Crop, DrawGaussian, Transform3D
 
 class h36m(data.Dataset):
 	"""docstring for h36m"""
@@ -61,7 +64,7 @@ class h36m(data.Dataset):
 		pts_2d = torch.from_numpy(pts_2d)
 		outReg = torch.from_numpy(outReg)
 		pts_3d_mono = torch.from_numpy(pts_3d_mono)
-		
+				
 		return frame, pts_2d, outReg, pts_3d_mono	
 
 
@@ -110,8 +113,9 @@ class h36m(data.Dataset):
 				outOutRegs[i,:,:] = outReg
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		
-
+		outOutRegs = outOutRegs[:,:,2]
+		outOutRegs = np.expand_dims(outOutRegs, 3)
 		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)
 
-	def __len__():
+	def __len__(self):
 		return self.nVideos	

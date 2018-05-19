@@ -29,11 +29,11 @@ class h36m(data.dataset):
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
-		pts_2d, pts_3d, pts_3d_mono = pickle.load(path + "data.pkl")
+		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		
-		pts_2d = pts_2d[frameName]
-		pts_3d = pts_3d[frameName]
-		pts_3d_mono = pts_3d_mono[frameName]
+		pts_2d = pts_2d
+		pts_3d = pts_3d
+		pts_3d_mono = pts_3d_mono
 
 
 		c = np.ones(2) * ref.h36mImgSize / 2
@@ -43,7 +43,7 @@ class h36m(data.dataset):
 	
 		s2d, s3d = 0, 0
 		for e in ref.edges:
-			s2d += ((pts[e[0]] - pts[e[1]]) ** 2).sum() ** 0.5
+			s2d += ((pts_2d[e[0]] - pts_2d[e[1]]) ** 2).sum() ** 0.5
 			s3d += ((pts_3d[e[0], :2] - pts_3d[e[1], :2]) ** 2).sum() ** 0.5
 		scale = s2d / s3d
 
@@ -82,16 +82,16 @@ class h36m(data.dataset):
 		if self.loadConsecutive:
 
 			startPt = random.randint(1, CountFramesInVid - self.nFramesLoad + 2)
-			inpFrames = np.zeros(3,self.nFramesLoad,:,:)		
-			outPts_2ds = np.zeros(self.nFramesLoad,ref.nJoints,2)
-			outOutRegs = np.zeros(self.nFramesLoad,ref.nJoints,3)
-			outPts_3d_monos = np.zeros(self.nFramesLoad,ref.nJoints,3)
+			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
+			outPts_2ds = np.zeros((self.nFramesLoad,ref.nJoints,2))
+			outOutRegs = np.zeros((self.nFramesLoad,ref.nJoints,3))
+			outPts_3d_monos = np.zeros((self.nFramesLoad,ref.nJoints,3))
 
-			for i in range(self.nFrames):
+			for i in range(self.nFramesLoad):
 				frameIndex = "{:06d}.jpg".format(5*startPt-4)
 				frame,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
-				outptss[i,:,:] = pts_2d
+				outPts_2ds[i,:,:] = pts_2d
 				outOutRegs[i,:,:] = outReg
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		else :
@@ -99,16 +99,16 @@ class h36m(data.dataset):
 			frameIndices = np.random.permutation(CountFramesInVid)
 			selectedFrameIndices = frameIndices[:self.nFramesLoad]
 
-			inpFrames = np.zeros(3,self.nFramesLoad,:,:)		
-			outPts_2ds = np.zeros(self.nFramesLoad,ref.nJoints,2)
-			outOutRegs = np.zeros(self.nFramesLoad,ref.nJoints,3)
-			outPts_3d_monos = np.zeros(self.nFramesLoad,ref.nJoints,3)
+			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
+			outPts_2ds = np.zeros((self.nFramesLoad,ref.nJoints,2))
+			outOutRegs = np.zeros((self.nFramesLoad,ref.nJoints,3))
+			outPts_3d_monos = np.zeros((self.nFramesLoad,ref.nJoints,3))
 			
 			for i in range(self.nFramesLoad):
 				ithFrameIndex = "{:06d}.jpg".format(5*selectedFrameIndices[i] - 4)
-				frame,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, frameIndex)
+				LoadFrameAndData(path, vidFolder + '_' +  ithFrameIndex)
 				inpFrames[:,i,:,:] = frame
-				outptss[i,:,:] = pts_2d
+				outPts_2ds[i,:,:] = pts_2d
 				outOutRegs[i,:,:] = outReg
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		

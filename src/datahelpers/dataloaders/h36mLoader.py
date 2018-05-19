@@ -8,19 +8,17 @@ import pickle
 
 class h36m(data.dataset):
 	"""docstring for h36m"""
-	def __init__(self, opts, split, nFramesLoad, loadConsecutive = True):
+	def __init__(self, split, nFramesLoad, loadConsecutive = True):
 		super(h36m, self).__init__()
 		print("Initializing 3D %s data for h3.6m data" %(split))
-		self.opts = opts
 		self.split = split
 		self.nFramesLoad = nFramesLoad
 		self.loadConsecutive = loadConsecutive
-		self.vidFolders = np.load(ref.h36mdir + "/vid_" + split + ".npy")
-		self.countFrames = np.load(ref.h36mdir + "/cnt_" + split + ".npy")
+		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
+		self.countFrames = np.load(ref.h36mDataDir + "/cnt_" + split + ".npy")
 		
 		self.root = 7
 		self.split = split
-		self.opts = opts
 		self.annot = annot
 
 		self.nVideos = (self.vidFolders).shape[0]
@@ -63,7 +61,10 @@ class h36m(data.dataset):
 			outReg[i, 2] = pt[2] / ref.outputRes * 2 - 1
 
 		frame = torch.from_numpy(frame)
-
+		pts_2d = torch.from_numpy(pts_2d)
+		outReg = torch.from_numpy(outReg)
+		pts_3d_mono = torch.from_numpy(pts_3d_mono)
+		
 		return frame, pts_2d, outReg, pts_3d_mono	
 
 
@@ -75,7 +76,7 @@ class h36m(data.dataset):
 
 		vidFolder = self.vidFolders[index]
 
-		path = ref.h36mdir + "/" + vidFolder + "/"
+		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
 		CountFramesInVid = self.countFrames[index]
 

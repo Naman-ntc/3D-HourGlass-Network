@@ -6,20 +6,19 @@ import torch.utils.data as data
 import pickle
 
 
-class ntu(data.dataset):
+class ntu(data.Dataset):
 	"""docstring for ntu"""
-	def __init__(self, split, nFramesLoad, loadConsecutive = True):
+	def __init__(self, split, opts):
 		super(ntu, self).__init__()
 		print("Initializing 3D %s data for ntu data" %(split))
 		self.split = split
-		self.nFramesLoad = nFramesLoad
-		self.loadConsecutive = loadConsecutive
+		self.nFramesLoad = opts.nFramesLoad
+		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.ntuDataDir + "/vid_" + split + ".npy")
 		self.countFrames = np.load(ref.ntuDataDir + "/cnt_" + split + ".npy")
 		
 		self.root = 7
 		self.split = split
-		self.annot = annot
 
 		self.nVideos = (self.vidFolders).shape[0]
 

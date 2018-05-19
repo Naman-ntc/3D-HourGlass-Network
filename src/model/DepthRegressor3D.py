@@ -1,14 +1,14 @@
 import torch
 import torch.nn as nn
-from Layers3D import *
+from .Layers3D import *
 
 class DepthRegressor3D(nn.Module):
-	"""docstring for DepthRegressor"""
-	def __init__(self, nChannels = 128, nRegModules = 4, nFrames = 16, nJoints = 16):
-		super(DepthRegressor, self).__init__()
+	"""docstring for DepthRegressor3D"""
+	def __init__(self, nChannels = 128, nRegModules = 4, nRegFrames = 16, nJoints = 16):
+		super(DepthRegressor3D, self).__init__()
 		self.nChannels = nChannels
 		self.nRegModules = nRegModules
-		self.nFrames = nFrames
+		self.nRegFrames = nRegFrames
 		self.nJoints = nJoints
 		reg_ = []
 		for _ in range(4):
@@ -18,17 +18,17 @@ class DepthRegressor3D(nn.Module):
 
 		self.reg = nn.Sequential(* reg_)
 		
-		self.fc = nn.Linear(self.nChannels*self.nFrames*4*4, 16*self.nFrames)
+		self.fc = nn.Linear(self.nChannels*self.nRegFrames*4*4, 16*self.nRegFrames)
 
 	def forward(self, input):
 		out = self.reg(input)
 		D = out.size()[2]
-		slides = D/ self.nFrames
+		slides = D/ self.nRegFrames
 		z = torch.zeros(D, 16)
 		for i in range(int(slides)):
-			z[16*i:16*i+16,:] = self.fc(out[:,:,16*i:16*i+16,:,:].reshape(-1, 16*self.nFrames*self.nChannels)).reshape(-1,16)
-		rem = D % self.nFrames
+			z[16*i:16*i+16,:] = self.fc(out[:,:,16*i:16*i+16,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(-1,16)
+		rem = D % self.nRegFrames
 
 		if (rem != 0):
-			z[16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nFrames*self.nChannels)).reshape(-1,16)[16 + 16*int(slides) - D:16,:]
+			z[16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(-1,16)[16 + 16*int(slides) - D:16,:]
 		return z

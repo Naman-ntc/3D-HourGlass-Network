@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from Layers3D import *
+from .Layers3D import *
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""

@@ -6,14 +6,12 @@ import pickle
 							
 class FusionDataset(data.Dataset):
 	"""docstring for FusionDataset"""
-	def __init__(self, split, nFramesLoad, loadConsecutive = True):
+	def __init__(self, split, opts):
 		super(FusionDataset, self).__init__()
 		self.split = split
-		self.nFramesLoad = nFramesLoad
-		self.loadConsecutive = loadConsecutive
-
-		self.dataset_h36m = h36m(split, nFramesLoad, loadConsecutive)
-		self.dataset_ntu = ntu(split, nFramesLoad, loadConsecutive)
+		
+		self.dataset_h36m = h36m(split, opts)
+		self.dataset_ntu = ntu(split, opts)
 
 		self.nVideos_h36m = len(self.dataset_h36m)
 		self.nVideos_ntu = len(self.dataset_ntu)

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from Layers3D import *
-from HourGlass3D import *
+from .Layers3D import *
+from .HourGlass3D import *
 
 class HourglassNet3D(nn.Module):
 	"""docstring for HourglassNet3D"""

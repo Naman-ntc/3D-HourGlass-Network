@@ -6,24 +6,21 @@ import torch.utils.data as data
 import pickle
 
 
-class h36m(data.dataset):
+class h36m(data.Dataset):
 	"""docstring for h36m"""
-	def __init__(self, split, nFramesLoad, loadConsecutive = True):
+	def __init__(self, split, opts):
 		super(h36m, self).__init__()
-		print("Initializing 3D %s data for h3.6m data" %(split))
-		self.split = split
-		self.nFramesLoad = nFramesLoad
-		self.loadConsecutive = loadConsecutive
+		print("Initializing 3D %s data for h36m data" %(split))
+		#self.split = split
+		self.nFramesLoad = opts.nFramesLoad
+		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
 		self.countFrames = np.load(ref.h36mDataDir + "/cnt_" + split + ".npy")
 		
 		self.root = 7
 		self.split = split
-		self.annot = annot
 
-		self.nVideos = (self.vidFolders).shape[0]
-
-	
+		self.nVideos = (self.vidFolders).shape[0]	
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
@@ -114,4 +111,7 @@ class h36m(data.dataset):
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		
 
-		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)	
+		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)
+
+	def __len__():
+		return self.nVideos	

@@ -29,7 +29,7 @@ disturb = 10
 
 expDir = '../exp'
 dataDir = '../data/'
-ntuDataDir = dataDir + 'ntu/data'
-h36mDataDir = dataDir + 'h36m/data'
+ntuDataDir = dataDir + 'ntu'
+h36mDataDir = dataDir + 'h36m'
 
 nThreads = 4

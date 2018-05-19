@@ -2,6 +2,8 @@ import cv2
 import ref
 import torch
 import numpy as np
+
+from model.SoftArgMax import *
 from progress.bar import Bar
 
 from utils.utils import AverageMeter
@@ -10,12 +12,14 @@ from utils.utils import AverageMeter
 
 from Losses import *
 
+SoftArgMaxLayer = SoftArgMax()
+
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	if split == 'train':
 		model.train()
 	else:
 		model.eval()
-	Loss, Acc, = AverageMeter(), AverageMeter()
+	Loss, Loss3D, = AverageMeter(), AverageMeter()
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
@@ -40,12 +44,12 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.saveImg('debug/{}.png'.format(i))
 
 		loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
-		
-		Loss3D.update(loss.data[0], input.size(0))
+		print(loss.item())
+		Loss3D.update(loss.item(), input.size(0))
 		for k in range(opt.nStack):
-			loss += Joints2DArgMaxSquaredError(output[k], target2D_var)
+			loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
 
-		Loss.update(loss.data[0], input.size(0))
+		Loss.update(loss.item(), input.size(0))
 		
 
 		if split == 'train':
@@ -55,7 +59,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
  
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | Acc {Acc.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss, Acc=Acc, split = split, loss3d = Loss3D)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss {loss.avg:.6f} | Loss3D {loss3d.avg:.6f}'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss, split = split, loss3d = Loss3D)
 		bar.next()
 
 	bar.finish()

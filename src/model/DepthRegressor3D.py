@@ -22,7 +22,7 @@ class DepthRegressor3D(nn.Module):
 
 	def forward(self, input):
 		out = self.reg(input)
-		N = out.size()[1]
+		N = out.size()[0]
 		D = out.size()[2]
 		slides = D/ self.nRegFrames
 		z = torch.zeros(N, 16, D, 1)

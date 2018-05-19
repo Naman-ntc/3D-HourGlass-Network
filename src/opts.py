@@ -23,9 +23,12 @@ class opts():
 	self.parser.add_argument('-nRegModules', type = int, default = 16, help = '# number of frames temporally for regressor module')
 
 	self.parser.add_argument('-nEpochs', type = int, default = 60, help = '#training epochs')
-	self.parser.add_argument('-trainBatch', type = int, default = 3, help = 'Mini-batch size')
 	self.parser.add_argument('-valIntervals', type = int, default = 5, help = '#valid intervel')
-
+	self.parser.add_argument('-trainBatch', type = int, default = 8, help = '#Mini-batch size')
+	
+	self.parser.add_argument('-nFrames', type = int, default = 32, help = '#Frames per video to consider')
+	self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
+	
 	self.parser.add_argument('-LR', type = float, default = 2.5e-4, help = 'Learning Rate')
 	self.parser.add_argument('-dropLR', type = int, default = 1000000, help = 'drop LR')
 	

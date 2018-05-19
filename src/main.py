@@ -9,8 +9,8 @@ from opts import opts
 from model.Pose3D import Pose3D
 
 from datahelpers.dataloaders.fusedDataLoader import Fusion
-from datahelpers.dataloaders.h36mLoader import H36M
-from datahelpers.dataloaders.ntuLoader import MPII
+from datahelpers.dataloaders.h36mLoader import h36m
+from datahelpers.dataloaders.ntuLoader import ntu
 
 from utils.utils import adjust_learning_rate
 from utils.logger import Logger
@@ -28,8 +28,21 @@ def main():
 	else :
 		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nFrames, ref.nJoints)
 
+
+	val_loader = torch.utils.data.DataLoader(
+		FusionDataset(_, 'train', opts.nFrames, opts.loadConsecutive),
+		batch_size = 1,
+		shuffle = False,
+		num_workers = int(ref.nThreads)
+	)
+
+	if (opt.test):
+		# Validate!!!
+		pass
+
+		
 	train_loader = torch.utils.data.DataLoader(
-		FusionDataset(_,'train',32),
+		h36m(_, 'train', opts.nFrames, opts.loadConsecutive),
 		batch_size = opt.trainBatch,
 		shuffle = True if opt.DEBUG == 0 else False,
 		num_workers = int(ref.nThreads)
@@ -42,6 +55,8 @@ def main():
 		weight_decay = ref.weightDecay, 
 		momentum = ref.momentum
 	)
+
+
 
 
 

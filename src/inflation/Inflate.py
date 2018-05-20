@@ -20,8 +20,10 @@ def inflateDepthRegressor(model3d, model):
 def inflateFullyConnected(model3d, model):
 	for i in range(nRegFrames):
 		for j in range(nRegFrames):
-			model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data
-
+			if (i == j) :
+				model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data * 0.4
+			else :
+				model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data * 0.04
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
 	inflatebn(model3d.bnStart, model.bn1)
@@ -66,7 +68,7 @@ def inflatehourglass(model3d, model):
 	return
 
 def inflateconv(conv3d, conv):
-	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size())
+	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()) * (1./(conv3d.weight.data.shape[2]))
 	conv3d.bias.data = conv.bias.data
 	conv3d.weight.data = conv3d.weight.data.contiguous()
 	conv3d.bias.data = conv3d.bias.data.contiguous()

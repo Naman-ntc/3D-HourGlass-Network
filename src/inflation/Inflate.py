@@ -1,9 +1,26 @@
 import torch
 
 
-nChannels = 256
+nChannels = 128
 nStack = 2
 nModules = 2
+nRegFrames = 16
+
+def inflatePose3D(model3d, model):
+	inflateHourglassNet(model3d.hg, model)
+	inflateDepthRegressor(model3d.dr, model)
+
+def inflateDepthRegressor(model3d, model):
+	for i in range(4):
+		inflateResidual(model3d.reg[4*i], model.reg_[4*i])
+		inflateResidual(model3d.reg[4*i+1], model.reg_[4*i+1])
+		inflateMaxPool(model3d.reg[4*i+2], model.reg_[4*i+2])
+	inflateFullyConnected(model3d.fc, model.reg)	
+
+def inflateFullyConnected(model3d, model):
+	for i in range(nRegFrames):
+		for j in range(nRegFrames):
+			model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data
 
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)

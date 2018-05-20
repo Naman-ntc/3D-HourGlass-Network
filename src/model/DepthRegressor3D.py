@@ -4,7 +4,7 @@ from .Layers3D import *
 
 class DepthRegressor3D(nn.Module):
 	"""docstring for DepthRegressor3D"""
-	def __init__(self, nChannels = 128, nRegModules = 4, nRegFrames = 16, nJoints = 16):
+	def __init__(self, nChannels = 128, nRegModules = 2, nRegFrames = 16, nJoints = 16):
 		super(DepthRegressor3D, self).__init__()
 		self.nChannels = nChannels
 		self.nRegModules = nRegModules

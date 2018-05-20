@@ -1,8 +1,8 @@
 import sys
-sys.path.insert(0,'..')
+#sys.path.insert(0,'..')
 import pickle
 from functools import partial
-from twod.hg_3d import *
+#from twod.hg_3d import *
 from model.Pose3D import *
 from model.DepthRegressor3D import *
 from model.HourGlassNet3D import *

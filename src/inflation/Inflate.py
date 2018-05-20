@@ -12,18 +12,18 @@ def inflatePose3D(model3d, model):
 
 def inflateDepthRegressor(model3d, model):
 	for i in range(4):
-		inflateResidual(model3d.reg[4*i], model.reg_[4*i])
-		inflateResidual(model3d.reg[4*i+1], model.reg_[4*i+1])
-		inflateMaxPool(model3d.reg[4*i+2], model.reg_[4*i+2])
+		inflateResidual(model3d.reg[3*i], model.reg_[2*i])
+		inflateResidual(model3d.reg[3*i+1], model.reg_[2*i+1])
+		inflateMaxPool(model3d.reg[3*i+2], model.maxpool)
 	inflateFullyConnected(model3d.fc, model.reg)	
 
 def inflateFullyConnected(model3d, model):
 	for i in range(nRegFrames):
 		for j in range(nRegFrames):
 			if (i == j) :
-				model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data * 0.4
+				model3d.weight.data[16*(i):16*(i+1), 2048*(i):2048*(i+1)] = model.weight.data * 0.4
 			else :
-				model3d.fc.weight.data[16*(i):16*(i+1), 4096*(i):4096*(i+1)] = model.reg.weight.data * 0.04
+				model3d.weight.data[16*(i):16*(i+1), 2048*(i):2048*(i+1)] = model.weight.data * 0.04
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
 	inflatebn(model3d.bnStart, model.bn1)

@@ -85,17 +85,34 @@ for video in videoList:
 				bbox.x2 = max(bbox.x2, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorY'])
 				bbox.y1 = min(bbox.y1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'])
 				bbox.y2 = max(bbox.y2, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'])
-				current2d.append([bbox.x1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'],\
-				 bbox.x1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorY']])
-				current3d.append([bbox.x1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'],\
-				 bbox.x1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorY'], \
-				  bbox.x1, skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['z']])
+				"""
+				appended only pixel coordinates here
+				"""
+				current2d.append([
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'], 
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorY']
+					])
+				"""
+				appended only 3D coordinates here
+				"""
+				current3d.append([
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['x'], 
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['y'], 
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['z']
+					])
 				#print(bbox)
 			for i in range(len(current2d)):
+				"""
+				Subtracted meanX and meanY from pixel coordinates, 3D coordinates should be independent
+				"""
 				current2d[i][0] -= bbox.meanX
 				current2d[i][1] -= bbox.meanY
-				current3d[i][0] -= bbox.meanX
-				current3d[i][1] -= bbox.meanY
+				"""
+				Also scaled pixel coordinates wrt 1920x1080
+				"""
+				current2d[i][0] *= (224.0/1920)
+				current2d[i][1] *= (224.0/1080)
+				
 				
 
 			sideLength = bbox.extend()
@@ -109,8 +126,8 @@ for video in videoList:
 		dirName = name[:-4]
 		os.system("mkdir train/" + dirName)
 		i = 0
-		currentDict["2d"] = d2d
-		currentDict["3d"] = d3d
+		currentDict["2d"] = np.asarray(d2d)
+		currentDict["3d"] = np.asarray(d3d)
 		pickle.dump(currentDict, open("train/" + dirName + "/data.pkl", 'wb'))
 		while (cap.isOpened()):
 			

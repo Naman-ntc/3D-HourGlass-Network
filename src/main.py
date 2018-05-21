@@ -43,7 +43,7 @@ def main():
 		
 	train_loader = torch.utils.data.DataLoader(
 		h36m('train', opt),
-		batch_size = 1,
+		batch_size = opt.dataloaderSize,
 		shuffle = True if opt.DEBUG == 0 else False,
 		num_workers = int(ref.nThreads)
 	)
@@ -68,7 +68,7 @@ def main():
 		# 	logger.scalar_summary('acc_val', acc_val, epoch)
 		# 	logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
 		# 	logger.scalar_summary('loss3d_val', loss3d_val, epoch)
-		# 	torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
+		torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
 		# 	logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, mpjpe_train, loss3d_train, loss_val, acc_val, mpjpe_val, loss3d_val))
 		# else:
 		# 	logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, mpjpe_train, loss3d_train))

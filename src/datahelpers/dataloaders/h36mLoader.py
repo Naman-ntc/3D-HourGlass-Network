@@ -23,7 +23,9 @@ class h36m(data.Dataset):
 		self.root = 7
 		self.split = split
 
-		self.nVideos = (self.vidFolders).shape[0]	
+		self.nVideos = (self.vidFolders).shape[0]
+
+		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)

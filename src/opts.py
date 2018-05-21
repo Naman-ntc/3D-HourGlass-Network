@@ -24,8 +24,9 @@ class opts():
 
 		self.parser.add_argument('-nEpochs', type = int, default = 60, help = '#training epochs')
 		self.parser.add_argument('-valIntervals', type = int, default = 5, help = '#valid intervel')
-		self.parser.add_argument('-trainBatch', type = int, default = 8, help = '#Mini-batch size')
-	
+		self.parser.add_argument('-trainBatch', type = int, default = 4, help = '#Mini-batch size')
+		self.parser.add_argument('-dataloaderSize', type = int, default = 2, help = '#Mini-batch size')
+		
 		self.parser.add_argument('-nFramesLoad', type = int, default = 16, help = '#Frames per video to consider')
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 	

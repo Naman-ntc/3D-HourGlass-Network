@@ -59,8 +59,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		
 
 		if split == 'train':
+			loss = loss/opt.trainBatch
 			loss.backward()
-			if ((i+1)%(opt.trainBatch/2) == 0):
+			if ((i+1)%(opt.trainBatch/opt.dataloaderSize) == 0):
 				optimizer.step()
 				optimizer.zero_grad()
 

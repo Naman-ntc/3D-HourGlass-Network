@@ -33,7 +33,7 @@ class opts():
 		self.parser.add_argument('-dropLR', type = int, default = 1000000, help = 'drop LR')
 	
 		self.parser.add_argument('-ratio3D', type = int, default = 0, help = 'weak label data ratio')
-		self.parser.add_argument('-regWeight', type = float, default = 0, help = 'depth regression loss weight')
+		self.parser.add_argument('-regWeight', type = float, default = 0.1, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
 	
 	

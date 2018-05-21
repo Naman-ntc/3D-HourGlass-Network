@@ -55,17 +55,15 @@ class h36m(data.Dataset):
 
 		frame = Crop(frame, c, s, 0, ref.inputRes) / 256.
 
+		outMap = np.zeros((ref.nJoints, ref.outputRes, ref.outputRes))
 		outReg = np.zeros((ref.nJoints, 3))
 		for i in range(ref.nJoints):
 			pt = Transform3D(pts_3d[i], c, s, 0, ref.outputRes)
+			if pts_2d[i][0] > 1:
+				outMap[i] = DrawGaussian(outMap[i], pt[:2], ref.hmGauss)
 			outReg[i, 2] = pt[2] / ref.outputRes * 2 - 1
-
-		frame = torch.from_numpy(frame)
-		pts_2d = torch.from_numpy(pts_2d)
-		outReg = torch.from_numpy(outReg)
-		pts_3d_mono = torch.from_numpy(pts_3d_mono)
 				
-		return frame, pts_2d, outReg, pts_3d_mono	
+		return frame, outMap, pts_2d, outReg, pts_3d_mono	
 
 
 
@@ -87,13 +85,16 @@ class h36m(data.Dataset):
 			outPts_2ds = np.zeros((self.nFramesLoad,ref.nJoints,2))
 			outOutRegs = np.zeros((self.nFramesLoad,ref.nJoints,3))
 			outPts_3d_monos = np.zeros((self.nFramesLoad,ref.nJoints,3))
-
+			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+			
 			for i in range(self.nFramesLoad):
-				frameIndex = "{:06d}.jpg".format(5*startPt-4)
-				frame,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
+				frameIndex = "{:06d}.jpg".format(5*i + 5*(startPt//5) + 1)
+				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
+				outOutMaps[:,i,:,:] = outMap
 				outPts_2ds[i,:,:] = pts_2d
 				outOutRegs[i,:,:] = outReg
+				
 				outPts_3d_monos[i,:,:] = pts_3d_mono
 		else :
 
@@ -115,7 +116,7 @@ class h36m(data.Dataset):
 		
 		outOutRegs = outOutRegs[:,:,2]
 		outOutRegs = np.expand_dims(outOutRegs, 3)
-		return (inpFrames, outPts_2ds, outOutRegs, outPts_3d_monos)
+		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 
 	def __len__(self):
 		return self.nVideos	

@@ -13,8 +13,6 @@ def Joints2DHeatMapsSquaredError(input, target):
 	"""
 	N = input.size()[0]
 	input = input.cuda()
-	print(input.shape)
-	print(target.shape)
 	return lossfunc(input.view(N,-1), target.view(N,-1))
 
 def Joints2DArgMaxSquaredError(input, target):
@@ -24,8 +22,6 @@ def Joints2DArgMaxSquaredError(input, target):
 	"""
 	N = input.size()[0]
 	input = input.cuda()
-	print(input.shape)
-	print(target.shape)	
 	return lossfunc(input.view(N,-1), target.view(N,-1))
 
 def JointsDepthSquaredError(input, target):
@@ -35,6 +31,4 @@ def JointsDepthSquaredError(input, target):
 	"""	
 	N = input.size()[0]
 	input = input.cuda()
-	print(input.shape)
-	print(target.shape)
 	return lossfunc(input.view(N,-1), target.view(N,-1))

@@ -15,8 +15,8 @@ class SoftArgMax(nn.Module):
 		#print(input.size())
 		#print(weights.size())
 		#print(torch.arange(H*W).unsqueeze(0).unsqueeze(0).size())
-		semiIndices = ((weights) * Variable(torch.arange(H*W).unsqueeze(0).unsqueeze(0).expand(weights.size())).cuda()).sum(dim=-1)
+		semiIndices = ((weights) * Variable(torch.arange(H*W).expand(weights.size())).cuda()).sum(dim=-1)
 		indicesX = semiIndices % H
 		indicesY = semiIndices / H
-		indices = torch.cat((indicesX.unsqueeze(-1), indicesY.unsqueeze(-1)))
+		indices = torch.cat((indicesX.unsqueeze(-1), indicesY.unsqueeze(-1)), dim=-1)
 		return indices

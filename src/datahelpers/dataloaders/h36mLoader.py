@@ -19,7 +19,7 @@ class h36m(data.Dataset):
 		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
 		self.countFrames = np.load(ref.h36mDataDir + "/cnt_" + split + ".npy")
-		
+
 		self.root = 7
 		self.split = split
 
@@ -30,7 +30,7 @@ class h36m(data.Dataset):
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
-		
+
 		pts_2d = pts_2d
 		pts_3d = pts_3d
 		pts_3d_mono = pts_3d_mono
@@ -38,9 +38,9 @@ class h36m(data.Dataset):
 
 		c = np.ones(2) * ref.h36mImgSize / 2
 		s = ref.h36mImgSize * 1.0
-	
+
 		pts_3d = pts_3d - pts_3d[self.root]
-	
+
 		s2d, s3d = 0, 0
 		for e in ref.edges:
 			s2d += ((pts_2d[e[0]] - pts_2d[e[1]]) ** 2).sum() ** 0.5
@@ -51,7 +51,7 @@ class h36m(data.Dataset):
 			pts_3d[j, 0] = pts_3d[j, 0] * scale + pts_2d[self.root, 0]
 			pts_3d[j, 1] = pts_3d[j, 1] * scale + pts_2d[self.root, 1]
 			pts_3d[j, 2] = pts_3d[j, 2] * scale + ref.h36mImgSize / 2
-		
+
 		pts_3d[7,:] = (pts_3d[12,:] + pts_3d[13,:]) / 2
 
 
@@ -64,8 +64,8 @@ class h36m(data.Dataset):
 			if pts_2d[i][0] > 1:
 				outMap[i] = DrawGaussian(outMap[i], pt[:2], ref.hmGauss)
 			outReg[i, 2] = pt[2] / ref.outputRes * 2 - 1
-				
-		return frame, outMap, pts_2d, outReg, pts_3d_mono	
+
+		return frame, outMap, pts_2d, outReg, pts_3d_mono
 
 
 
@@ -83,14 +83,14 @@ class h36m(data.Dataset):
 		if self.loadConsecutive:
 
 			startPt = random.randint(1, CountFramesInVid - self.nFramesLoad + 2)
-			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
+			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
-			
+
 			for i in range(self.nFramesLoad):
-				frameIndex = "{:06d}.jpg".format(5*i + 5*(startPt//5) + 1)
+				frameIndex = "{:06d}.jpg".format(5*(startPt//5) + 1)
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outOutMaps[:,i,:,:] = outMap
@@ -102,12 +102,12 @@ class h36m(data.Dataset):
 			frameIndices = np.random.permutation(CountFramesInVid)
 			selectedFrameIndices = frameIndices[:self.nFramesLoad]
 
-			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
+			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
-			
+
 			for i in range(self.nFramesLoad):
 				ithFrameIndex = "{:06d}.jpg".format(5*selectedFrameIndices[i] - 4)
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
@@ -122,4 +122,4 @@ class h36m(data.Dataset):
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 
 	def __len__(self):
-		return self.nVideos	
+		return self.nVideos

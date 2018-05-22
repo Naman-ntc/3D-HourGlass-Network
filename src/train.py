@@ -11,7 +11,7 @@ from progress.bar import Bar
 from utils.utils import AverageMeter
 
 #from utils.debugger import Debugger
-
+from utils.eval import *
 from Losses import *
 
 SoftArgMaxLayer = SoftArgMax()
@@ -31,6 +31,10 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
+
+		assert (input_var[:,:,0,:,:] == input_var[:,:,1,:,:]).all()
+		assert (input_var[:,:,0,:,:] == input_var[:,:,2,:,:]).all()
+
 		output = model(input_var)
 
 		reg = output[opt.nStack]
@@ -63,7 +67,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item(), input.size(0))
 
-		mplist = MPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
+		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
     	
 		for l in mplist:
 			mpjpe, num3D = l	

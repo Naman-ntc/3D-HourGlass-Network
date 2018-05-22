@@ -21,7 +21,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		model.train()
 	else:
 		model.eval()
-	Loss2D, Loss3D, = AverageMeter(), AverageMeter()
+	Loss2D, Loss3D, Mpjpe = AverageMeter(), AverageMeter(), AverageMeter()
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
@@ -61,7 +61,13 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item(), input.size(0))
 
-
+		mplist = MPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
+    	
+		for l in mplist:
+			mpjpe, num3D = l	
+			if num3D > 0:
+				Mpjpe.update(mpjpe, num3D)
+		
 		if split == 'train':
 			loss = loss/opt.trainBatch
 			loss.backward()
@@ -70,7 +76,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
 
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f}'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe)
 		bar.next()
 
 	bar.finish()

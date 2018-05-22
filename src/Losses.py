@@ -28,7 +28,10 @@ def JointsDepthSquaredError(input, target):
 	global lossfunc
 	"""
 	Takes input as (N,C,D,1) and similar target (Here C is number of channels equivalent to number of joints)
-	"""	
+	"""
 	N = input.size()[0]
 	input = input.cuda()
+	#print("")
+	#print(input[0,:,0,0])
+	#print(target[0,:,0,0])
 	return lossfunc(input.view(N,-1), target.view(N,-1))

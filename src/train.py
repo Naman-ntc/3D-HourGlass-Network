@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('agg')
 import cv2
 import ref
 import torch
@@ -23,7 +25,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
-	
+
 	for i, (input, targetMaps, target2D, target3D, meta) in enumerate(dataLoader):
 		input_var = (input).float().cuda()
 		targetMaps = (targetMaps).float().cuda()
@@ -32,7 +34,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)
 
 		reg = output[opt.nStack]
-		
+
 		if opt.DEBUG >= 2:
 			gt = getPreds(target2D.cpu().numpy()) * 4
 			pred = getPreds((output[opt.nStack - 1].data).cpu().numpy()) * 4
@@ -44,19 +46,21 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.saveImg('debug/{}.png'.format(i))
 
 		loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
-		
+
 		Loss3D.update(loss.item(), input.size(0))
-		
+
 		loss = 0
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
-			# plt.imshow(output[k].detach().cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
-			# plt.show()
-			# plt.imshow(targetMaps.cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
-			# plt.show()
+			plt.imshow(output[k].detach().cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
+			plt.savefig('%d:%d:output.png'%(i,k))
+			plt.close()
+			plt.imshow(targetMaps.cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
+			plt.show('%d:%d:target.png'%(i,k))
+			plt.close()
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item(), input.size(0))
-		
+
 
 		if split == 'train':
 			loss = loss/opt.trainBatch
@@ -65,7 +69,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.step()
 				optimizer.zero_grad()
 
- 
+
 		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f}'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D)
 		bar.next()
 
@@ -75,6 +79,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 def train(epoch, opt, train_loader, model, optimizer):
 	return step('train', epoch, opt, train_loader, model, optimizer)
-	
+
 def val(epoch, opt, val_loader, model):
 	return step('val', epoch, opt, val_loader, model)

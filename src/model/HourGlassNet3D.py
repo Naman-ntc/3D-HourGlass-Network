@@ -48,28 +48,28 @@ class HourglassNet3D(nn.Module):
 	def forward(self, input):
 		x = input
 		x = self.convStart(x)
-		assert (x[:,:,0,:,:] == x[:,:,1,:,:])
+		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
 		x = self.bnStart(x)
 		x = self.reluStart(x)
 		x = self.res1(x)
-		assert (x[:,:,0,:,:] == x[:,:,1,:,:])
+		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
 		x = self.mp(x)
 		x = self.res2(x)
-		assert (x[:,:,0,:,:] == x[:,:,1,:,:])
+		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
 		x = self.res3(x)
-		assert (x[:,:,0,:,:] == x[:,:,1,:,:])
+		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
 
 		out = []
 
 		for i in range(self.nStack):
 			x1 = self.hourglass[i](x)
-			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:])
+			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:]).all()
 			x1 = self.Residual[i](x1)
-			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:])
+			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:]).all()
 			x1 = self.lin1[i](x1)
-			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:])
+			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:]).all()
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
-			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:])
+			assert (x1[:,:,0,:,:] == x1[:,:,1,:,:]).all()
 			x = x + x1 + self.jointstochan[i](out[i])
 		return (out,x)

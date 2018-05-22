@@ -31,8 +31,10 @@ class DepthRegressor3D(nn.Module):
 			assert (out[:,:,self.nRegFrames*i,:,:] == out[:,:,self.nRegFrames*i+self.nRegFrames-1,:,:]).all()
 			z[:,:,self.nRegFrames*i:self.nRegFrames*i+self.nRegFrames,:] = self.fc(out[:,:,self.nRegFrames*i:self.nRegFrames*i+self.nRegFrames,:,:].reshape(-1, 4*4*self.nRegFrames*self.nChannels)).reshape(N,16,self.nRegFrames,1)
 			assert (z[:,:,self.nRegFrames*i,:] == z[:,:,self.nRegFrames*i+self.nRegFrames-1,:]).all()
+			z[:,:,16*i:16*i+16,:] = self.fc(out[:,:,16*i:16*i+16,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, 16).t().reshape(16, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
+
 		rem = D % self.nRegFrames
 
 		if (rem != 0):
-			z[:,:,16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(N,16,self.nRegFrames,1)[:,:,16 + 16*int(slides) - D:16,:]
+			z[:,:,16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, 16).t().reshape(16, self.nRegFrames).unsqueeze(0).unsqueeze(-1)[:,:,16 + 16*int(slides) - D:16,:]
 		return z

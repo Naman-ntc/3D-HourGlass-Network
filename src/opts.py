@@ -27,7 +27,7 @@ class opts():
 		self.parser.add_argument('-trainBatch', type = int, default = 4, help = '#Mini-batch size')
 		self.parser.add_argument('-dataloaderSize', type = int, default = 1, help = '#Mini-batch size')
 
-		self.parser.add_argument('-nFramesLoad', type = int, default = 16, help = '#Frames per video to consider')
+		self.parser.add_argument('-nFramesLoad', type = int, default = 32, help = '#Frames per video to consider')
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
 		self.parser.add_argument('-LR', type = float, default = 2.5e-5, help = 'Learning Rate')

@@ -61,7 +61,7 @@ class SkipLayer3D(nn.Module):
 		out = input
 		if self.conv is not None:
 			out = self.conv(out)
-		assert (out[:,:,0,:,:] == out[:,:,1,:,:])	
+		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		return out	
 		
 class Residual3D(nn.Module):

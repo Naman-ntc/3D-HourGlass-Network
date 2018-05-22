@@ -114,8 +114,8 @@ class h36m(data.Dataset):
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outOutMaps[:,i,:,:] = outMap
-				outPts_2ds[i,:,:] = pts_2d
-				outOutRegs[i,:,:] = outReg
+				outPts_2ds[:,i,:] = pts_2d
+				outOutRegs[:,i,:] = outReg
 		
 		outOutRegs = outOutRegs[:,:,2]
 		outOutRegs = np.expand_dims(outOutRegs, 3)

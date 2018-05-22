@@ -22,9 +22,9 @@ def inflateFullyConnected(model3d, model):
 		model3d.bias.data[16*i:16*(i+1)] = model.bias.data
 		for j in range(nRegFrames):
 			if (i == j) :
-				model3d.weight.data[16*(i):16*(i+1), 2048*(i):2048*(i+1)] = model.weight.data * 0.4
+				model3d.weight.data[16*(i):16*(i+1), 2048*(j):2048*(j+1)] = model.weight.data / 16.0
 			else :
-				model3d.weight.data[16*(i):16*(i+1), 2048*(i):2048*(i+1)] = model.weight.data * 0.04
+				model3d.weight.data[16*(i):16*(i+1), 2048*(j):2048*(j+1)] = model.weight.data / 16.0
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
 	inflatebn(model3d.bnStart, model.bn1)

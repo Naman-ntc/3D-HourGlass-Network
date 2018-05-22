@@ -52,12 +52,14 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		loss = 0
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
-			plt.imshow(output[k].detach().cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
+			"""
+                        plt.imshow(output[k].detach().cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
 			plt.savefig('%d:%d:output.png'%(i,k))
 			plt.close()
 			plt.imshow(targetMaps.cpu().numpy()[0,0,0,:,:], cmap='hot', interpolation='nearest')
 			plt.show('%d:%d:target.png'%(i,k))
 			plt.close()
+			"""
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item(), input.size(0))
 

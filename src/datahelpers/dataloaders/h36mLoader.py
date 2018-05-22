@@ -96,8 +96,7 @@ class h36m(data.Dataset):
 				outOutMaps[:,i,:,:] = outMap
 				outPts_2ds[:,i,:] = pts_2d
 				outOutRegs[:,i,:] = outReg
-				
-				outPts_3d_monos[i,:,:] = pts_3d_mono
+				outPts_3d_monos[:,i,:] = pts_3d_mono
 		else :
 
 			frameIndices = np.random.permutation(CountFramesInVid)
@@ -116,7 +115,8 @@ class h36m(data.Dataset):
 				outOutMaps[:,i,:,:] = outMap
 				outPts_2ds[:,i,:] = pts_2d
 				outOutRegs[:,i,:] = outReg
-		
+				outPts_3d_monos[:,i,:] = pts_3d_mono
+
 		outOutRegs = outOutRegs[:,:,2]
 		outOutRegs = np.expand_dims(outOutRegs, 3)
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)

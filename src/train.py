@@ -55,8 +55,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 		loss = 0
 		for k in range(opt.nStack):
-			loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
-			#loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
+			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
+			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item(), input.size(0))
 
 		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)

@@ -28,6 +28,7 @@ class h36m(data.Dataset):
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
+		print(path + frameName)
 		frame = cv2.imread(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 
@@ -73,7 +74,7 @@ class h36m(data.Dataset):
 
 		if (self.split == 'train'):
 			index = np.random.randint(self.nVideos)
-
+		index = 2
 		vidFolder = self.vidFolders[index]
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"

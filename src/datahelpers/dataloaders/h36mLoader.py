@@ -84,9 +84,9 @@ class h36m(data.Dataset):
 
 			startPt = random.randint(1, CountFramesInVid - self.nFramesLoad + 2)
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
-			outPts_2ds = np.zeros((self.nFramesLoad,ref.nJoints,2))
-			outOutRegs = np.zeros((self.nFramesLoad,ref.nJoints,3))
-			outPts_3d_monos = np.zeros((self.nFramesLoad,ref.nJoints,3))
+			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
+			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
+			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 			
 			for i in range(self.nFramesLoad):
@@ -104,17 +104,18 @@ class h36m(data.Dataset):
 			selectedFrameIndices = frameIndices[:self.nFramesLoad]
 
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))		
-			outPts_2ds = np.zeros((self.nFramesLoad,ref.nJoints,2))
-			outOutRegs = np.zeros((self.nFramesLoad,ref.nJoints,3))
-			outPts_3d_monos = np.zeros((self.nFramesLoad,ref.nJoints,3))
+			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
+			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
+			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
+			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 			
 			for i in range(self.nFramesLoad):
 				ithFrameIndex = "{:06d}.jpg".format(5*selectedFrameIndices[i] - 4)
-				LoadFrameAndData(path, vidFolder + '_' +  ithFrameIndex)
+				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
+				outOutMaps[:,i,:,:] = outMap
 				outPts_2ds[i,:,:] = pts_2d
 				outOutRegs[i,:,:] = outReg
-				outPts_3d_monos[i,:,:] = pts_3d_mono
 		
 		outOutRegs = outOutRegs[:,:,2]
 		outOutRegs = np.expand_dims(outOutRegs, 3)

@@ -93,5 +93,9 @@ def MPJPE(output2D, output3D, meta):
 		
 
 	
-	
-
+def myMPJPE(output2Ds, output3Ds, metas):
+	nFrames = output2Ds.shape[2]
+	out = []
+	for i in range(nFrames):
+		out.append(MPJPE(output2Ds[:,:,i,:,:], output3Ds[:,:,i,:], metas[:,:,i,:]))
+	return out	

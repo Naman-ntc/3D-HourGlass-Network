@@ -29,12 +29,14 @@ class ConvBlock3D(nn.Module):
 		self.inChannels = inChannels
 		self.outChannels = outChannels
 		self.cbr1 = ConvBnRelu3D(self.inChannels, self.outChannels//2, 1, 1, 0)
+		self.padded = nn.ReplicationPad3d(1)
 		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, 3, 1, 1)
 		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, 1, 1, 0)
 
 	def forward(self, input):	
 		out = input
 		out = self.cbr1(out)
+		out = self.padded(out)
 		out = self.cbr2(out)
 		out = self.cbr3(out)
 		return out

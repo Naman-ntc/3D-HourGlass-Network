@@ -19,6 +19,7 @@ def inflateDepthRegressor(model3d, model):
 
 def inflateFullyConnected(model3d, model):
 	for i in range(nRegFrames):
+		model3d.bias.data[16*i:16*(i+1)] = model.bias.data
 		for j in range(nRegFrames):
 			if (i == j) :
 				model3d.weight.data[16*(i):16*(i+1), 2048*(i):2048*(i+1)] = model.weight.data * 0.4

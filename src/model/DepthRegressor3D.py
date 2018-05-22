@@ -27,9 +27,9 @@ class DepthRegressor3D(nn.Module):
 		slides = D/ self.nRegFrames
 		z = torch.zeros(N, 16, D, 1)
 		for i in range(int(slides)):
-			z[:,:,16*i:16*i+16,:] = self.fc(out[:,:,16*i:16*i+16,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(N,16,self.nRegFrames,1)
+			z[:,:,16*i:16*i+16,:] = self.fc(out[:,:,16*i:16*i+16,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, 16).t().reshape(16, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
 		rem = D % self.nRegFrames
 
 		if (rem != 0):
-			z[:,:,16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(N,16,self.nRegFrames,1)[:,:,16 + 16*int(slides) - D:16,:]
+			z[:,:,16*int(slides):D,:] = self.fc(out[:,:,D-16:D,:,:].reshape(-1, 16*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, 16).t().reshape(16, self.nRegFrames).unsqueeze(0).unsqueeze(-1)[:,:,16 + 16*int(slides) - D:16,:]
 		return z

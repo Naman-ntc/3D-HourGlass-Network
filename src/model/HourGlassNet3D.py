@@ -16,7 +16,7 @@ class HourglassNet3D(nn.Module):
 		#self.cbrStart = ConvBnRelu3D(3, 64, (1,7,7), (1,2,2), (0,3,3)) ## self.convStart = nn.ConvBnRelu3D(3, 64, (3,7,7), (1,2,2), (1,3,3))
 		self.convStart = nn.Conv3d(3, 64, (1,7,7), (1,2,2), (0,3,3))
 		self.bnStart = nn.BatchNorm3d(64)
-		self.reluStart = nn.LeakyReLU()
+		self.reluStart = nn.ReLU()
 
 		self.res1 = Residual3D(64,128)
 		self.mp = nn.MaxPool3d((1,2,2),(1,2,2))
@@ -31,8 +31,8 @@ class HourglassNet3D(nn.Module):
 			for _ in range(self.nModules):
 				_ResidualModules.append(Residual3D(self.nChannels, self.nChannels))
 			_ResidualModules = nn.Sequential(*_ResidualModules)
-			
-			_Residual.append(_ResidualModules)	
+
+			_Residual.append(_ResidualModules)
 			_lin1.append(ConvBnRelu3D(self.nChannels, self.nChannels))
 			_chantojoints.append(nn.Conv3d(self.nChannels, self.nJoints,1))
 			_lin2.append(nn.Conv3d(self.nChannels, self.nChannels,1))

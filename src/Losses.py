@@ -34,7 +34,8 @@ def JointsDepthSquaredError(input, target):
 	"""
 	assert input.shape == target.shape
 	assert len(input.shape) == 4
+	print("")
+	print(input[:,:,0,0])
+	print(target[:,:,0,0])
 	input = input.cuda()
-	print(input[0,:,:3,0])
-	print(target[0,:,:3,0])
 	return lossfunc(input, target)

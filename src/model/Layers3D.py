@@ -11,7 +11,7 @@ class ConvBnRelu3D(nn.Module):
 		self.stride = stride
 		self.padding = padding
 		self.bn = nn.BatchNorm3d(self.inChannels)
-		self.relu = nn.LeakyReLU()
+		self.relu = nn.ReLU()
 		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
 	def forward(self, input):
@@ -35,7 +35,7 @@ class ConvBlock3D(nn.Module):
 		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, 3, 1, (0,1,1))
 		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, 1, 1, 0)
 
-	def forward(self, input):	
+	def forward(self, input):
 		out = input
 		out = self.cbr1(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
@@ -62,8 +62,8 @@ class SkipLayer3D(nn.Module):
 		if self.conv is not None:
 			out = self.conv(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
-		return out	
-		
+		return out
+
 class Residual3D(nn.Module):
 	"""docstring for Residual3D"""
 	def __init__(self, inChannels, outChannels):

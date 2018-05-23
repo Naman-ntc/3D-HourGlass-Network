@@ -45,3 +45,15 @@ print("")
 out = model3d.hg.res1(out)
 print(out[0,:,0,:,:])
 print("")
+
+out = model3d.hg.mp(out)
+print(out[0,:,0,:,:])
+print("")
+
+out = model3d.hg.res2(out)
+print(out[0,:,0,:,:])
+print("")
+
+out = model3d.hg.res3(out)
+print(out[0,:,0,:,:])
+print("")

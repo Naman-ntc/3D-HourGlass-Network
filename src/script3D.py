@@ -54,3 +54,14 @@ out = model.r1(out)
 print(out[0,:,:,:])
 print("")
 
+out = model.maxpool(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r4(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r5(out)
+print(out[0,:,:,:])
+print("")

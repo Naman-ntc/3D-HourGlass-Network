@@ -42,42 +42,6 @@ out = model3d.hg.reluStart(out)
 print(out[0,:,0,:,:])
 print("")
 
-out = model3d.hg.res1.cb.cbr1.bn(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr1.relu(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr1.conv(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr2.bn(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr2.relu(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr2.padLayer(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr2.conv(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr3.bn(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr3.relu(out)
-print(out[0,:,0,:,:])
-print("")
-
-out = model3d.hg.res1.cb.cbr3.conv(out)
+out = model3d.hg.res1(out)
 print(out[0,:,0,:,:])
 print("")

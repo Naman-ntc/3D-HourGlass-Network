@@ -50,54 +50,7 @@ out = model.relu(out)
 print(out[0,:,:,:])
 print("")
 
-out = model.r1.bn(out)
+out = model.r1(out)
 print(out[0,:,:,:])
 print("")
 
-out = model.r1.relu(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.conv1(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.bn1(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.relu(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.conv2(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.bn2(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.relu(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1.conv3(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.maxpool(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r4.bn(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r4.bn(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r4.bn(out)
-print(out[0,:,:,:])
-print("")

@@ -4,7 +4,7 @@ from .Layers3D import *
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, nChannels, numReductions = 3, nModules = 1, poolKernel = (2,2,2), poolStride = (2,2,2), upSampleKernel = 2):
+	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (2,2,2), poolStride = (2,2,2), upSampleKernel = 2):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules

@@ -3,13 +3,13 @@ import torch.nn as nn
 
 class myBatchNorm3D(nn.Module):
 	"""docstring for myBatchNorm3D"""
-	def __init__(self, nChannels):
+	def __init__(self, inChannels):
 		super(myBatchNorm3D, self).__init__()
-		self.nChannels = nChannels
+		self.inChannels = inChannels
 		self.bn = nn.BatchNorm2d(self.inChannels)
-	
+
 	def forward(self, input):
-		out = input		
+		out = input
 		N,C,D,H,W = out.size()
 		out = out.squeeze(0).t().reshape(D,C,H,W)
 		out = self.bn(out.contiguous())

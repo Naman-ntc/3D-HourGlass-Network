@@ -13,7 +13,6 @@ import torch
 
 
 model3d = Pose3D()
-torch.save(model3d,open('origModel.pth','wb'))
 
 
 pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")

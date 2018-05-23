@@ -1,0 +1,103 @@
+import ref
+import cv2
+import torch
+import numpy as np
+
+from utils.img import Crop, DrawGaussian, Transform3D
+
+c = np.ones(2) * ref.h36mImgSize / 2
+s = ref.h36mImgSize * 1.0
+
+img = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000111.jpg')
+
+img = Crop(img, c, s, 0, ref.inputRes) / 256.
+img.shape
+
+
+img = torch.from_numpy(img).unsqueeze(0).cuda()
+
+
+
+out = img.expand(32,3,256,256).cuda()
+import pickle
+from functools import partial
+
+pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+pickle.load = partial(pickle.load, encoding="latin1")
+
+model = torch.load('models/hgreg-3d.pth').cuda()
+
+
+
+
+
+
+
+
+
+
+
+
+out = model.conv1_(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.bn1(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.relu(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.bn(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.relu(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.conv1(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.bn1(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.relu(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.conv2(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.bn2(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.relu(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r1.conv3(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.maxpool(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r4.bn(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r4.bn(out)
+print(out[0,:,:,:])
+print("")
+
+out = model.r4.bn(out)
+print(out[0,:,:,:])
+print("")

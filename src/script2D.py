@@ -23,18 +23,19 @@ model3d = torch.load('inflatedModel.pth').cuda()
 
 
 
+print("Script2D")
 
-out = model3d(out)
-print(out[0][0,:,0,:,:])
-print("")
-print(out[0][0,:,0,:,:])
-print("")
-print(out[2][0,:,0,0])
-print("")
+# out = model3d(out)
+# print(out[0][0,:,0,:,:])
+# print("")
+# print(out[0][0,:,0,:,:])
+# print("")
+# print(out[2][0,:,0,0])
+# print("")
 
 
 
-"""
+
 out = model3d.hg.convStart(out)
 print(out[0,:,0,:,:])
 print("")
@@ -74,5 +75,4 @@ print("")
 out = model3d.hg.lin1[0](out)
 print(out[0,:,0,:,:])
 print("")
-"""
 print("Script2D")

@@ -24,7 +24,7 @@ model3d = torch.load('inflatedModel.pth').cuda()
 
 
 
-out = model(out)
+out = model3d(out)
 print(out[0][0,:,0,:,:])
 print("")
 print(out[0][0,:,0,:,:])

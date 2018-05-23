@@ -44,7 +44,7 @@ out = out2d
 
 
 out1 = model.Residual[0](out)
-out1 = model.Residual[0](out1)
+out1 = model.Residual[1](out1)
 print(out1[0,:,:,:])
 print("Residual model3d")
 

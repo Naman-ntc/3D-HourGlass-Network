@@ -38,18 +38,28 @@ out2d = model.r4(out2d)
 out2d = model.r5(out2d)
 
 out2d = model.hourglass[0](out2d)
-out3d = out2d
+out = out2d
 
 
-out3d = model.Residual[0](out3d)
-out3d = model.Residual[1](out3d)
-print(out3d[0,:,:,:])
-print("Residual model")
 
-out3d = model.lin_[0](out3d)
-print(out3d[0,:,:,:])
-print("lin1 model")
 
-out3d = model.ll_[0](out3d)
-print(out3d[0,:,:,:])
-print("lin2 model")
+out1 = model.Residual[0](out)
+out1 = model.Residual[0](out1)
+print(out1[0,:,:,:])
+print("Residual model3d")
+
+out1 = model.lin_[0](out1)
+print(out1[0,:,:,:])
+print("lin1 model3d")
+
+out2 = model.tmpOut[0](out1)
+print(out2[0,:,:,:])
+print("lin1 model3d")
+
+out1 = model.ll_[0](out1)
+print(out1[0,:,:,:])
+print("lin2 model3d")
+
+out = out + out1 + model.tmpOut_[0](out2)
+print(out[0,:,:,:])
+print("lin1 model3d")

@@ -41,14 +41,22 @@ out2d = model.hourglass[0](out2d)
 out = out2d.t().reshape(1,128,32,64,64)
 
 
-out = model3d.hg.Residual[0](out)
-print(out[0,:,0,:,:])
+out1 = model3d.hg.Residual[0](out)
+print(out1[0,:,0,:,:])
 print("Residual model3d")
 
-out = model3d.hg.lin1[0](out)
-print(out[0,:,0,:,:])
+out1 = model3d.hg.lin1[0](out1)
+print(out1[0,:,0,:,:])
 print("lin1 model3d")
 
-out = model3d.hg.lin2[0](out)
-print(out[0,:,0,:,:])
+out2 = model3d.hg.chantojoints[0](out1)
+print(out2[0,:,0,:,:])
+print("lin1 model3d")
+
+out1 = model3d.hg.lin2[0](out1)
+print(out1[0,:,0,:,:])
 print("lin2 model3d")
+
+out = out + out1 + model3d.hg.jointstochan[0](out2)
+print(out[0,:,0,:,:])
+print("lin1 model3d")

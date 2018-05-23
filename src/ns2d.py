@@ -41,14 +41,15 @@ out2d = model.hourglass[0](out2d)
 out3d = out2d
 
 
-out3d = model3d.hg.Residual[0](out3d)
-print(out3d[0,:,0,:,:])
+out3d = model.Residual[0](out3d)
+out3d = model.Residual[1](out3d)
+print(out3d[0,:,:,:])
 print("Residual model")
 
-out3d = model3d.hg.lin1[0](out3d)
-print(out3d[0,:,0,:,:])
+out3d = model.lin_[0](out3d)
+print(out3d[0,:,:,:])
 print("lin1 model")
 
-out3d = model3d.hg.lin2[0](out3d)
-print(out3d[0,:,0,:,:])
+out3d = model.ll_[0](out3d)
+print(out3d[0,:,:,:])
 print("lin2 model")

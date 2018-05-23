@@ -38,7 +38,7 @@ out2d = model.r4(out2d)
 out2d = model.r5(out2d)
 
 out2d = model.hourglass[0](out2d)
-out3d = out2d
+out = out2d.t().reshape(1,128,32,64,64)
 
 
 out = model3d.hg.Residual[0](out)

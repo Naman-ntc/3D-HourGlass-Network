@@ -1,6 +1,23 @@
 import torch
 import torch.nn as nn
 
+class myBatchNorm3D(nn.Module):
+	"""docstring for myBatchNorm3D"""
+	def __init__(self, nChannels):
+		super(myBatchNorm3D, self).__init__()
+		self.nChannels = nChannels
+		self.bn = nn.BatchNorm2d(self.inChannels)
+	
+	def forward(self, input):
+		out = input		
+		N,C,D,H,W = out.size()
+		out = out.squeeze(0).t().reshape(D,C,H,W)
+		out = self.bn(out.contiguous())
+		out = out.t().reshape(C,D,H,W).unsqueeze(0)
+		return out
+
+
+
 class ConvBnRelu3D(nn.Module):
 	"""docstring for ConvBnRelu3D"""
 	def __init__(self, inChannels, outChannels, kernelSize = 1, stride = 1, padding = 0):
@@ -10,17 +27,14 @@ class ConvBnRelu3D(nn.Module):
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
-		self.bn = nn.BatchNorm2d(self.inChannels)
+		self.bn = myBatchNorm3D(self.inChannels)
 		self.relu = nn.ReLU()
 		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
 	def forward(self, input):
 		out = input
-		N,C,D,H,W = out.size()
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
-		out = out.squeeze(0).t().reshape(D,C,H,W)
-		out = self.bn(out.contiguous())
-		out = out.t().reshape(C,D,H,W).unsqueeze(0)
+		out = self.bn(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.conv(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()

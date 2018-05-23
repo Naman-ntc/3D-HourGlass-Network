@@ -15,7 +15,7 @@ class HourglassNet3D(nn.Module):
 
 		#self.cbrStart = ConvBnRelu3D(3, 64, (1,7,7), (1,2,2), (0,3,3)) ## self.convStart = nn.ConvBnRelu3D(3, 64, (3,7,7), (1,2,2), (1,3,3))
 		self.convStart = nn.Conv3d(3, 64, (1,7,7), (1,2,2), (0,3,3))
-		self.bnStart = nn.BatchNorm2d(64)
+		self.bnStart = myBatchNorm3D(64)
 		self.reluStart = nn.ReLU()
 
 		self.res1 = Residual3D(64,128)
@@ -49,10 +49,7 @@ class HourglassNet3D(nn.Module):
 		x = input
 		x = self.convStart(x)
 		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
-		N,C,D,H,W = x.size()
-		x = x.squeeze(0).t().reshape(D,C,H,W)
-		x = self.bnStart(x.contiguous())
-		x = x.t().reshape(C,D,H,W).unsqueeze(0)
+		x = self.bnStart(x)
 		x = self.reluStart(x)
 		x = self.res1(x)
 		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()

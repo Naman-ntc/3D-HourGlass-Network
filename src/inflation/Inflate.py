@@ -39,9 +39,9 @@ def inflateHourglassNet(model3d, model):
 		for j in range(nModules):
 			inflateResidual(model3d.Residual[i][j],model.Residual[nModules*i+j])
 	for i in range(nStack):
-		inflateconv(model3d.lin1[i].conv, model.lin_[i][0])
-		model3d.lin1[i].bn.bn = inflatebn(model3d.lin1[i].bn, model.lin_[i][1])
-		inflaterelu(model3d.lin1[i].relu, model.lin_[i][2])
+		inflateconv(model3d.lin1[i][0], model.lin_[i][0])
+		model3d.lin1[i][1].bn = inflatebn(model3d.lin1[i][1].bn, model.lin_[i][1])
+		inflaterelu(model3d.lin1[i][2], model.lin_[i][2])
 	for i in range(nStack):
 		inflateconv(model3d.chantojoints[i], model.tmpOut[i])
 		inflateconv(model3d.lin2[i], model.ll_[i])

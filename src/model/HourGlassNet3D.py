@@ -33,7 +33,7 @@ class HourglassNet3D(nn.Module):
 			_ResidualModules = nn.Sequential(*_ResidualModules)
 
 			_Residual.append(_ResidualModules)
-			_lin1.append(ConvBnRelu3D(self.nChannels, self.nChannels))
+			_lin1.append(nn.Sequential(nn.Conv3d(self.nChannels, self.nChannels), nn.myBatchNorm3d(self.nChannels), nn.ReLU()))
 			_chantojoints.append(nn.Conv3d(self.nChannels, self.nJoints,1))
 			_lin2.append(nn.Conv3d(self.nChannels, self.nChannels,1))
 			_jointstochan.append(nn.Conv3d(self.nJoints,self.nChannels,1))

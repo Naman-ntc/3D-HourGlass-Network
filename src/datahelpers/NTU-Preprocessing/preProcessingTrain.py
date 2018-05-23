@@ -18,7 +18,7 @@ class box:
 		self.meanY = 0
 
 	def __str__(self):
-		return "x1:" + str(self.x1) + " x2:" + str(self.x2) + " y1:" + str(self.y1) + " y2:" + str(self.y2) 
+		return "x1:" + str(self.x1) + " x2:" + str(self.x2) + " y1:" + str(self.y1) + " y2:" + str(self.y2)
 
 	def makeInt(self):
 		self.x1 = int(self.x1)
@@ -89,15 +89,15 @@ for video in videoList:
 				appended only pixel coordinates here
 				"""
 				current2d.append([
-					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'], 
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorX'],
 					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['colorY']
 					])
 				"""
 				appended only 3D coordinates here
 				"""
 				current3d.append([
-					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['x'], 
-					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['y'], 
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['x'],
+					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['y'],
 					skeleton['frameInfo'][frameNo]['bodyInfo'][0]['jointInfo'][jointNo]['z']
 					])
 				#print(bbox)
@@ -110,10 +110,10 @@ for video in videoList:
 				"""
 				Also scaled pixel coordinates wrt 1920x1080
 				"""
-				current2d[i][0] *= (224.0/1920)
-				current2d[i][1] *= (224.0/1080)
-				
-				
+				current2d[i][0] *= (224.0/1920) #Shouldn't this be (224.0/(bbox.x2 - bbox.x1))
+				current2d[i][1] *= (224.0/1080) #Shouldn't this be (224.0/(bbox.y2 - bbox.y1))
+
+
 
 			sideLength = bbox.extend()
 			bboxes.append(bbox)
@@ -130,7 +130,7 @@ for video in videoList:
 		currentDict["3d"] = np.asarray(d3d)
 		pickle.dump(currentDict, open("train/" + dirName + "/data.pkl", 'wb'))
 		while (cap.isOpened()):
-			
+
 			ret, frame = cap.read()
 			if ret:
 				#print(type(bboxes[i].x1))
@@ -151,7 +151,7 @@ for video in videoList:
 
 		if count%10 == 0:
 			print(str(count) + " of " + str(total) + " done - " + str(count*100.0/total) + " %")
-		
+
 		count = count + 1
 	except:
 		pass

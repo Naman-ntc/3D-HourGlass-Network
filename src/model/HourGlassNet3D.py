@@ -51,7 +51,7 @@ class HourglassNet3D(nn.Module):
 		assert (x[:,:,0,:,:] == x[:,:,1,:,:]).all()
 		N,C,D,H,W = x.size()
 		x = x.squeeze(0).t().reshape(D,C,H,W)
-		x = self.bnStart(x)
+		x = self.bnStart(x.contiguous())
 		x = x.reshape(C,D,H,W).unsqueeze(0)
 		x = self.reluStart(x)
 		x = self.res1(x)

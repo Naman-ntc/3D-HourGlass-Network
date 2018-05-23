@@ -17,8 +17,9 @@ class ConvBnRelu3D(nn.Module):
 	def forward(self, input):
 		out = input
 		N,C,D,H,W = out.size()
+		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = out.squeeze(0).t().reshape(D,C,H,W)
-		out = self.bn(out)
+		out = self.bn(out.contiguous())
 		out = out.reshape(C,D,H,W).unsqueeze(0)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.conv(out)

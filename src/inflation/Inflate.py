@@ -27,7 +27,7 @@ def inflateFullyConnected(model3d, model):
 				model3d.weight.data[16*(i):16*(i+1), 2048*(j):2048*(j+1)] = model.weight.data / 16.0
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
-	inflatebn(model3d.bnStart, model.bn1)
+	model3d.bnStart = inflatebn(model3d.bnStart, model.bn1)
 	inflaterelu(model3d.reluStart, model.relu)
 	inflateResidual(model3d.res1, model.r1)
 	inflateResidual(model3d.res2, model.r4)
@@ -40,7 +40,7 @@ def inflateHourglassNet(model3d, model):
 			inflateResidual(model3d.Residual[i][j],model.Residual[nModules*i+j])
 	for i in range(nStack):
 		inflateconv(model3d.lin1[i].conv, model.lin_[i][0])
-		inflatebn(model3d.lin1[i].bn, model.lin_[i][1])
+		model3d.lin1[i].bn = inflatebn(model3d.lin1[i].bn, model.lin_[i][1])
 		inflaterelu(model3d.lin1[i].relu, model.lin_[i][2])
 	for i in range(nStack):
 		inflateconv(model3d.chantojoints[i], model.tmpOut[i])
@@ -76,6 +76,7 @@ def inflateconv(conv3d, conv):
 	return
 
 def inflatebn(bn3d, bn):
+	"""
 	bn3d.weight.data = bn.weight.data
 	bn3d.bias.data = bn.bias.data
 	bn3d.running_mean = bn.running_mean
@@ -84,7 +85,9 @@ def inflatebn(bn3d, bn):
 	bn3d.weight.data = bn3d.weight.data.contiguous()
 	bn3d.running_mean = bn3d.running_mean.contiguous()
 	bn3d.running_var = bn3d.running_var.contiguous()
-	return
+	"""
+	#bn3d = bn
+	return bn
 
 def inflaterelu(relu3d, relu):
 	return
@@ -93,13 +96,13 @@ def inflateMaxPool(mp3d, mp):
 	return		
 
 def inflateResidual(res3d, res):
-	inflatebn(res3d.cb.cbr1.bn, res.bn)
+	res3d.cb.cbr1.bn = inflatebn(res3d.cb.cbr1.bn, res.bn)
 	inflaterelu(res3d.cb.cbr1.relu, res.relu)
 	inflateconv(res3d.cb.cbr1.conv, res.conv1)
-	inflatebn(res3d.cb.cbr2.bn, res.bn1)
+	res3d.cb.cbr2.bn = inflatebn(res3d.cb.cbr2.bn, res.bn1)
 	inflaterelu(res3d.cb.cbr2.relu, res.relu)
 	inflateconv(res3d.cb.cbr2.conv, res.conv2)	
-	inflatebn(res3d.cb.cbr3.bn, res.bn2)
+	res3d.cb.cbr3.bn = inflatebn(res3d.cb.cbr3.bn, res.bn2)
 	inflaterelu(res3d.cb.cbr3.relu, res.relu)
 	inflateconv(res3d.cb.cbr3.conv, res.conv3)
 	if (res3d.inChannels != res3d.outChannels):

@@ -41,8 +41,8 @@ print(out[0][0,:,:,:])
 print("")
 print(out[1][0,:,:,:])
 print("")
-print(out[2][0,:,:,:])
-print("")
+#print(out[2][0,:,:,:])
+#print("")
 
 """
 out = model.conv1_(out)

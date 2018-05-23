@@ -20,13 +20,14 @@ class myBatchNorm3D(nn.Module):
 
 class ConvBnRelu3D(nn.Module):
 	"""docstring for ConvBnRelu3D"""
-	def __init__(self, inChannels, outChannels, kernelSize = 1, stride = 1, padding = 0):
+	def __init__(self, inChannels, outChannels, kernelSize = 1, stride = 1, padding = 0, padLayer=None):
 		super(ConvBnRelu3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
+		self.padLayer = padLayer
 		self.bn = myBatchNorm3D(self.inChannels)
 		self.relu = nn.ReLU()
 		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
@@ -36,6 +37,8 @@ class ConvBnRelu3D(nn.Module):
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.bn(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
+		if (self.padLayer is not None):
+			out = self.padLayer(out)
 		out = self.conv(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.relu(out)
@@ -57,7 +60,6 @@ class ConvBlock3D(nn.Module):
 		out = input
 		out = self.cbr1(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
-		out = self.padded(out)
 		out = self.cbr2(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.cbr3(out)

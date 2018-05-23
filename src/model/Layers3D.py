@@ -36,9 +36,10 @@ class ConvBnRelu3D(nn.Module):
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.bn(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
+		out = self.relu(out)
+		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		out = self.conv(out)
 		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
-		out = self.relu(out)
 		return out
 
 

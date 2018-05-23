@@ -36,6 +36,7 @@ model = torch.load('models/hgreg-3d.pth').cuda()
 
 print("Script3D")
 
+"""
 out = model(out)
 print(out[0][0,:,:,:])
 print("")
@@ -72,4 +73,20 @@ print("")
 out = model.r5(out)
 print(out[0,:,:,:])
 print("")
-"""
+
+out = model.hourglass[0](out)
+print(out[0,:,:,:])
+print("")
+
+out = model.Residual[0](out)
+out = model.Residual[1](out)
+print(out[0,:,:,:])
+print("")
+
+out = model.lin_[0](out)
+print(out[0,:,:,:])
+print("")
+
+out = model.ll_[0](out)
+print(out[0,:,:,:])
+print("")

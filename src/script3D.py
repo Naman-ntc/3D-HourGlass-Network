@@ -37,41 +37,42 @@ model = torch.load('models/hgreg-3d.pth').cuda()
 print("Script3D")
 
 
-x = self.conv1_(x)
-x = self.bn1(x)
-x = self.relu(x)
-x = self.r1(x)
-x = self.maxpool(x)
-x = self.r4(x)
-x = self.r5(x)
+x = model.conv1_(x)
+x = model.bn1(x)
+x = model.relu(x)
+x = model.r1(x)
+x = model.maxpool(x)
+x = model.r4(x)
+x = model.r5(x)
 
 out = []
 
-for i in range(self.nStack):
-	hg = self.hourglass[i](x)
+for i in range(model.nStack):
+	hg = model.hourglass[i](x)
 	ll = hg
-	for j in range(self.nModules):
-		ll = self.Residual[i * self.nModules + j](ll)
-	ll = self.lin_[i](ll)
-	tmpOut = self.tmpOut[i](ll)
+	for j in range(model.nModules):
+		ll = model.Residual[i * model.nModules + j](ll)
+	ll = model.lin_[i](ll)
+	tmpOut = model.tmpOut[i](ll)
 	out.append(tmpOut)
 	
-	ll_ = self.ll_[i](ll)
-	tmpOut_ = self.tmpOut_[i](tmpOut)
+	ll_ = model.ll_[i](ll)
+	tmpOut_ = model.tmpOut_[i](tmpOut)
 	x = x + ll_ + tmpOut_
 
-print(x[0,:,0,:,:])
+print(x[0,:,:,:])
 print("")
 
 for i in range(4):
-	for j in range(self.nRegModules):
-		x = self.reg_[i * self.nRegModules + j](x)
-	x = self.maxpool(x)
+	for j in range(model.nRegModules):
+		x = model.reg_[i * model.nRegModules + j](x)
+	x = model.maxpool(x)
 
-print(x[0,:,0,:,:])
+print(x[0,:,:,:])
 print("")	
 
 x = x.view(x.size(0), -1)
-reg = self.reg(x)
+reg = model.reg(x)
 out.append(reg)
+
 

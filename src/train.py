@@ -32,9 +32,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
 
-		assert (input_var[:,:,0,:,:] == input_var[:,:,1,:,:]).all()
-		assert (input_var[:,:,0,:,:] == input_var[:,:,2,:,:]).all()
-
 		output = model(input_var)
 
 		reg = output[opt.nStack]

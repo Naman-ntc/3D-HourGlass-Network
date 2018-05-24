@@ -22,18 +22,15 @@ class DepthRegressor3D(nn.Module):
 
 	def forward(self, input):
 		out = self.reg(input)
-		assert (out[:,:,0,:,:] == out[:,:,1,:,:]).all()
 		N = out.size()[0]
 		D = out.size()[2]
 		slides = D/ self.nRegFrames
 		z = torch.zeros(N, self.nJoints, D, 1)
 		for i in range(int(slides)):
-			assert (out[:,:,self.nRegFrames*i,:,:] == out[:,:,self.nRegFrames*i+self.nRegFrames-1,:,:]).all()
 			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].squeeze(0).t().reshape(self.nRegFrames,self.nChannels,4,4).reshape(-1)
 			temp2 = self.fc(temp1).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
 			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
-			assert (z[:,:,self.nRegFrames*i,:] == z[:,:,self.nRegFrames*i+self.nRegFrames-1,:]).all()
-		rem = D % self.nRegFrames
+			rem = D % self.nRegFrames
 
 		if (rem != 0):
 			"""

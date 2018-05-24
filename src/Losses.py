@@ -13,7 +13,6 @@ def Joints2DHeatMapsSquaredError(input, target):
 	"""
 	assert input.shape == target.shape
 	assert len(input.shape) == 5
-	assert (input[:,:,0,:,:] == input[:,:,1,:,:]).all()
 	input = input.cuda()
 	return lossfunc(input, target)
 

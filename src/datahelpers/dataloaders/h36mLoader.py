@@ -73,7 +73,7 @@ class h36m(data.Dataset):
 
 		if (self.split == 'train'):
 			index = np.random.randint(self.nVideos)
-		index = 2
+
 		vidFolder = self.vidFolders[index]
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
@@ -90,7 +90,7 @@ class h36m(data.Dataset):
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 
 			for i in range(self.nFramesLoad):
-				frameIndex = "{:06d}.jpg".format(5*(startPt//5) + 1)
+				frameIndex = "{:06d}.jpg".format(5*(startPt//5 + i) + 1)
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outOutMaps[:,i,:,:] = outMap

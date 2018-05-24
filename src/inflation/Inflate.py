@@ -5,6 +5,7 @@ nChannels = 128
 nStack = 2
 nModules = 2
 nRegFrames = 8
+nJoints = 16
 
 def inflatePose3D(model3d, model):
 	inflateHourglassNet(model3d.hg, model)
@@ -18,13 +19,15 @@ def inflateDepthRegressor(model3d, model):
 	inflateFullyConnected(model3d.fc, model.reg)	
 
 def inflateFullyConnected(model3d, model):
+	val = 4*4*nChannels
 	for i in range(nRegFrames):
 		model3d.bias.data[16*i:16*(i+1)] = model.bias.data
 		for j in range(nRegFrames):
 			if (i == j) :
-				model3d.weight.data[16*(i):16*(i+1), 2048*(j):2048*(j+1)] = model.weight.data / 16.0
+				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data / 16.0
 			else :
-				model3d.weight.data[16*(i):16*(i+1), 2048*(j):2048*(j+1)] = model.weight.data / 16.0
+				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data / 16.0
+
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
 	model3d.bnStart.bn = inflatebn(model3d.bnStart, model.bn1)

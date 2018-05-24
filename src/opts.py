@@ -20,7 +20,7 @@ class opts():
 		self.parser.add_argument('-nModules', type = int, default = 2, help = '# residual modules at each hourglass')
 		self.parser.add_argument('-numReductions', type = int, default = 4, help = '# recursions in hourglass')
 		self.parser.add_argument('-nRegModules', type = int, default = 2, help = '# depth regression modules')
-		self.parser.add_argument('-nRegFrames', type = int, default = 16, help = '# number of frames temporally for regressor module')
+		self.parser.add_argument('-nRegFrames', type = int, default = 8, help = '# number of frames temporally for regressor module')
 
 		self.parser.add_argument('-nEpochs', type = int, default = 60, help = '#training epochs')
 		self.parser.add_argument('-valIntervals', type = int, default = 5, help = '#valid intervel')

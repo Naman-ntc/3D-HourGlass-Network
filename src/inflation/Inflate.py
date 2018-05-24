@@ -4,7 +4,7 @@ import torch
 nChannels = 128
 nStack = 2
 nModules = 2
-nRegFrames = 16
+nRegFrames = 8
 
 def inflatePose3D(model3d, model):
 	inflateHourglassNet(model3d.hg, model)

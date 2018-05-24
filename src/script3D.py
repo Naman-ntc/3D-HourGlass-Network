@@ -38,12 +38,11 @@ print("Script3D")
 
 
 out = model(out)
-print(out[0][0,:,:,:])
+print(out[0,:,:,:])
 print("")
-print(out[1][0,:,:,:])
+print(out[0,:,:,:])
 print("")
-print(out[2][0,:])
-print("")
+
 
 
 """

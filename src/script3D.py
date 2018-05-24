@@ -37,6 +37,11 @@ model = torch.load('models/hgreg-3d.pth').cuda()
 print("Script3D")
 
 
+x = model(x)[2]
+print(x[0,:])
+print("")
+
+"""
 x = model.conv1_(x)
 x = model.bn1(x)
 x = model.relu(x)
@@ -76,3 +81,4 @@ reg = model.reg(x)
 out.append(reg)
 
 
+"""

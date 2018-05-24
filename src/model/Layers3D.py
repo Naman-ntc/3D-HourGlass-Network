@@ -12,7 +12,7 @@ class myBatchNorm3D(nn.Module):
 		out = input
 		N,C,D,H,W = out.size()
 		out = out.transpose(1,2).reshape(N*D,C,H,W)
-		out = self.bn(out)
+		out = self.bn(out.contiguous())
 		out = out.reshape(N,D,C,H,W).transpose(1,2)
 		return out
 

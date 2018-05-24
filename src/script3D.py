@@ -18,7 +18,7 @@ img = torch.from_numpy(img).unsqueeze(0).cuda()
 
 
 
-out = img.expand(32,3,256,256).cuda()
+x = img.expand(32,3,256,256).cuda()
 import pickle
 from functools import partial
 
@@ -37,57 +37,41 @@ model = torch.load('models/hgreg-3d.pth').cuda()
 print("Script3D")
 
 
-out = model(out)
-print(out[0,:,:,:])
-print("")
-print(out[0,:,:,:])
-print("")
+x = self.conv1_(x)
+x = self.bn1(x)
+x = self.relu(x)
+x = self.r1(x)
+x = self.maxpool(x)
+x = self.r4(x)
+x = self.r5(x)
 
+out = []
 
+for i in range(self.nStack):
+	hg = self.hourglass[i](x)
+	ll = hg
+	for j in range(self.nModules):
+		ll = self.Residual[i * self.nModules + j](ll)
+	ll = self.lin_[i](ll)
+	tmpOut = self.tmpOut[i](ll)
+	out.append(tmpOut)
+	
+	ll_ = self.ll_[i](ll)
+	tmpOut_ = self.tmpOut_[i](tmpOut)
+	x = x + ll_ + tmpOut_
 
-"""
-out = model.conv1_(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.bn1(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.relu(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.r1(out)
-print(out[0,:,:,:])
-print("")
-
-out = model.maxpool(out)
-print(out[0,:,:,:])
+print(x[0,:,0,:,:])
 print("")
 
-out = model.r4(out)
-print(out[0,:,:,:])
-print("")
+for i in range(4):
+	for j in range(self.nRegModules):
+		x = self.reg_[i * self.nRegModules + j](x)
+	x = self.maxpool(x)
 
-out = model.r5(out)
-print(out[0,:,:,:])
-print("")
+print(x[0,:,0,:,:])
+print("")	
 
-out = model.hourglass[0](out)
-print(out[0,:,:,:])
-print("")
+x = x.view(x.size(0), -1)
+reg = self.reg(x)
+out.append(reg)
 
-out = model.Residual[0](out)
-out = model.Residual[1](out)
-print(out[0,:,:,:])
-print("")
-
-out = model.lin_[0](out)
-print(out[0,:,:,:])
-print("")
-
-out = model.ll_[0](out)
-print(out[0,:,:,:])
-print("")
-"""

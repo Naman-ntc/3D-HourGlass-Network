@@ -16,6 +16,7 @@ from utils.utils import adjust_learning_rate
 from utils.logger import Logger
 
 from train import train,val
+from inflateScript import *
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
 	if opt.loadModel != 'none':
 		model = torch.load(opt.loadModel).cuda()
 	else :
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
+		model = inflate(opt).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(

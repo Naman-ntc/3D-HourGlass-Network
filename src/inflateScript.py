@@ -12,14 +12,17 @@ from inflation.Inflate import *
 import torch
 
 
-model3d = Pose3D()
 
 
-pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
-pickle.load = partial(pickle.load, encoding="latin1")
-model = torch.load('models/hgreg-3d.pth') #, map_location=lambda storage, loc: storage)
+def inflate(opt):
+	model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
 
-inflatePose3D(model3d, model)
+	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+	pickle.load = partial(pickle.load, encoding="latin1")
+	model = torch.load('models/hgreg-3d.pth') #, map_location=lambda storage, loc: storage)
 
-torch.save(model3d,open('inflatedModel.pth','wb'))
+	inflatePose3D(model3d, model)
 
+	torch.save(model3d,open('inflatedModel.pth','wb'))
+
+	return model3d

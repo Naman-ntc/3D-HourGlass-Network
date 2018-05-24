@@ -66,7 +66,7 @@ class Hourglass3D(nn.Module):
 		If temporal dimension is odd then after upsampling add a dimension temporally
 		doing this via 2 kernel 1D convolution with 1 padding along the temporal direction
 		"""
-		self.addTemporal = nn.Conv3d(self.nChannels, self.nChannels, (2,1,1), 1, (1,0,0))
+		self.addTemporal = nn.ReplicationPad3d((0,0,0,0,0,1))
 
 	def forward(self, input):
 		out1 = input

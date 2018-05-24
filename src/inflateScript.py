@@ -14,9 +14,11 @@ import torch
 
 
 
-def inflate(opt):
-	model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
-
+def inflate(opt = None):
+	if opt is not None:
+		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
+	else :
+		model3d = Pose3D()
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 	pickle.load = partial(pickle.load, encoding="latin1")
 	model = torch.load('models/hgreg-3d.pth') #, map_location=lambda storage, loc: storage)
@@ -26,3 +28,6 @@ def inflate(opt):
 	torch.save(model3d,open('inflatedModel.pth','wb'))
 
 	return model3d
+
+
+inflate()

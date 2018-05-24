@@ -29,10 +29,15 @@ class DepthRegressor3D(nn.Module):
 		z = torch.zeros(N, self.nJoints, D, 1)
 		for i in range(int(slides)):
 			assert (out[:,:,self.nRegFrames*i,:,:] == out[:,:,self.nRegFrames*i+self.nRegFrames-1,:,:]).all()
-			z[:,:,self.nRegFrames*i:self.nRegFrames*i+self.nRegFrames,:] = self.fc(out[:,:,self.nRegFrames*i:self.nRegFrames*i+self.nRegFrames,:,:].reshape(-1, self.nJoints*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
+			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].squeeze(0).t().reshape(self.nRegFrames,self.nChannels,4,4).reshape(-1)
+			temp2 = self.fc(temp1).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
+			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
 			assert (z[:,:,self.nRegFrames*i,:] == z[:,:,self.nRegFrames*i+self.nRegFrames-1,:]).all()
 		rem = D % self.nRegFrames
 
 		if (rem != 0):
+			"""
+			INCORRECT XXXXXXXX
+			"""
 			z[:,:,self.nRegFrames*int(slides):D,:] = self.fc(out[:,:,D-self.nRegFrames:D,:,:].reshape(-1, self.nJoints*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)[:,:,self.nRegFrames + self.nRegFrames*int(slides) - D:self.nRegFrames,:]
 		return z

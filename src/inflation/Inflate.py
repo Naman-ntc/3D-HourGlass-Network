@@ -54,7 +54,7 @@ def inflatehourglass(model3d, model):
 	inflateMaxPool(model3d.mp, model.low1)
 	
 	for i in range(nModules):
-		inflateResidual(model3d.beforepool[i], model.low1_[i])
+		inflateResidual(model3d.afterpool[i], model.low1_[i])
 
 	if model3d.numReductions > 1:
 		inflatehourglass(model3d.hg, model.low2)

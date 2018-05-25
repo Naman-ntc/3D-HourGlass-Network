@@ -50,7 +50,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 		Loss3D.update(loss.item(), input.size(0))
 
-
+		#loss = 0
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
@@ -75,11 +75,12 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		bar.next()
 
 	bar.finish()
-	return Loss2D.avg, Loss3D.avg	
+	return Loss2D.avg, Loss3D.avg, Mpjpe.val
 
 
 def train(epoch, opt, train_loader, model, optimizer):
 	return step('train', epoch, opt, train_loader, model, optimizer)
 
 def val(epoch, opt, val_loader, model):
-	return step('val', epoch, opt, val_loader, model)
+	with torch.no_grad():
+		return step('val', epoch, opt, val_loader, model)

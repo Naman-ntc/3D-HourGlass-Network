@@ -11,7 +11,7 @@ class myBatchNorm3D(nn.Module):
 	def forward(self, input):
 		out = input
 		N,C,D,H,W = out.size()
-		out = out.transpose(1,2).view(N*D,C,H,W)
+		out = out.transpose(1,2).contiguous().view(N*D,C,H,W)
 		out = self.bn(out.contiguous())
 		out = out.view(N,D,C,H,W).transpose(1,2)
 		return out

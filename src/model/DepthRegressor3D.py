@@ -27,14 +27,17 @@ class DepthRegressor3D(nn.Module):
 		slides = D/ self.nRegFrames
 		z = torch.zeros(N, self.nJoints, D, 1)
 		for i in range(int(slides)):
-			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].squeeze(0).t().contiguous().view(self.nRegFrames,self.nChannels,4,4).view(-1)
-			temp2 = self.fc(temp1).view(self.nRegFrames, self.nJoints).t().view(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)
+			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].transpose(1,2).view(N, -1)
+			temp2 = self.fc(temp1).view(N,self.nRegFrames, self.nJoints).transpose(1,2).unsqueeze(-1)
 			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
-			rem = D % self.nRegFrames
+		rem = D % self.nRegFrames
 
 		if (rem != 0):
 			"""
 			INCORRECT XXXXXXXX
 			"""
+			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].transpose(1,2).view(N, -1)
+			temp2 = self.fc(temp1).view(N,self.nRegFrames, self.nJoints).transpose(1,2).unsqueeze(-1)
+			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
 			z[:,:,self.nRegFrames*int(slides):D,:] = self.fc(out[:,:,D-self.nRegFrames:D,:,:].reshape(-1, self.nJoints*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)[:,:,self.nRegFrames + self.nRegFrames*int(slides) - D:self.nRegFrames,:]
 		return z

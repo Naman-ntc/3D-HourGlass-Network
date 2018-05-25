@@ -50,19 +50,19 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 		Loss3D.update(loss.item(), input.size(0))
 
-		loss = 0
+
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
-		Loss2D.update(loss.item(), input.size(0))
+		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
 		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
-    	
+
 		for l in mplist:
 			mpjpe, num3D = l	
 			if num3D > 0:
 				Mpjpe.update(mpjpe, num3D)
-		
+
 		if split == 'train':
 			loss = loss/opt.trainBatch
 			loss.backward()
@@ -75,7 +75,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		bar.next()
 
 	bar.finish()
-	return Loss2D.avg, Loss3D.avg
+	return Loss2D.avg, Loss3D.avg	
 
 
 def train(epoch, opt, train_loader, model, optimizer):

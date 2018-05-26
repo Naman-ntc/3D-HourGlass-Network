@@ -31,7 +31,9 @@ class opts():
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
 		self.parser.add_argument('-LR', type = float, default = 2.5e-5, help = 'Learning Rate')
-		self.parser.add_argument('-dropLR', type = int, default = 15, help = 'drop LR')
+		self.parser.add_argument('-patience', type = int, default = 8, help = 'patience for LR scheduler')
+		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
+		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
 		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')
 
 		self.parser.add_argument('-ratio3D', type = int, default = 0, help = 'weak label data ratio')

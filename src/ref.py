@@ -31,5 +31,5 @@ expDir = '../exp'
 dataDir = '../data/'
 ntuDataDir = dataDir + 'ntu'
 h36mDataDir = dataDir + 'h36m'
-
+mpiiDataDir = dataDir + 'mpii'
 nThreads = 4

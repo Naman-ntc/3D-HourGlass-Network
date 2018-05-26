@@ -57,7 +57,7 @@ def main():
 		momentum = ref.momentum
 	)
 
-	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = 0.3, patience = 5, verbose = True, threshold = 0.001)
+	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 
 	for epoch in range(1, opt.nEpochs + 1):
 		loss_train, loss3d_train, mpjpe_train = train(epoch, opt, train_loader, model, optimizer)

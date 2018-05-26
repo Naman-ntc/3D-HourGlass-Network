@@ -3,7 +3,9 @@ import random
 import numpy as np
 import torch.utils.data as data
 import pickle
-							
+from datahelpers.dataloaders.h36mLoader import *
+from datahelpers.dataloaders.mpiiLoader import *
+
 class FusionDataset(data.Dataset):
 	"""docstring for FusionDataset"""
 	def __init__(self, split, opts):

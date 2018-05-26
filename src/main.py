@@ -43,7 +43,7 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		h36m('train', opt),
+		FusionDataset('train', opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True if opt.DEBUG == 0 else False,
 		num_workers = int(ref.nThreads)

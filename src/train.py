@@ -46,10 +46,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.showImg()
 			debugger.saveImg('debug/{}.png'.format(i))
 
-		loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
-
-		Loss3D.update(loss.item(), input.size(0))
-
+		if (meta != -1):
+			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
+			Loss3D.update(loss.item(), input.size(0))
+		else:
+			Loss3D.update(0,0)
 		#loss = 0
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)

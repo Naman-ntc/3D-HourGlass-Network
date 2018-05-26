@@ -10,7 +10,7 @@ from model.Pose3D import Pose3D
 
 from datahelpers.dataloaders.fusedDataLoader import FusionDataset
 from datahelpers.dataloaders.h36mLoader import h36m
-from datahelpers.dataloaders.ntuLoader import ntu
+from datahelpers.dataloaders.mpiiLoader import mpii
 
 from utils.utils import adjust_learning_rate
 from utils.logger import Logger
@@ -44,6 +44,7 @@ def main():
 
 	train_loader = torch.utils.data.DataLoader(
 		FusionDataset('train', opt),
+		#mpii('train', opt, True),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,
 		num_workers = int(ref.nThreads)

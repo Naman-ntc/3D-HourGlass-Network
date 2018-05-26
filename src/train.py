@@ -45,12 +45,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.showImg()
 			debugger.saveImg('debug/{}.png'.format(i))
 
-		if (isinstance(meta, int)):
-			#Loss3D.update(0,0)
+		if (len(meta.shape) == 1):
 			loss = 0
-			print("Hi")
 		else:
-			print(meta.shape)
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 			Loss3D.update(loss.item(), input.size(0))
 
@@ -60,7 +57,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
 
-		if (isinstance(meta, int)):
+		if (len(meta.shape) == 1):
 			pass
 		else:
 			mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)

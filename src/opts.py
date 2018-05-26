@@ -23,7 +23,7 @@ class opts():
 		self.parser.add_argument('-nRegFrames', type = int, default = 8, help = '# number of frames temporally for regressor module')
 
 		self.parser.add_argument('-nEpochs', type = int, default = 60, help = '#training epochs')
-		self.parser.add_argument('-valIntervals', type = int, default = 5, help = '#valid intervel')
+		self.parser.add_argument('-valIntervals', type = int, default = 2, help = '#valid intervel')
 		self.parser.add_argument('-trainBatch', type = int, default = 4, help = '#Mini-batch size')
 		self.parser.add_argument('-dataloaderSize', type = int, default = 1, help = '#Mini-batch size')
 

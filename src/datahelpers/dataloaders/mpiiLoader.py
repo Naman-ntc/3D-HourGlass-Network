@@ -12,7 +12,7 @@ class mpii(data.Dataset):
 		print('==> initializing 2D {} data.'.format(split))
 		annot = {}
 		tags = ['imgname','part','center','scale']
-		f = File('{}/annot/{}.h5'.format(ref.mpiiDataDir, split), 'r')
+		f = File('{}/{}.h5'.format(ref.mpiiDataDir, split), 'r')
 		for tag in tags:
 			annot[tag] = np.asarray(f[tag]).copy()
 		f.close()
@@ -28,7 +28,7 @@ class mpii(data.Dataset):
 		self.returnMeta = returnMeta
 
 	def LoadImage(self, index):
-		path = '{}/{}'.format(ref.mpiiDataDir, self.annot['imgname'][index])
+		path = '{}/{}'.format(ref.mpiiDataDir, str(self.annot['imgname'][index])[2:-1])
 		img = cv2.imread(path)
 		return img
 
@@ -69,18 +69,21 @@ class mpii(data.Dataset):
 			#print 'after', inp[0].max(), inp[0].mean()
 
 		inp = torch.from_numpy(inp)
+		out = torch.from_numpy(out)
+		Reg = torch.from_numpy(Reg)
+		meta = torch.from_numpy(np.zeros((ref.nJoints, 3)))
 		if self.returnMeta:
-			return inp, out, Reg, np.zeros((ref.nJoints, 3))
+			return inp, out, Reg, meta
 		else:
 			return inp, out
 
 	def __getitem__(self, index):
-		a,b,c,d = getitem(index)
+		a,b,c,d = self.getitem(index)
 		a = a[:,None,:,:].expand(3,self.nFramesLoad,256,256)
-		b = b[:,None,:,:].expand(3,self.nFramesLoad,256,256)
-		c = c[:,None,2].expand(ref.nJoints, self.nFramesLoad, 1)
-		d = d[:,None,:].expand(ref.nJoints, self.nFramesLoad, 1)
-		return (a,b,c,d,-1)
+		b = b[:,None,:,:].expand(16,self.nFramesLoad,64,64)
+		c = c[:,None,2:].expand(ref.nJoints, self.nFramesLoad, 1)
+		d = d[:,None,:2].expand(ref.nJoints, self.nFramesLoad, 2)
+		return (a,b,d,c,-1)
 
 
 	def __len__(self):

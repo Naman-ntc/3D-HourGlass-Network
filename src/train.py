@@ -33,7 +33,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		target3D_var = (target3D).float().cuda()
 
 		output = model(input_var)
-
 		reg = output[opt.nStack]
 
 		if opt.DEBUG >= 2:
@@ -46,23 +45,30 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			debugger.showImg()
 			debugger.saveImg('debug/{}.png'.format(i))
 
-		if (meta != -1):
+		if (isinstance(meta, int)):
+			#Loss3D.update(0,0)
+			loss = 0
+			print("Hi")
+		else:
+			print(meta.shape)
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 			Loss3D.update(loss.item(), input.size(0))
-		else:
-			Loss3D.update(0,0)
-		#loss = 0
+
 		for k in range(opt.nStack):
 			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
-		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
 
-		for l in mplist:
-			mpjpe, num3D = l	
-			if num3D > 0:
-				Mpjpe.update(mpjpe, num3D)
+		if (isinstance(meta, int)):
+			pass
+		else:
+			mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
+
+			for l in mplist:
+				mpjpe, num3D = l
+				if num3D > 0:
+					Mpjpe.update(mpjpe, num3D)
 
 		if split == 'train':
 			loss = loss/opt.trainBatch

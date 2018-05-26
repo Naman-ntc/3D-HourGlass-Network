@@ -7,7 +7,7 @@ import cv2
 from utils.utils import Rnd, Flip, ShuffleLR
 from utils.img import Crop, DrawGaussian, Transform
 
-class MPII(data.Dataset):
+class mpii(data.Dataset):
 	def __init__(self, split, opts, returnMeta = False):
 		print '==> initializing 2D {} data.'.format(split)
 		annot = {}

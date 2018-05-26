@@ -11,12 +11,13 @@ class FusionDataset(data.Dataset):
 		self.split = split
 		
 		self.dataset_h36m = h36m(split, opts)
-		self.dataset_ntu = ntu(split, opts)
+		self.dataset_mpii = mpii(split, opts, True)
+		#self.dataset_ntu = ntu(split, opts)
 
-		self.nVideos_h36m = len(self.dataset_h36m)
-		self.nVideos_ntu = len(self.dataset_ntu)
+		self.nVideos_mpii = len(self.dataset_mpii)
+		self.nVideos_h36m = min(len(self.dataset_h36m), self.nVideos_mpii*opts.ratioHM)
 
-		print("Built h36m and mpii dataset containing %d and %d samples")
+		print("Built h36m and mpii dataset containing %d and %d samples" %(self.nVideos_h36m, self.nVideos_mpii))
 
 	def __getitem__(self, index):
 		if (index < self.nImagesh36m):

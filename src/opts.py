@@ -31,10 +31,11 @@ class opts():
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
 		self.parser.add_argument('-LR', type = float, default = 2.5e-5, help = 'Learning Rate')
-		self.parser.add_argument('-dropLR', type = int, default = 1000000, help = 'drop LR')
+		self.parser.add_argument('-dropLR', type = int, default = 15, help = 'drop LR')
+		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')
 
 		self.parser.add_argument('-ratio3D', type = int, default = 0, help = 'weak label data ratio')
-		self.parser.add_argument('-regWeight', type = float, default = 0.1, help = 'depth regression loss weight')
+		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
 
 

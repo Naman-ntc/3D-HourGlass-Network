@@ -57,6 +57,8 @@ def main():
 		momentum = ref.momentum
 	)
 
+	scheduler = ReduceLROnPlateau(optimizer, 'min', factor = 0.3, patience = 5, verbose = True, threshold = 0.001)
+
 	for epoch in range(1, opt.nEpochs + 1):
 		loss_train, loss3d_train, mpjpe_train = train(epoch, opt, train_loader, model, optimizer)
 		logger.scalar_summary('loss_train', loss_train, epoch)
@@ -73,7 +75,17 @@ def main():
 			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, loss_val, mpjpe_val, loss3d_val))
 		else:
 			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train))
-		adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)
+		#adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)
+		if opt.scheduler == 1:
+			scheduler.step(int(loss_train))
+		elif opt.scheduler == 2:
+			scheduler.step(int(loss3d_train))
+		elif opt.scheduler == 3:
+			scheduler.step(int(loss_train + loss3d_train))	
+		elif opt.scheduler == 4:
+			scheduler.step(int(mpjpe_train))
+
+				
 	logger.close()
 
 if __name__ == '__main__':

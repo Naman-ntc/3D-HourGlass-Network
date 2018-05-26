@@ -75,7 +75,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		bar.next()
 
 	bar.finish()
-	return Loss2D.avg, Loss3D.avg, Mpjpe.val
+	return Loss2D.avg, Loss3D.avg, Mpjpe.avg
 
 
 def train(epoch, opt, train_loader, model, optimizer):

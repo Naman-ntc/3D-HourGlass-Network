@@ -31,7 +31,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
-
+		model = model.float()
 		output = model(input_var)
 		reg = output[opt.nStack]
 

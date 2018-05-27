@@ -43,8 +43,8 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		FusionDataset('train', opt),
-		#mpii('train', opt, True),
+		#FusionDataset('train', opt),
+		h36m('train', opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,
 		num_workers = int(ref.nThreads)
@@ -90,4 +90,5 @@ def main():
 	logger.close()
 
 if __name__ == '__main__':
+	#torch.set_default_tensor_type('torch.DoubleTensor')
 	main()

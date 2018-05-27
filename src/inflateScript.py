@@ -22,7 +22,7 @@ def inflate(opt = None):
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 	pickle.load = partial(pickle.load, encoding="latin1")
 	if opt is not None:
-		model = torch.load(opt.2DModel)
+		model = torch.load(opt.Model2D)
 	else:
 		model = torch.load('models/hgreg-3d.pth') #, map_location=lambda storage, loc: storage)
 

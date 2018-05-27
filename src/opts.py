@@ -14,7 +14,7 @@ class opts():
 		self.parser.add_argument('-mode', default = 'pose', help = 'either pose or action')
 
 		self.parser.add_argument('-loadModel', default = 'none', help = 'Provide full path to a previously trained model')
-		self.parser.add_argument('-2DModel', default = 'models/hgreg-3d', help = 'Provide full path to a model to inflate')
+		self.parser.add_argument('-Model2D', default = 'models/hgreg-3d', help = 'Provide full path to a model to inflate')
 
 		self.parser.add_argument('-nChannels', type = int, default = 128, help = '# features in the hourglass')
 		self.parser.add_argument('-nStack', type = int, default = 2, help = '# hourglasses to stack')

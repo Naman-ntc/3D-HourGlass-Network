@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-lossfunc = nn.MSELoss().cuda()
+lossfunc = nn.MSELoss().cuda().float()
 
 #@torch.set_default_tensor_type('torch.cuda.FloatTensor')
 

@@ -83,7 +83,7 @@ class mpii(data.Dataset):
 		b = b[:,None,:,:].expand(16,self.nFramesLoad,64,64)
 		c = c[:,None,2:].expand(ref.nJoints, self.nFramesLoad, 1)
 		d = d[:,None,:2].expand(ref.nJoints, self.nFramesLoad, 2)
-		return (a,b,d,c,-1)
+		return (a.numpy(),b.numpy(),d.numpy(),c.numpy(),np.asarray(-1))
 
 
 	def __len__(self):

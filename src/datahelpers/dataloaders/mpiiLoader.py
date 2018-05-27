@@ -68,10 +68,8 @@ class mpii(data.Dataset):
 			inp[2] = np.clip(inp[2] * (np.random.random() * (0.4) + 0.6), 0, 1)
 			#print 'after', inp[0].max(), inp[0].mean()
 
-		inp = torch.from_numpy(inp)
-		out = torch.from_numpy(out)
-		Reg = torch.from_numpy(Reg)
-		meta = torch.from_numpy(np.zeros((ref.nJoints, 3)))
+		
+		meta = (np.zeros((ref.nJoints, 3)))
 		if self.returnMeta:
 			return inp, out, Reg, meta
 		else:
@@ -79,12 +77,11 @@ class mpii(data.Dataset):
 
 	def __getitem__(self, index):
 		a,b,c,d = self.getitem(index)
-		a = a[:,None,:,:].expand(3,self.nFramesLoad,256,256)
-		b = b[:,None,:,:].expand(16,self.nFramesLoad,64,64)
-		c = c[:,None,2:].expand(ref.nJoints, self.nFramesLoad, 1)
-		d = d[:,None,:2].expand(ref.nJoints, self.nFramesLoad, 2)
-		return (a.numpy(),b.numpy(),d.numpy(),c.numpy(),np.asarray(-1))
-
+		a = np.repeat(a,self.nFramesLoad,axis=1)
+		b = np.repeat(b,self.nFramesLoad,axis=1)
+		c = np.repeat(c,self.nFramesLoad,axis=1)
+		d = np.repeat(d,self.nFramesLoad,axis=1)
+		return (a,b,d,c,np.asarray(-1))
 
 	def __len__(self):
 		return self.nVideos

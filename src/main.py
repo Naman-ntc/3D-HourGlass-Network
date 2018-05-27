@@ -24,10 +24,12 @@ def main():
 	now = datetime.datetime.now()
 	logger = Logger(opt.saveDir + '/logs_{}'.format(now.isoformat()))
 
-	if opt.loadModel != 'none':
-		model = torch.load(opt.loadModel).cuda()
-	else :
+	if opt.loadModel == 'none':
 		model = inflate(opt).cuda()
+	elif opt.loadModel == 'scratch':
+		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)	
+	else :
+		model = torch.load(opt.loadModel).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(

@@ -82,6 +82,8 @@ class h36m(data.Dataset):
 
 		if self.loadConsecutive:
 
+			fpsFac = 1
+
 			startPt = random.randint(1, CountFramesInVid - self.nFramesLoad + 2)
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
@@ -90,7 +92,7 @@ class h36m(data.Dataset):
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 
 			for i in range(self.nFramesLoad):
-				frameIndex = "{:06d}.jpg".format(5*(startPt//5 + i) + 1)
+				frameIndex = "{:06d}.jpg".format(fpsFac*(startPt//fpsFac + i) + 1)
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outOutMaps[:,i,:,:] = outMap

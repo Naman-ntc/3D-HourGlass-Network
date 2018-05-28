@@ -68,7 +68,7 @@ class mpii(data.Dataset):
 			inp[2] = np.clip(inp[2] * (np.random.random() * (0.4) + 0.6), 0, 1)
 			#print 'after', inp[0].max(), inp[0].mean()
 
-		
+
 		meta = (np.zeros((ref.nJoints, 3)))
 		if self.returnMeta:
 			return inp, out, Reg, meta

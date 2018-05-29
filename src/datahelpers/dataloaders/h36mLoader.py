@@ -29,6 +29,10 @@ class h36m(data.Dataset):
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
+		#print(frame, int(frameName[-10:-4]))
+		#if frame == None:
+			#print(path+frameName)
+		#print(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 
 		pts_2d = pts_2d

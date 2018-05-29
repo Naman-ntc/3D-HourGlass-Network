@@ -23,16 +23,16 @@ class opts():
 		self.parser.add_argument('-nRegModules', type = int, default = 2, help = '# depth regression modules')
 		self.parser.add_argument('-nRegFrames', type = int, default = 8, help = '# number of frames temporally for regressor module')
 
-		self.parser.add_argument('-nEpochs', type = int, default = 60, help = '#training epochs')
+		self.parser.add_argument('-nEpochs', type = int, default = 120, help = '#training epochs')
 		self.parser.add_argument('-valIntervals', type = int, default = 2, help = '#valid intervel')
-		self.parser.add_argument('-trainBatch', type = int, default = 4, help = '#Mini-batch size')
-		self.parser.add_argument('-dataloaderSize', type = int, default = 1, help = '#Mini-batch size')
+		self.parser.add_argument('-trainBatch', type = int, default = 2, help = '#Mini-batch size')
+		self.parser.add_argument('-dataloaderSize', type = int, default = 2, help = '#Mini-batch size')
 
-		self.parser.add_argument('-nFramesLoad', type = int, default = 32, help = '#Frames per video to consider')
+		self.parser.add_argument('-nFramesLoad', type = int, default = 16, help = '#Frames per video to consider')
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
 		self.parser.add_argument('-LR', type = float, default = 2.5e-5, help = 'Learning Rate')
-		self.parser.add_argument('-patience', type = int, default = 8, help = 'patience for LR scheduler')
+		self.parser.add_argument('-patience', type = int, default = 13, help = 'patience for LR scheduler')
 		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
 		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')

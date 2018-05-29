@@ -115,10 +115,10 @@ class h36m(data.Dataset):
 				frame,outMap,pts_2d,outReg,pts_3d_mono = self.LoadFrameAndData(path, vidFolder + "_" + frameIndex)
 				inpFrames[:,i,:,:] = frame
 				outOutMaps[:,i,:,:] = outMap
-				outPts_2ds[:,i,2:] = pts_2d
-				outOutRegs[:,i,:2] = outReg
+				outPts_2ds[:,i,:] = pts_2d
+				outOutRegs[:,i,:] = outReg
 				outPts_3d_monos[:,i,:] = pts_3d_mono
-
+			
 		outOutRegs = outOutRegs[:,:,2:]
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 

@@ -77,7 +77,7 @@ class mpii(data.Dataset):
 
 	def __getitem__(self, index):
 		a,b,c,d = self.getitem(index)
-		a = np.repeat(a[:,None,:,:],self.nFramesLoad,axis=1)
+		a = np.repeat(a[:,None,:,:],self.nFramesLoad,axis=1).astype('d')
 		b = np.repeat(b[:,None,:,:],self.nFramesLoad,axis=1)
 		c = np.repeat(c[:,None,2:],self.nFramesLoad,axis=1)
 		d = np.repeat(d[:,None,:2],self.nFramesLoad,axis=1)

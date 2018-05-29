@@ -13,7 +13,7 @@ class FusionDataset(data.Dataset):
 		self.split = split
 
 		self.dataset_h36m = h36m(split, opts)
-		self.dataset_mpii = mpii(split, opts, True)
+		self.dataset_mpii = mpii(split, opts)
 		#self.dataset_ntu = ntu(split, opts)
 
 		self.nVideos_h36m = len(self.dataset_h36m)

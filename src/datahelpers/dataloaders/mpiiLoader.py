@@ -8,7 +8,7 @@ from utils.utils import Rnd, Flip, ShuffleLR
 from utils.img import Crop, DrawGaussian, Transform
 
 class mpii(data.Dataset):
-	def __init__(self, split, opts, returnMeta = False):
+	def __init__(self, split, opts, returnMeta = True):
 		print('==> initializing 2D {} data.'.format(split))
 		annot = {}
 		tags = ['imgname','part','center','scale']
@@ -77,10 +77,10 @@ class mpii(data.Dataset):
 
 	def __getitem__(self, index):
 		a,b,c,d = self.getitem(index)
-		a = np.repeat(a,self.nFramesLoad,axis=1)
-		b = np.repeat(b,self.nFramesLoad,axis=1)
-		c = np.repeat(c,self.nFramesLoad,axis=1)
-		d = np.repeat(d,self.nFramesLoad,axis=1)
+		a = np.repeat(a[:,None,:,:],self.nFramesLoad,axis=1)
+		b = np.repeat(b[:,None,:,:],self.nFramesLoad,axis=1)
+		c = np.repeat(c[:,None,:],self.nFramesLoad,axis=1)
+		d = np.repeat(d[:,None,:],self.nFramesLoad,axis=1)
 		return (a,b,d,c,np.asarray(-1))
 
 	def __len__(self):

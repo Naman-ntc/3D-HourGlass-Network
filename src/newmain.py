@@ -54,7 +54,7 @@ def main():
 
 	optimizer = torch.optim.RMSprop(
 		[{'params': model.hg.parameters(), 'lr': 1e-4},
-		{'params': model.dr.parameters(), 'lr': 6e-6}],
+		{'params': model.dr.parameters(), 'lr': 0}],
 		alpha = ref.alpha, 
 		eps = ref.epsilon, 
 		weight_decay = ref.weightDecay, 

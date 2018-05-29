@@ -13,7 +13,7 @@ class h36m(data.Dataset):
 	"""docstring for h36m"""
 	def __init__(self, split, opts):
 		super(h36m, self).__init__()
-		print("Initializing 3D %s data for h36m data" %(split))
+		print("==> Initializing 3D %s data for h36m data" %(split))
 		#self.split = split
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
@@ -117,8 +117,7 @@ class h36m(data.Dataset):
 				outOutRegs[:,i,:] = outReg
 				outPts_3d_monos[:,i,:] = pts_3d_mono
 
-		outOutRegs = outOutRegs[:,:,2]
-		outOutRegs = np.expand_dims(outOutRegs, 3)
+		outOutRegs = outOutRegs[:,:,2:]
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 
 	def __len__(self):

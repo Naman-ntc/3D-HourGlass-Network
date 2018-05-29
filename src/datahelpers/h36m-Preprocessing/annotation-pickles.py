@@ -6,26 +6,25 @@ from h5py import File
 import re
 
 
-tags = ['action', 'bbox', 'camera', 'id', 'joint_2d', 'joint_3d_mono', 'subaction', 'subject']
+tags = ['action', 'bbox', 'camera', 'id', 'joint_2d', 'joint_3d_mono', 'subaction', 'subject', 'istrain']
 
 annot = {}
 
-f1 = File('annot_train.h5', 'r')
-f2 = File('annot_val.h5', 'r')
+# f1 = File('annot_train.h5', 'r')
+# f2 = File('annot_val.h5', 'r')
 
-l1 = np.asarray(f1['id']).shape[0]
-l2 = np.asarray(f2['id']).shape[0]
+# l1 = np.asarray(f1['id']).shape[0]
+# l2 = np.asarray(f2['id']).shape[0]
 
-annot['istrain'] = np.concatenate((np.ones((l1)),np.zeros((l2))))
+# annot['istrain'] = np.concatenate((np.ones((l1)),np.zeros((l2))))
+
+f = File('all.h5.h5', 'r') 
 
 
-for tag in tags:
-	a1 = np.asarray(f1[tag]).copy()
-	a2 = np.asarray(f2[tag]).copy()
-	annot[tag] = np.concatenate((a1,a2))
+for tag in tags: 
+	annot[tag] = np.asarray(f[tag]).copy() 
+f.close() 
 
-f1.close()
-f2.close()
 
 data = {}
 

@@ -18,7 +18,7 @@ annot = {}
 
 # annot['istrain'] = np.concatenate((np.ones((l1)),np.zeros((l2))))
 
-f = File('all.h5.h5', 'r') 
+f = File('annotFullTest.h5', 'r') 
 
 
 for tag in tags: 
@@ -45,7 +45,6 @@ for i in range(length):
 	joint_2d = annot['joint_2d'][i]
 	joint_3d_mono = annot['joint_3d_mono'][i]
 	istrain = annot['istrain'][i]
-
 	if subject in data:
 		if action in data[subject]:
 			if subaction in data[subject][action]:
@@ -62,7 +61,6 @@ for i in range(length):
 			data[subject][action] = {subaction : {camera : {name : (joint_2d, joint_3d_mono, joint_3d_mono)}}}
 	else :
 		data[subject] = {action : {subaction : {camera : {name : (joint_2d, joint_3d_mono, joint_3d_mono)}}}}	
-
 	if istrain :
 		vidFolder = "s_{:02d}_act_{:02d}_subact_{:02d}_ca_{:02d}".format(subject,action,subaction,camera)
 		if vidFolder in train_vids:

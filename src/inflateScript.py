@@ -8,7 +8,7 @@ from model.DepthRegressor3D import *
 from model.HourGlassNet3D import *
 from model.HourGlass3D import *
 from model.Layers3D import *
-from inflation.Inflate import *
+import inflation.Inflate as Inflate
 import torch
 import ref
 
@@ -17,6 +17,11 @@ import ref
 def inflate(opt = None):
 	if opt is not None:
 		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
+		Inflate.nChannels = opt.nChannels
+		Inflate.nStack = opt.nStack
+		Inflate.nModules = opt.nModules
+		Inflate.nRegFrames = opt.nRegFrames
+		Inflate.nJoints = opt.nJoints
 	else :
 		model3d = Pose3D()
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
@@ -26,7 +31,7 @@ def inflate(opt = None):
 	else:
 		model = torch.load('models/hgreg-3d.pth') #, map_location=lambda storage, loc: storage)
 
-	inflatePose3D(model3d, model)
+	Inflate.inflatePose3D(model3d, model)
 
 	torch.save(model3d,open('inflatedModel.pth','wb'))
 

@@ -29,11 +29,9 @@ class h36m(data.Dataset):
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
-		#print(frame, int(frameName[-10:-4]))
-		#if frame == None:
-			#print(path+frameName)
-		#print(path+frameName)
+		
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
+		
 
 		pts_2d = pts_2d
 		pts_3d = pts_3d
@@ -88,7 +86,7 @@ class h36m(data.Dataset):
 
 			fpsFac = 1
 
-			startPt = random.randint(1, CountFramesInVid - self.nFramesLoad + 2)
+			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))

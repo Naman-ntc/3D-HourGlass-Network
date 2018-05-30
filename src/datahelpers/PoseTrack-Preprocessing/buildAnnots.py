@@ -5,6 +5,33 @@ import numpy as np
 import scipt.io as sio
 from helperFunctions import *
 
+class Bbox:
+	def __init__(self):
+		self.mean = None
+		self.delta = None
+
+def makeBoundingBox(joints, slack = 0.2): 
+	#slack is the percent of the extra area that we keep in the crop, ie, right now the total width will be 1.2 times the maximum distance between the
+	#joints that are farthest apart along the x axis
+	minX = 20000
+	maxX = 0
+	minY = 20000
+	maxY = 0
+	for joint in joints:
+		minX = min(minX, joint[0])
+		maxX = max(maxX, joint[0])
+		minY = min(minY, joint[1])
+		maxY = max(maxY, joint[1])
+	box = Bbox()
+	box.mean = ((minX + maxX)/2.0, (minY + maxY)/2.0)
+	box.delta = max(maxX - minX, maxY - minY)*(1.0 + slack)
+	newJoints = np.zeros((len(joints), 2))
+	for i in range(len(joints)):
+		newJoints[i][0] = joints[i][0] - box.mean[0]
+		newJoints[i][1] = joints[i][1] - box.mean[1]
+	return box, newJoints
+
+
 
 
 os.system("ls > output")
@@ -61,7 +88,7 @@ for mat in matList:
 				return them as a tuple of bbox,newJoints
 				"""
 
-				bbox,newJoints = "SAHIL'S Function called on joints" 
+				bbox,newJoints = makeBoundingBox(joints) ##Bbox is a class, with bbox.mean a tuple of x, y and bbox.delta
 				personWiseData.append([bbox,newJoints])
 		frameWiseData[imageName] = (personWiseData)
 

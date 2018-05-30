@@ -31,7 +31,8 @@ class opts():
 		self.parser.add_argument('-nFramesLoad', type = int, default = 16, help = '#Frames per video to consider')
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
-		self.parser.add_argument('-LR', type = float, default = 2.5e-5, help = 'Learning Rate')
+		self.parser.add_argument('-LRhg', type = float, default = 2.5e-5, help = 'Learning Rate')
+		self.parser.add_argument('-LRdr', type = float, default = 2.5e-5, help = 'Learning Rate')
 		self.parser.add_argument('-patience', type = int, default = 13, help = 'patience for LR scheduler')
 		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')

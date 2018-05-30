@@ -21,7 +21,7 @@ def inflate(opt = None):
 		Inflate.nStack = opt.nStack
 		Inflate.nModules = opt.nModules
 		Inflate.nRegFrames = opt.nRegFrames
-		Inflate.nJoints = opt.nJoints
+		Inflate.nJoints = ref.nJoints
 	else :
 		model3d = Pose3D()
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")

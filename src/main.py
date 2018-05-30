@@ -45,15 +45,15 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		#FusionDataset('train', opt),
-		h36m('train', opt),
+		FusionDataset('train', opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,
 		num_workers = int(ref.nThreads)
 	)
 
 	optimizer = torch.optim.RMSprop(
-		model.parameters(), opt.LR, 
+		[{'params': model.hg.parameters(), 'lr': opt.LRhg},
+		{'params': model.dr.parameters(), 'lr': opt.LRdr}], 
 		alpha = ref.alpha, 
 		eps = ref.epsilon, 
 		weight_decay = ref.weightDecay, 

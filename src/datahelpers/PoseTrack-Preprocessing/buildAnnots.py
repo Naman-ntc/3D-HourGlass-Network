@@ -29,6 +29,10 @@ def makeBoundingBox(joints, slack = 0.2):
 	for i in range(len(joints)):
 		newJoints[i][0] = joints[i][0] - box.mean[0]
 		newJoints[i][1] = joints[i][1] - box.mean[1]
+
+		newJoints[i][0] = joints[i][0] - box.mean[0] + bbox.delta/2.0 #uncomment if you want origin to be in the bottom left
+		newJoints[i][1] = joints[i][1] - box.mean[1] + bbox.delta/2.0 #uncomment if you want origin to be in the bottom left
+
 	return box, newJoints
 
 

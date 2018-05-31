@@ -1,9 +1,8 @@
-import ref
 import os
 import torch
 import numpy as np 
 import scipt.io as sio
-from helperFunctions import *
+from .helperFunctions import *
 
 class Bbox:
 	def __init__(self):
@@ -37,8 +36,8 @@ def makeBoundingBox(joints, slack = 0.2):
 
 
 
-
-os.system("ls ref.posetrackDataDir + /annotations/%s > output" %(split))
+split = 'train'
+os.system("ls annotations/%s > output" %(split))
 file = open("output", 'r')
 matList = ""
 for chunk in file:
@@ -96,4 +95,4 @@ for mat in matList:
 	finalData.append((whichFrames,frameWiseData))
 
 
-pickle.dump(finalData, open(ref.posetrackDataDir + '/' + split + '.pkl','wb'))
+pickle.dump(finalData, open(split + '.pkl','wb'))

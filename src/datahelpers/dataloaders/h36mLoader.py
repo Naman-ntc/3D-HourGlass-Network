@@ -14,14 +14,13 @@ class h36m(data.Dataset):
 	def __init__(self, split, opts):
 		super(h36m, self).__init__()
 		print("==> Initializing 3D %s data for h36m data" %(split))
-		#self.split = split
+		self.split = split
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
 		self.countFrames = np.load(ref.h36mDataDir + "/cnt_" + split + ".npy")
 
 		self.root = 7
-		self.split = split
 
 		self.nVideos = (self.vidFolders).shape[0]
 

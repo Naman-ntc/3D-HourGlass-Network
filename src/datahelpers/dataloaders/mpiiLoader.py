@@ -1,9 +1,9 @@
-import torch.utils.data as data
-import numpy as np
 import ref
-import torch
-from h5py import File
 import cv2
+import torch
+import numpy as np
+from h5py import File
+import torch.utils.data as data
 from utils.utils import Rnd, Flip, ShuffleLR
 from utils.img import Crop, DrawGaussian, Transform
 
@@ -81,7 +81,7 @@ class mpii(data.Dataset):
 		b = np.repeat(b[:,None,:,:],self.nFramesLoad,axis=1)
 		c = np.repeat(c[:,None,2:],self.nFramesLoad,axis=1)
 		d = np.repeat(d[:,None,:2],self.nFramesLoad,axis=1)
-		e = np.ones((ref.nJoints,self.nFramesLoad,3))
+		e = -1*np.ones((ref.nJoints,self.nFramesLoad,3))
 		return (a,b,d,c,e)
 
 	def __len__(self):

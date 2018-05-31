@@ -38,7 +38,7 @@ def makeBoundingBox(joints, slack = 0.2):
 
 
 
-os.system("ls > output")
+os.system("ls ref.posetrackDataDir + /annotations/%s > output" %(split))
 file = open("output", 'r')
 matList = ""
 for chunk in file:
@@ -75,9 +75,10 @@ for mat in matList:
 			for j in range(countPeople):
 				person = thisFrame[1][0][j][0]
 				crazyJoints = person[7][0][0][0][0]
-				joints = stabilize(crazyJoints)
+				cluttered,joints = stabilize(crazyJoints)
 
-
+				if cluttered > 6 :
+					continue
 				"""
 				COMPLETE HERE!!!
 				given set of n Joints (here probably 13 but better make invariant to it)
@@ -97,7 +98,7 @@ for mat in matList:
 		frameWiseData[imageName] = (personWiseData)
 
 		# Here imageName is the relative path from the PoseTrackDataDirectory (so yeah keep the images folder!!)
-	finalData.append((whichFrames,person))
+	finalData.append((whichFrames,frameWiseData))
 
 
-pickle.dump(finalData, open('annotations.pkl','rb'))
+pickle.dump(finalData, open(ref.posetrackDataDir + '/annotations.pkl','wb'))

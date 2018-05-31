@@ -14,7 +14,7 @@ class posetrack(data.Dataset):
 		self.split = split
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
-		self.annotations = pickle.load(open(ref.posetrackDataDir + '/annotations.pkl','rb'))
+		self.annotations = pickle.load(open(ref.posetrackDataDir + '/' + split + '.pkl','rb'))
 		
 		self.nVideos = len(self.annotations)
 

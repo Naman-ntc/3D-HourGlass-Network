@@ -96,4 +96,4 @@ for mat in matList:
 	finalData.append((whichFrames,frameWiseData))
 
 
-pickle.dump(finalData, open(ref.posetrackDataDir + '/annotations.pkl','wb'))
+pickle.dump(finalData, open(ref.posetrackDataDir + '/' + split + '.pkl','wb'))

@@ -80,6 +80,7 @@ class tcn(nn.Module):
 			self.convolutions.append(residual1D(numFeatures, layer[0]))
 			numFeatures = layer[0][2]
 			temporalExtent = temporalExtent/layer[0][0]
+		self.convolutions = nn.Sequential(* self.convolutions)
 		#print(numFeatures, temporalExtent, numFeatures*temporalExtent)
 		self.fc = nn.Linear(int(numFeatures*temporalExtent), int(numClasses))
 		#self.softmax = nn.Softmax()
@@ -87,8 +88,8 @@ class tcn(nn.Module):
 
 	def forward(self, input):
 		x = input
-		for convolution in self.convolutions:
-			x = convolution(x)
+		#for convolution in self.convolutions:
+		x = convolution(x)
 		#print(x.shape)
 		x = x.view(x.size(0), -1)
 		#print(x.shape)

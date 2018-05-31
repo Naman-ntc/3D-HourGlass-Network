@@ -49,11 +49,6 @@ matList = [x for x in matList if (x[-3:] == 'mat')]
 
 ##### MADE A LIST OF THE FILES IN THE DIRECTORY
 
-file = open("labels", 'w')
-count = 0
-
-total = len(videoList)
-
 
 finalData = []
 

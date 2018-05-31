@@ -1,8 +1,10 @@
 import os
 import torch
 import numpy as np 
-import scipt.io as sio
-from .helperFunctions import *
+import scipy.io as sio
+import numpy as np
+from helperFunctions import *
+import pickle
 
 class Bbox:
 	def __init__(self):
@@ -17,6 +19,8 @@ def makeBoundingBox(joints, slack = 0.2):
 	minY = 20000
 	maxY = 0
 	for joint in joints:
+		if joint[0]<0:
+			continue
 		minX = min(minX, joint[0])
 		maxX = max(maxX, joint[0])
 		minY = min(minY, joint[1])
@@ -26,11 +30,13 @@ def makeBoundingBox(joints, slack = 0.2):
 	box.delta = max(maxX - minX, maxY - minY)*(1.0 + slack)
 	newJoints = np.zeros((len(joints), 2))
 	for i in range(len(joints)):
+		if joints[i][0]<0:
+			continue
 		newJoints[i][0] = joints[i][0] - box.mean[0]
 		newJoints[i][1] = joints[i][1] - box.mean[1]
 
-		newJoints[i][0] = joints[i][0] - box.mean[0] + bbox.delta/2.0 #uncomment if you want origin to be in the bottom left
-		newJoints[i][1] = joints[i][1] - box.mean[1] + bbox.delta/2.0 #uncomment if you want origin to be in the bottom left
+		newJoints[i][0] = joints[i][0] - box.mean[0] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
+		newJoints[i][1] = joints[i][1] - box.mean[1] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
 
 	return box, newJoints
 
@@ -52,33 +58,39 @@ matList = [x for x in matList if (x[-3:] == 'mat')]
 finalData = []
 
 for mat in matList:
-	file = sio.load(mat)
+	file = sio.loadmat("annotations/" + split + "/" + mat)
 	file = file['annolist']
-	size = file.shape[0]
+	size = file.shape[1]
 	whichFrames = []
-	frameWiseData = {}
+	frameWiseData = []
 	for i in range(size):
-		thisFrame = file[i]
+		thisFrame = file[0,i]
 		isAnnotated = thisFrame[3][0][0]
-
+		thisframeData = {}
 		if isAnnotated:
 			imageName = thisFrame[0][0][0][0][0]
-			whichFrames.append(imageName[-12:-4])
-			countPeople = thisFrame[1][0].shape[0]
-			personWiseData = []
+			whichFrames.append(imageName)
+			#print(thisFrame[1])
+			if (len(thisFrame[1]) == 0):
+				continue
+			try :
+				countPeople = thisFrame[1][0].shape[0]
+			except:
+				print(thisFrame[1])
+			personWiseData = {}
 			for j in range(countPeople):
-				person = thisFrame[1][0][j][0]
+				person = thisFrame[1][0][j]
+				personID = person[6][0][0]
+				if person[7].shape == (0,0):
+					continue
 				crazyJoints = person[7][0][0][0][0]
 				cluttered,joints = stabilize(crazyJoints)
-
-				if cluttered > 6 :
-					continue
 				"""
 				COMPLETE HERE!!!
 				given set of n Joints (here probably 13 but better make invariant to it)
 				give me a bounding box, no cropping required (as memory pains ho skta thoda)
 				that is we'll runtime on crop, give boundingBox + updated pixels
-				
+
 				also better to give a bounding box in the following manney :
 					1) give me the center root relative krke (average of joints[2,:] and joints[3,:])
 					2) number of pixels to crop from centre on each sidex (delta/2 on each side give me the delta)
@@ -88,9 +100,9 @@ for mat in matList:
 				"""
 
 				bbox,newJoints = makeBoundingBox(joints) ##Bbox is a class, with bbox.mean a tuple of x, y and bbox.delta
-				personWiseData.append([bbox,newJoints])
-		frameWiseData[imageName] = (personWiseData)
-
+				personWiseData[personID] = ([bbox,newJoints])
+			thisframeData[imageName] = (personWiseData)
+		frameWiseData.append(thisframeData)
 		# Here imageName is the relative path from the PoseTrackDataDirectory (so yeah keep the images folder!!)
 	finalData.append((whichFrames,frameWiseData))
 

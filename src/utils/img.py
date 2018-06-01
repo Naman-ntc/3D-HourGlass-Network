@@ -101,7 +101,7 @@ def Crop(img, center, scale, rot, res):
 		else:
 			tmpImg = cv2.resize(tmpImg, (newSize_wd, newSize_ht)) #TODO
 			ht, wd = tmpImg.shape[0], tmpImg.shape[1]
-		
+
 	c, s = 1.0 * center / scaleFactor, scale / scaleFactor
 	c[0], c[1] = c[1], c[0]
 	ul = Transform((0, 0), c, s, 0, res, invert = True)

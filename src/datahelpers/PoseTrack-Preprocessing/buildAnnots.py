@@ -11,7 +11,7 @@ class Bbox:
 		self.mean = None
 		self.delta = None
 
-def makeBoundingBox(joints, slack = 0.2): 
+def makeBoundingBox(joints, slack = 0.2):
 	#slack is the percent of the extra area that we keep in the crop, ie, right now the total width will be 1.2 times the maximum distance between the
 	#joints that are farthest apart along the x axis
 	minX = 20000
@@ -27,17 +27,18 @@ def makeBoundingBox(joints, slack = 0.2):
 		maxY = max(maxY, joint[1])
 	box = Bbox()
 	box.mean = ((minX + maxX)/2.0, (minY + maxY)/2.0)
-	box.delta = max(maxX - minX, maxY - minY)*(1.0 + slack)
+	box.delta = min(max(maxX - minX, maxY - minY)*(1.0 + slack), min(box.mean[0], box.mean[1]))
 	newJoints = np.zeros((len(joints), 2))
 	for i in range(len(joints)):
 		if joints[i][0]<0:
 			continue
+			newJointsp[i] = joints[i]
 		newJoints[i][0] = joints[i][0] - box.mean[0]
 		newJoints[i][1] = joints[i][1] - box.mean[1]
 
 		newJoints[i][0] = joints[i][0] - box.mean[0] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
 		newJoints[i][1] = joints[i][1] - box.mean[1] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
-
+	print(box.mean,box.delta)
 	return box, newJoints
 
 
@@ -62,7 +63,7 @@ for mat in matList:
 	file = file['annolist']
 	size = file.shape[1]
 	whichFrames = []
-	frameWiseData = []
+	frameWiseData = {}
 	for i in range(size):
 		thisFrame = file[0,i]
 		isAnnotated = thisFrame[3][0][0]
@@ -100,9 +101,9 @@ for mat in matList:
 				"""
 
 				bbox,newJoints = makeBoundingBox(joints) ##Bbox is a class, with bbox.mean a tuple of x, y and bbox.delta
-				personWiseData[personID] = ([bbox,newJoints])
-			thisframeData[imageName] = (personWiseData)
-		frameWiseData.append(thisframeData)
+				personWiseData[personID] = ([bbox.mean,bbox.delta,newJoints])
+			#thisframeData[imageName] = (personWiseData)
+			frameWiseData[imageName] = personWiseData
 		# Here imageName is the relative path from the PoseTrackDataDirectory (so yeah keep the images folder!!)
 	finalData.append((whichFrames,frameWiseData))
 

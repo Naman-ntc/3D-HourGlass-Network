@@ -56,8 +56,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
 
-		Acc.update(Accuracy(output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy())
+		acclist = Acc.update(Accuracy(output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy())
 
+		for acc in acclist:
+			Accuracy.update(acc)
+			
 		if ((meta == -1).all()):
 			pass
 		else:

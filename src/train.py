@@ -55,8 +55,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
+		acclist = myAccuracy((output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy())
 
-		Acc.update(Accuracy((output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy()))
+
+		for acc in acclist:
+			Acc.update(acc)
 
 		if ((meta == -1).all()):
 			pass
@@ -76,7 +79,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
 
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | PCKh {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | PCKh {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe, PCKh = Acc)
 		bar.next()
 
 	bar.finish()

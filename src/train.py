@@ -21,7 +21,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		model.train()
 	else:
 		model.eval()
-	Loss2D, Loss3D, Mpjpe = AverageMeter(), AverageMeter(), AverageMeter()
+	Loss2D, Loss3D, Mpjpe, Acc = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
@@ -56,6 +56,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
 
+		Acc.update(Accuracy(output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy())
+
 		if ((meta == -1).all()):
 			pass
 		else:
@@ -74,11 +76,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
 
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | PCKh {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe)
 		bar.next()
 
 	bar.finish()
-	return Loss2D.avg, Loss3D.avg, Mpjpe.avg
+	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 
 
 def train(epoch, opt, train_loader, model, optimizer):

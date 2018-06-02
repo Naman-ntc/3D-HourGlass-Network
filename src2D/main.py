@@ -42,7 +42,7 @@ def main():
 	)
 
 	val_loader2 = torch.utils.data.DataLoader(
-		mpii('val',opt),
+		posetrack('val',opt),
 		batch_size = 1,
 		shuffle = False,
 		num_workers = int(ref.nThreads)

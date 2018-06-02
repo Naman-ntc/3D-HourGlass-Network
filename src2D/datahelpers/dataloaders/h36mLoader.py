@@ -27,6 +27,8 @@ class h36m(data.Dataset):
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
+		if self.split=='train':
+			index = np.random.randint(self.nVideos)
 		frame = cv2.imread(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		

@@ -16,4 +16,14 @@ def stabilize(crazy):
 		cluttered -= 1
 		joints[mapping[id]][0] = x
 		joints[mapping[id]][1] = y
+	if ((joints[2,0] == -1)  or (joints[3,0] == -1)):
+		pass
+	else :	
+		joints[6,:] = (joints[2,:] + joints[3,:])/2
+	
+	if ((joints[6,0] == -1)  or (joints[8,0] == -1)):
+		pass
+	else :	
+		joints[7,:] = (joints[8,:] + joints[6,:])/2
+
 	return (cluttered, joints)	

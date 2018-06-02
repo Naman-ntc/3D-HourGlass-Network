@@ -19,7 +19,7 @@ def makeBoundingBox(joints, slack = 0.2):
 	minY = 20000
 	maxY = 0
 	for joint in joints:
-		if joint[0]<0:
+		if joint[0]<=0 or joint[1]<=0:
 			continue
 		minX = min(minX, joint[0])
 		maxX = max(maxX, joint[0])
@@ -27,19 +27,9 @@ def makeBoundingBox(joints, slack = 0.2):
 		maxY = max(maxY, joint[1])
 	box = Bbox()
 	box.mean = ((minX + maxX)/2.0, (minY + maxY)/2.0)
-	box.delta = min(max(maxX - minX, maxY - minY)*(1.0 + slack), min(box.mean[0], box.mean[1]))
-	newJoints = np.zeros((len(joints), 2))
-	for i in range(len(joints)):
-		if joints[i][0]<0:
-			continue
-			newJointsp[i] = joints[i]
-		newJoints[i][0] = joints[i][0] - box.mean[0]
-		newJoints[i][1] = joints[i][1] - box.mean[1]
-
-		newJoints[i][0] = joints[i][0] - box.mean[0] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
-		newJoints[i][1] = joints[i][1] - box.mean[1] + box.delta/2.0 #uncomment if you want origin to be in the bottom left
-	print(box.mean,box.delta)
-	return box, newJoints
+	box.delta = (0.5*(maxX-minX+5)*(1+slack), 0.5*(maxY-minY+5)*(1+slack))
+	print(box.mean, box.delta)
+	return box
 
 
 
@@ -71,13 +61,15 @@ for mat in matList:
 		if isAnnotated:
 			imageName = thisFrame[0][0][0][0][0]
 			whichFrames.append(imageName)
-			#print(thisFrame[1])
+			
 			if (len(thisFrame[1]) == 0):
+				whichFrames.remove(imageName)
 				continue
 			try :
 				countPeople = thisFrame[1][0].shape[0]
 			except:
 				print(thisFrame[1])
+			
 			personWiseData = {}
 			for j in range(countPeople):
 				person = thisFrame[1][0][j]
@@ -100,11 +92,9 @@ for mat in matList:
 				return them as a tuple of bbox,newJoints
 				"""
 
-				bbox,newJoints = makeBoundingBox(joints) ##Bbox is a class, with bbox.mean a tuple of x, y and bbox.delta
-				personWiseData[personID] = ([bbox.mean,bbox.delta,newJoints])
-			#thisframeData[imageName] = (personWiseData)
+				bbox = makeBoundingBox(joints) ##Bbox is a class, with bbox.mean a tuple of x, y and bbox.delta
+				personWiseData[personID] = ([bbox.mean,bbox.delta,joints])
 			frameWiseData[imageName] = personWiseData
-		# Here imageName is the relative path from the PoseTrackDataDirectory (so yeah keep the images folder!!)
 	finalData.append((whichFrames,frameWiseData))
 
 

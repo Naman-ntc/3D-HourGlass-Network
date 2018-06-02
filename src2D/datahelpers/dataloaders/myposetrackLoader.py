@@ -25,8 +25,8 @@ class posetrack(data.Dataset):
 		print("Loaded %d %s videos for posetrack data" %(self.nVideos, split))
 
 	def __getitem__(self, index):
-		# if self.split=='train':
-		# 	index = np.random.randint(self.nVideos)
+		if self.split=='train':
+			index = np.random.randint(self.nVideos)
 		whichFrames,frameWiseData = self.annotations[index]
 		
 		numFrames = len(whichFrames)
@@ -51,7 +51,7 @@ class posetrack(data.Dataset):
 				return self.__getitem__(index+1)
 			personIndex = random.choice(list(result))
 
-			if self.augmentation:
+			if self.augmentation & (self.split == 'train'):
 				angle = random.randint(0,10)
 				scale = 1 + (random.random()-0.5)*0.4
 				flipOrNot  = random.random() > 0
@@ -62,22 +62,24 @@ class posetrack(data.Dataset):
 
 			for i in range(self.nFramesLoad):
 				tempFrame = cv2.imread(ref.posetrackDataDir + '/' + whichFrames[startpt + i])
-				plt.imshow(tempFrame)
-				plt.show()
 				frameData = frameWiseData[whichFrames[startpt + i]]
-				bboxmean,bboxdelta, joints = frameData[personIndex]
-				print(bboxmean,bboxdelta)				
+				bboxmean,bboxdelta,joints = frameData[personIndex]
 				tempFrame = F.to_pil_image(tempFrame)
-				cropedAndResized = F.resized_crop(tempFrame, bboxmean[0] + bboxdelta, bboxmean[1] - bboxdelta, bboxdelta, bboxdelta, (224,224))
+				croppedImage = F.crop(tempFrame,bboxmean[1]-bboxdelta[1],bboxmean[0]-bboxdelta[0],2*bboxdelta[1],2*bboxdelta[0])
+				paddedCroppedImage = F.pad(croppedImage, (int(max(0, bboxdelta[1]-bboxdelta[0])), int(max(0, bboxdelta[0]-bboxdelta[1]))))
+				resizedSquarePaddedCropped = F.resize(paddedCroppedImage,(256,256))
+				
 				for k in range(joints.shape[0]):
 					if (joints[k][0]<0):
 						pass
 					else :
-						joints[k][0] += 16
-						joints[k][1] += 16
-				padded = F.pad(cropedAndResized, 16)
+						joints[k][0] -= bboxmean[0]-bboxdelta[0] - (max(0, bboxdelta[1]-bboxdelta[0]))
+						joints[k][1] -= bboxmean[1]-bboxdelta[1] - (max(0, bboxdelta[0]-bboxdelta[1]))
+						scaleFac = 256./(2*max(bboxdelta[1],bboxdelta[0]))
+						joints[k][0] *= scaleFac
+						joints[k][1] *= scaleFac
 				
-				rotated = F.affine(padded,angle,(0,0),scale,0)
+				rotated = F.affine(resizedSquarePaddedCropped,angle,(0,0),scale,0)
 
 				if flipOrNot:
 					flipped = hflip(rotated)
@@ -92,9 +94,7 @@ class posetrack(data.Dataset):
 					if (joints[j,:] == -1).all():
 						continue
 					else:
-						joints[j,0] += bboxdelta
-						joints[j,1] += bboxdelta
-						outOutMaps[j,i,:,:] = DrawGaussian(outOutMaps[j,i,:,:], joints[j,:], ref.hmGauss)
+						outOutMaps[j,i,:,:] = DrawGaussian(outOutMaps[j,i,:,:], joints[j,:]/4, ref.hmGauss)
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)			
 
 	def __len__(self):

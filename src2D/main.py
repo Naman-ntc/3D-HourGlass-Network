@@ -34,8 +34,15 @@ def main():
 		model = torch.load(opt.loadModel).cuda()
 
 
-	val_loader = torch.utils.data.DataLoader(
-		FusionDataset('val',opt),
+	val_loader1 = torch.utils.data.DataLoader(
+		h36m('val',opt),
+		batch_size = 1,
+		shuffle = False,
+		num_workers = int(ref.nThreads)
+	)
+
+	val_loader2 = torch.utils.data.DataLoader(
+		mpii('val',opt),
 		batch_size = 1,
 		shuffle = False,
 		num_workers = int(ref.nThreads)
@@ -72,13 +79,17 @@ def main():
 		#logger.scalar_summary('mpjpe_train', mpjpe_train, epoch)
 		#logger.scalar_summary('loss3d_train', loss3d_train, epoch)
 		if epoch % opt.valIntervals == 0:
-			loss_val, acc_val = val(epoch, opt, val_loader, model)
+			loss_val, acc_val = val(epoch, opt, val_loader1, model)
 			logger.scalar_summary('loss_val', loss_val, epoch)
 			logger.scalar_summary('acc_val', acc_val, epoch)
+			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, loss_val, acc_val))
+			loss_val, acc_val = val(epoch, opt, val_loader2, model)
+			logger.scalar_summary('loss_val', loss_val, epoch)
+			logger.scalar_summary('acc_val', acc_val, epoch)
+			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, loss_val, acc_val))
 			#logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
 			#logger.scalar_summary('loss3d_val', loss3d_val, epoch)
 			torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
-			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, loss_val, acc_val))
 		else:
 			logger.write('{:8f} {:8f} \n'.format(loss_train, acc_train))
 		#adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)

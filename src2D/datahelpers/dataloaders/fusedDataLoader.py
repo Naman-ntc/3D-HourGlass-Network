@@ -15,9 +15,8 @@ class FusionDataset(data.Dataset):
 		self.dataset_h36m = h36m(split, opts)
 		self.dataset_posetrack = posetrack(split, opts)
 
-		self.nVideos_h36m = len(self.dataset_h36m)
-		self.nVideos_posetrack = min(len(self.dataset_posetrack), self.nVideos_h36m//opts.ratioHM)
-
+		self.nVideos_posetrack = len(self.dataset_posetrack)
+		self.nVideos_h36m = min(len(self.dataset_h36m), (self.nVideos_posetrack)*opts.ratioHP)
 
 		print("Built h36m and posetrack dataset containing %d and %d samples" %(self.nVideos_h36m, self.nVideos_posetrack))
 

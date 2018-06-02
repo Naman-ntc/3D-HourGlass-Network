@@ -38,7 +38,7 @@ class opts():
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
 		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')
 
-		self.parser.add_argument('-ratioHM', type = int, default = 5, help = 'weak label data ratio')
+		self.parser.add_argument('-ratioHP', type = float, default = 1, help = 'H36M to Posetrack data ratio')
 		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
 

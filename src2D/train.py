@@ -42,8 +42,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			
 		if opt.DEBUG >= 2:
 			for i in range(16):
-				# plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-				# plt.show()
+				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+				#plt.show()
 				# plt.imshow(targetMaps.sum(1)[0,i,:,:].data.cpu().numpy(), cmap='hot', interpolation='nearest')
 				# plt.show()
 				# plt.imshow(output[opt.nStack - 1].sum(1)[0,i,:,:].detach().cpu().numpy(), cmap='hot', interpolation='nearest')

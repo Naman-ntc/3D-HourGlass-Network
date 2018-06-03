@@ -42,14 +42,14 @@ def main():
 	val_loader2 = torch.utils.data.DataLoader(
 		posetrack('val',opt),
 		batch_size = 1,
-		shuffle = False,
+		shuffle = True,
 		num_workers = int(ref.nThreads)
 	)
 
 
 
 	val(0, opt, val_loader2, model)
-	val(0, opt, val_loader1, model)
+	val(0, opt, val_loader2, model)
 
 
 

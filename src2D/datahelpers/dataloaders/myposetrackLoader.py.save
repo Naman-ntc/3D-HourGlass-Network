@@ -63,14 +63,13 @@ class posetrack(data.Dataset):
 
 			for i in range(self.nFramesLoad):
 				tempFrame = cv2.imread(ref.posetrackDataDir + '/' + whichFrames[startpt + 0])
-				#print(ref.posetrackDataDir + '/' + whichFrames[startpt + 0])
 				frameData = frameWiseData[whichFrames[startpt + 0]]
 				bboxmean,bboxdelta,joints = frameData[personIndex]
 				tempFrame = F.to_pil_image(tempFrame)
 				croppedImage = F.crop(tempFrame,bboxmean[1]-bboxdelta[1],bboxmean[0]-bboxdelta[0],2*bboxdelta[1],2*bboxdelta[0])
 				paddedCroppedImage = F.pad(croppedImage, (int(max(0, bboxdelta[1]-bboxdelta[0])), int(max(0, bboxdelta[0]-bboxdelta[1]))))
 				resizedSquarePaddedCropped = F.resize(paddedCroppedImage,(256,256))
-				joints = joints.copy()
+				
 				for k in range(joints.shape[0]):
 					if (joints[k][0]<0):
 						pass
@@ -78,6 +77,7 @@ class posetrack(data.Dataset):
 						joints[k][0] -= bboxmean[0]-bboxdelta[0] - (max(0, bboxdelta[1]-bboxdelta[0]))
 						joints[k][1] -= bboxmean[1]-bboxdelta[1] - (max(0, bboxdelta[0]-bboxdelta[1]))
 						scaleFac = 256./(2*max(bboxdelta[1],bboxdelta[0]))
+
 						joints[k][0] *= scaleFac
 						joints[k][1] *= scaleFac
 				

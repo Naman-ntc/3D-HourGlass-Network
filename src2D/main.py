@@ -29,7 +29,7 @@ def main():
 
 		model = inflate(opt).cuda()
 	elif opt.loadModel == 'scratch':
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
+		model = HourglassNet3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, ref.nJoints).cuda()
 	else :
 		model = torch.load(opt.loadModel).cuda()
 

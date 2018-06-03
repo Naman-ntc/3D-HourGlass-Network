@@ -15,6 +15,7 @@ class h36m(data.Dataset):
 		super(h36m, self).__init__()
 		print("==> Initializing 3D %s data for h36m data" %(split))
 		self.split = split
+		self.opts = opts
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
@@ -81,7 +82,6 @@ class h36m(data.Dataset):
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
 		CountFramesInVid = self.countFrames[index]
-
 		if self.loadConsecutive:
 
 			fpsFac = 5
@@ -92,6 +92,7 @@ class h36m(data.Dataset):
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+
 
 			for i in range(self.nFramesLoad):
 				frameIndex = "{:06d}.jpg".format(fpsFac*(startPt//fpsFac + i) + 1)

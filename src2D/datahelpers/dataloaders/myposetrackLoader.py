@@ -12,11 +12,12 @@ import matplotlib.pyplot as plt
 
 class posetrack(data.Dataset):
 	"""docstring for posetrack"""
-	def __init__(self, split, returnMeta = True, augmentation = False):
+	def __init__(self, split, opts, returnMeta = True, augmentation = False):
 		super(posetrack, self).__init__()
 		self.split = split
-		self.nFramesLoad = 16#opts.nFramesLoad
-		self.loadConsecutive = 1#opts.loadConsecutive
+		self.opts = opts
+		self.nFramesLoad = opts.nFramesLoad
+		self.loadConsecutive = opts.loadConsecutive
 		self.augmentation = augmentation
 		self.annotations = pickle.load(open(ref.posetrackDataDir + '/' + split + '.pkl','rb'))
 		
@@ -32,7 +33,6 @@ class posetrack(data.Dataset):
 		numFrames = len(whichFrames)
 
 		if self.loadConsecutive:
-			
 			startpt = random.randint(1, numFrames - (self.nFramesLoad))
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
@@ -40,12 +40,13 @@ class posetrack(data.Dataset):
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 
+
 			result = set(frameWiseData[whichFrames[startpt]].keys())
 			for i in range(self.nFramesLoad):
 				try:
 					result.intersection_update(frameWiseData[whichFrames[startpt+i]].keys())
 				except:
-					print(whichFrames[startpt+i])
+					print(startpt+i)
 					assert 1!=1
 			if (len(result) == 0):
 				return self.__getitem__(index+1)

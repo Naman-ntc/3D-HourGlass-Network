@@ -102,7 +102,7 @@ def Show3d(datas,frame,gt_ind,dir_path,epoch):
 #  plt.show()
   fig.set_dpi(100)
   fig.savefig(dir_path+'epoch_'+str(epoch)+'_frame'+str(frame)+'gt_'+str(gt_ind)+'show_3d.png')
-#  plt.show()
+  plt.show()
   fig.savefig(dir_path+str(frame)+'.jpg')
   plt.close()
 

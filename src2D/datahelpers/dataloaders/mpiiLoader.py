@@ -40,7 +40,8 @@ class mpii(data.Dataset):
 		return pts, c, s
 
 	def getitem(self, index):
-		index = int(torch.randint(index+1,()))
+		if self.split=='train':
+			index = int(torch.randint(self.nVideos,()))
 		img = self.LoadImage(index)
 		pts, c, s = self.GetPartInfo(index)
 		r = 0

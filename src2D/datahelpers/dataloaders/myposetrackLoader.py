@@ -27,7 +27,7 @@ class posetrack(data.Dataset):
 
 	def __getitem__(self, index):
 		if self.split=='train':
-			index = np.random.randint(self.nVideos)
+			index = int(torch.randint(self.nVideos,()))
 		whichFrames,frameWiseData = self.annotations[index]
 		
 		numFrames = len(whichFrames)

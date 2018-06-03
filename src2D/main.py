@@ -79,7 +79,7 @@ def main():
 		#logger.scalar_summary('mpjpe_train', mpjpe_train, epoch)
 		#logger.scalar_summary('loss3d_train', loss3d_train, epoch)
 		if epoch % opt.valIntervals == 0:
-			#loss_val, acc_val = val(epoch, opt, val_loader1, model)
+			loss_val, acc_val = val(epoch, opt, val_loader1, model)
 			logger.scalar_summary('loss_val', loss_val, epoch)
 			logger.scalar_summary('acc_val', acc_val, epoch)
 			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, acc_train, loss_val, acc_val))

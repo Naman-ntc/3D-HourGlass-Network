@@ -46,7 +46,8 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		FusionDataset('train',opt),
+		h36m('train',opt),
+		#FusionDataset('train',opt),
 		#posetrack('train', opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,

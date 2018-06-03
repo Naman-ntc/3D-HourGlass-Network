@@ -8,7 +8,7 @@ import torch.utils.data
 from opts import opts
 from model.Pose3D import Pose3D
 
-from datahelpers.dataloaders.fusedDataLoader import FusionDataset
+from datahelpers.dataloaders.oldfusedDataLoader import FusionDataset
 from datahelpers.dataloaders.h36mLoader import h36m
 from datahelpers.dataloaders.mpiiLoader import mpii
 from datahelpers.dataloaders.myposetrackLoader import posetrack
@@ -42,7 +42,7 @@ def main():
 	)
 
 	val_loader2 = torch.utils.data.DataLoader(
-		posetrack('val',opt),
+		mpii('val',opt),
 		batch_size = 1,
 		shuffle = False,
 		num_workers = int(ref.nThreads)
@@ -54,8 +54,8 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		h36m('train',opt),
-		#FusionDataset('train',opt),
+		#h36m('train',opt),
+		FusionDataset('train',opt),
 		#posetrack('train', opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,

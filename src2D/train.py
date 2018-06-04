@@ -1,21 +1,20 @@
-import matplotlib
 import cv2
 import ref
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
-from model.SoftArgMax import *
 from progress.bar import Bar
+import matplotlib.pyplot as plt
 
-from utils.utils import AverageMeter
 
-#from utils.debugger import Debugger
-from utils.eval import *
-from Losses import *
-from visualise_model import *
 from my import *
+from Losses import *
+from utils.eval import *
+from visualise_model import *
+from utils.utils import *
 
+from model.SoftArgMax import *
 SoftArgMaxLayer = SoftArgMax()
+
 
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	if split == 'train':
@@ -34,10 +33,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		target3D_var = (target3D).float().cuda()
 		model = model.float()
 		output = model(input_var)[0]
-		loss = 0
 
 		if opt.DEBUG == 2:
-			for i in range(16):
+			for i in range(input_var.shape[2]):
 				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 				a = np.zeros((16,3))
@@ -46,6 +44,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,i,:,:].data.cpu().numpy())
 				visualise3d(b,a,epoch,i)
 		
+		loss = 0
 		for k in range(opt.nStack):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		
@@ -55,13 +54,13 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Acc.update(tempAcc)
 
 
-		if opt.DEBUG == 3 & int(tempAcc) < 0.80:
+		if opt.DEBUG == 3 and (float(tempAcc) < 0.80):
 			for j in range(input_var.shape[2]):
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
-				visualise3d(b,a,'val-errors','%d,%d'%(i,j),input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+				visualise3d(b,a,'val-errors',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 
 		if split == 'train':

@@ -28,6 +28,8 @@ class h36m(data.Dataset):
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
+		if self.split=='train':
+			index = np.random.randint(self.nVideos)
 		frame = cv2.imread(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		
@@ -95,6 +97,7 @@ class h36m(data.Dataset):
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+
 
 			for i in range(self.nFramesLoad):
 				frameIndex = "{:06d}.jpg".format(fpsFac*(startPt//fpsFac + i) + 1)

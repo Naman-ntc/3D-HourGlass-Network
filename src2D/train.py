@@ -35,11 +35,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		model = model.float()
 		output = model(input_var)[0]
 		loss = 0
-			
+
 		if opt.DEBUG == 2:
 			for i in range(16):
 				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-				
+
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,i,:,:].cpu().numpy())
@@ -55,7 +55,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Acc.update(tempAcc)
 
 
-		if opt.DEBUG == 3 & tempAcc < 0.80:
+		if opt.DEBUG == 3 & int(tempAcc) < 0.80:
 			for j in range(input_var.shape[2]):
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))

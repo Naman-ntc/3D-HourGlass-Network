@@ -44,27 +44,20 @@ def show_2d(img, points, c = 'g'):
 		cv2.line(img, (int(points[e[0], 0]), int(points[e[0], 1])), 
 									(int(points[e[1], 0]), int(points[e[1], 1])), c, 2)
 
-def Show3d(datas,frame,gt_ind,dir_path,epoch):
+def Show3d(datas,dir_path,epoch,index,frame):
 	
 	if(type(datas)!=list):
 		datas = [datas]
-	#print(len(datas))
 
 	import matplotlib.pyplot as plt
 	import mpl_toolkits.mplot3d
 	from mpl_toolkits.mplot3d import Axes3D
 	fig = plt.figure()
-	ax = fig.add_subplot((111),projection='3d')
+	ax = fig.add_subplot((121),projection='3d')
 	ax.set_xlabel('z') 
 	ax.set_ylabel('x') 
 	ax.set_zlabel('y')
-#  ax.set_xlim([-3000 , 3000])
-#  ax.set_xlim([-3000 , 3000])
-#  ax.set_zlim([-1500 , 1500])
-#  
-	
-	
-	
+
 	for data in datas:
 			joint = data['joint']
 			oo = max(joint.max(), 2) / 8  
@@ -80,23 +73,20 @@ def Show3d(datas,frame,gt_ind,dir_path,epoch):
 				ax.plot([zb], [xb], [yb], 'w')
 			if 'img' in data:
 				img = data['img'].copy()
-#        print(img.shape)
 				stepX, stepY = 100. / img.shape[0], 100. / img.shape[1]
 				X1 = np.arange(-3000, 3000, stepX)
 				Y1 = np.arange(-1500, 1500, stepY)
-#        img = img.transpose(1,2,0)
-#        print('here')
 				X1, Y1 = np.meshgrid(X1, Y1)
-#        print('here after mesh grid')
 				ax.plot_surface(X1, -1500,Y1, rstride=1, cstride=1, facecolors=img)
-				
-	fig.set_dpi(100)
-	fig.savefig(dir_path+'epoch_'+str(epoch)+'_video'+str(video)+'_frame'+str(frame)+'show_3d.png')
+	
+	bx = fig.add_subplot((122))
+	bx = plt.imshow(frame)
+	#fig.set_dpi(100)
+	fig.savefig(dir_path+'epoch_'+str(epoch)+'index_'+str(index)+'show_3d.png')
 	plt.show()
-	fig.savefig(dir_path+str(frame)+'.jpg')
 	plt.close()
 
-if __name__ == '__main__':
-	tmpFile = sys.argv[2]
-	data = getData(tmpFile)
-	eval(sys.argv[1] + '(data)') 
+# if __name__ == '__main__':
+# 	tmpFile = sys.argv[2]
+# 	data = getData(tmpFile)
+# 	eval(sys.argv[1] + '(data)') 

@@ -29,10 +29,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	for i, (input, targetMaps, target2D, target3D, meta) in enumerate(dataLoader):
 		input_var = (input).float().cuda()
-		# for i in range(16):
-		# 	ploter = input_var[0,:,i,:,:].transpose(0,1).transpose(1,2).data.cpu().numpy()
-		# 	plt.imshow(ploter)
-		# 	plt.show()
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
@@ -40,15 +36,10 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)[0]
 		loss = 0
 			
-		if opt.DEBUG >= 2:
+		if opt.DEBUG == 2:
 			for i in range(16):
 				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-				#plt.show()
-				# plt.imshow(targetMaps.sum(1)[0,i,:,:].data.cpu().numpy(), cmap='hot', interpolation='nearest')
-				# plt.show()
-				# plt.imshow(output[opt.nStack - 1].sum(1)[0,i,:,:].detach().cpu().numpy(), cmap='hot', interpolation='nearest')
-				# plt.show()
-				#test_heatmaps(targetMaps[0,:,i,:,:].data.cpu(), input_var.data[0,:,i,:,:].cpu(), '%%')
+				
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,i,:,:].cpu().numpy())
@@ -60,7 +51,18 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		
 		Loss2D.update(loss.item(), input.size(0))
 
-		Acc.update(Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy()))
+		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
+		Acc.update(tempAcc)
+
+
+		if opt.DEBUG == 3 & tempAcc < 0.80:
+			for j in range(input_var.shape[2]):
+				a = np.zeros((16,3))
+				b = np.zeros((16,3))
+				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
+				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
+				visualise3d(b,a,'val-errors','%d,%d'%(i,j),input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+
 
 		if split == 'train':
 			loss = loss/opt.trainBatch

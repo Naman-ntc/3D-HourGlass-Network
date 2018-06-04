@@ -49,7 +49,8 @@ def main():
 	)
 
 	if (opt.test):
-		val(0, opt, val_loader, model)
+		val(0, opt, val_loader1, model)
+		val(0, opt, val_loader2, model)
 		pass
 
 

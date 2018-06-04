@@ -85,6 +85,10 @@ class h36m(data.Dataset):
 			fpsFac = 5
 
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
+			if self.split == 'val':
+				startPt = 0
+				oldnFramesLoad = self.nFramesLoad
+				self.nFramesLoad = min(150, CountFramesInVid)
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
@@ -100,6 +104,10 @@ class h36m(data.Dataset):
 				outPts_2ds[:,i,:] = pts_2d
 				outOutRegs[:,i,:] = outReg
 				outPts_3d_monos[:,i,:] = pts_3d_mono
+			
+			if self.split == 'val':
+				self.nFramesLoad = oldnFramesLoad
+
 		else :
 
 			frameIndices = np.random.permutation(CountFramesInVid)

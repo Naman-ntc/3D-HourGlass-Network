@@ -41,6 +41,11 @@ class posetrack(data.Dataset):
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
 
 
+			if self.split == 'val':
+				startPt = 0
+				oldnFramesLoad = self.nFramesLoad
+				self.nFramesLoad = min(150, self.nFramesLoad)
+
 			result = set(frameWiseData[whichFrames[startpt]].keys())
 			for i in range(self.nFramesLoad):
 				try:
@@ -61,10 +66,16 @@ class posetrack(data.Dataset):
 				scale = 1
 				flipOrNot = 0	
 
+
+			if self.split == 'val':
+				startPt = 0
+				oldnFramesLoad = self.nFramesLoad
+				self.nFramesLoad = min(150, numFrames)
+
 			for i in range(self.nFramesLoad):
-				tempFrame = cv2.imread(ref.posetrackDataDir + '/' + whichFrames[startpt + 0])
+				tempFrame = cv2.imread(ref.posetrackDataDir + '/' + whichFrames[startpt + i])
 				#print(ref.posetrackDataDir + '/' + whichFrames[startpt + 0])
-				frameData = frameWiseData[whichFrames[startpt + 0]]
+				frameData = frameWiseData[whichFrames[startpt + i]]
 				bboxmean,bboxdelta,joints = frameData[personIndex]
 				tempFrame = F.to_pil_image(tempFrame)
 				croppedImage = F.crop(tempFrame,bboxmean[1]-bboxdelta[1],bboxmean[0]-bboxdelta[0],2*bboxdelta[1],2*bboxdelta[0])
@@ -97,6 +108,10 @@ class posetrack(data.Dataset):
 						continue
 					else:
 						outOutMaps[j,i,:,:] = DrawGaussian(outOutMaps[j,i,:,:], joints[j,:]/4, ref.hmGauss)
+			
+			if self.split == 'val':
+				self.nFramesLoad = oldnFramesLoad
+
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)			
 
 	def __len__(self):

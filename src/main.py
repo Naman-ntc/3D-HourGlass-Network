@@ -42,7 +42,7 @@ def main():
 
 	if (opt.test):
 		val(0, opt, val_loader, model)
-		pass
+		return
 
 
 	train_loader = torch.utils.data.DataLoader(

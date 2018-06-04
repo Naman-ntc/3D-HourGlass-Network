@@ -89,6 +89,7 @@ def inflatebn(bn3d, bn):
 	bn3d.bn.running_mean = bn3d.bn.running_mean.contiguous()
 	bn3d.bn.running_var = bn3d.bn.running_var.contiguous()
 	"""
+	bn.track_running_stats = True
 	return bn
 
 def inflaterelu(relu3d, relu):

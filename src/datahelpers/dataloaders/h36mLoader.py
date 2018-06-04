@@ -5,7 +5,7 @@ import random
 import numpy as np
 import torch.utils.data as data
 import pickle
-
+import matplotlib.pyplot as plt
 from utils.utils import Rnd, Flip, ShuffleLR
 from utils.img import Crop, DrawGaussian, Transform3D
 
@@ -15,6 +15,7 @@ class h36m(data.Dataset):
 		super(h36m, self).__init__()
 		print("==> Initializing 3D %s data for h36m data" %(split))
 		self.split = split
+		self.opts = opts
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
@@ -27,8 +28,9 @@ class h36m(data.Dataset):
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
+		if self.split=='train':
+			index = np.random.randint(self.nVideos)
 		frame = cv2.imread(path+frameName)
-		
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		
 
@@ -64,6 +66,7 @@ class h36m(data.Dataset):
 			pt = Transform3D(pts_3d[i], c, s, 0, ref.outputRes)
 			if pts_2d[i][0] > 1:
 				outMap[i] = DrawGaussian(outMap[i], pt[:2], ref.hmGauss)
+
 			outReg[i, 2] = pt[2] / ref.outputRes * 2 - 1
 
 		return frame, outMap, pts_2d, outReg, pts_3d_mono
@@ -71,19 +74,17 @@ class h36m(data.Dataset):
 
 
 	def __getitem__(self, index):
-
 		if (self.split == 'train'):
-			index = np.random.randint(self.nVideos)
-
+			index = int(torch.randint(self.nVideos, ()))
+			
 		vidFolder = self.vidFolders[index]
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
 		CountFramesInVid = self.countFrames[index]
-
 		if self.loadConsecutive:
 
-			fpsFac = 1
+			fpsFac = 5
 
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
@@ -91,6 +92,7 @@ class h36m(data.Dataset):
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+
 
 			for i in range(self.nFramesLoad):
 				frameIndex = "{:06d}.jpg".format(fpsFac*(startPt//fpsFac + i) + 1)
@@ -121,6 +123,7 @@ class h36m(data.Dataset):
 				outPts_3d_monos[:,i,:] = pts_3d_mono
 			
 		outOutRegs = outOutRegs[:,:,2:]
+
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 
 	def __len__(self):

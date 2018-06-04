@@ -1,5 +1,4 @@
 import matplotlib
-matplotlib.use('agg')
 import cv2
 import ref
 import torch

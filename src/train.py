@@ -2,17 +2,19 @@ import cv2
 import ref
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
-from model.SoftArgMax import *
 from progress.bar import Bar
+import matplotlib.pyplot as plt
 
-from utils.utils import AverageMeter
 
-#from utils.debugger import Debugger
-from utils.eval import *
+from my import *
 from Losses import *
+from utils.eval import *
+from visualise_model import *
+from utils.utils import *
 
+from model.SoftArgMax import *
 SoftArgMaxLayer = SoftArgMax()
+
 
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	if split == 'train':
@@ -33,15 +35,17 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)
 		reg = output[opt.nStack]
 
-		if opt.DEBUG >= 2:
-			gt = getPreds(target2D.cpu().numpy()) * 4
-			pred = getPreds((output[opt.nStack - 1].data).cpu().numpy()) * 4
-			debugger = Debugger()
-			debugger.addImg((input[0].numpy().transpose(1, 2, 0)*256).astype(np.uint8))
-			debugger.addPoint2D(pred[0], (255, 0, 0))
-			debugger.addPoint2D(gt[0], (0, 0, 255))
-			debugger.showImg()
-			debugger.saveImg('debug/{}.png'.format(i))
+		if opt.DEBUG == 2:
+			for i in range(input_var.shape[2]):
+				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+
+				a = np.zeros((16,3))
+				b = np.zeros((16,3))
+				a[:,:2] = getPreds(targetMaps[:,:,i,:,:].cpu().numpy())
+				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,i,:,:].data.cpu().numpy())
+				visualise3d(b,a,epoch,i)
+
+
 		if ((meta == -1).all()):
 			loss = 0
 		else:
@@ -49,11 +53,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			Loss3D.update(loss.item(), input.size(0))
 
 		for k in range(opt.nStack):
-			#loss += Joints2DArgMaxSquaredError(SoftArgMaxLayer(output[k]), target2D_var)
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
 		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
 
-		acclist = myAccuracy((output[opt.nStack - 1].data).cpu().numpy(), (targetMaps.data).cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
+		Acc.update(tempAcc)
 
 
 		for acc in acclist:
@@ -61,13 +65,27 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 		if ((meta == -1).all()):
 			pass
+			tempMPJPE = 1
 		else:
 			mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
-
+			
 			for l in mplist:
 				mpjpe, num3D = l
 				if num3D > 0:
 					Mpjpe.update(mpjpe, num3D)
+			tempMPJPE = (sum([x*y for x,y in mplist]))/(1.0*sum([y for x,y in mplist]))			
+		
+		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
+			for j in range(input_var.shape[2]):
+				a = np.zeros((16,3))
+				b = np.zeros((16,3))
+				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
+				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
+				b[:,2] = reg[0,:,j,:]
+				a[:,2] = target3D_var[0,:,j,:]
+				visualise3d(b,a,'val-errors',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+
+
 
 		if split == 'train':
 			loss = loss/opt.trainBatch

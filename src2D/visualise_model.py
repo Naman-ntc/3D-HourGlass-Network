@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import os
 import sys
 from  utils.pyTools import Show3d
 import ref
@@ -8,12 +8,10 @@ import numpy as np
 
 
 
-def visualise3d(pred,gt,epoch,iterindex,frame):
+def visualise3d(pred,gt,epoch,iter,frindex,frame):
     
     pred_root_rel = pred[:,:3] - pred[ref.root,:3]
 #    gt_root_rel   = gt[:,:3]   - gt[ref.root, :3]
-    
-    
     gt_length=0
     len_pred=0
     tot_cnt=0
@@ -30,4 +28,5 @@ def visualise3d(pred,gt,epoch,iterindex,frame):
     data={}
     data['joint']=pred_root_rel
     data['gt']=gt
-    Show3d(data,'./Plots/', epoch, iterindex, frame)
+    os.system("mkdir -p Plots/mp%d"%(iter))
+    Show3d(data,'./Plots/mp%d/'%(iter), epoch, frindex, frame)

@@ -82,7 +82,7 @@ class h36m(data.Dataset):
 		CountFramesInVid = self.countFrames[index]
 		if self.loadConsecutive:
 
-			fpsFac = 5
+			fpsFac = 1
 
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 			if self.split == 'val':

@@ -36,7 +36,7 @@ class opts():
 		self.parser.add_argument('-patience', type = int, default = 13, help = 'patience for LR scheduler')
 		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
-		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')
+		self.parser.add_argument('-scheduler', type = int, default = 3, help = 'drop LR')
 
 		self.parser.add_argument('-ratioHM', type = int, default = 5, help = 'weak label data ratio')
 		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')

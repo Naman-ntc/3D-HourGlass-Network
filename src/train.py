@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from my import *
 from Losses import *
 from utils.eval import *
-from visualise_model import *
+from visualise import *
 from utils.utils import *
 
 from model.SoftArgMax import *
@@ -60,21 +60,18 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Acc.update(tempAcc)
 
 
-		for acc in acclist:
-			Acc.update(acc)
-
 		if ((meta == -1).all()):
 			pass
 			tempMPJPE = 1
 		else:
 			mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
-			
+
 			for l in mplist:
 				mpjpe, num3D = l
 				if num3D > 0:
 					Mpjpe.update(mpjpe, num3D)
-			tempMPJPE = (sum([x*y for x,y in mplist]))/(1.0*sum([y for x,y in mplist]))			
-		
+			tempMPJPE = (sum([x*y for x,y in mplist]))/(1.0*sum([y for x,y in mplist]))
+
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
 			for j in range(input_var.shape[2]):
 				a = np.zeros((16,3))

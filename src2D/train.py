@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from my import *
 from Losses import *
 from utils.eval import *
-from visualise_model import *
+from visualise import *
 from utils.utils import *
 
 from model.SoftArgMax import *
@@ -35,16 +35,15 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)[0]
 
 		if opt.DEBUG == 2:
-			print("WHAT")
-			for i in range(input_var.shape[2]):
+			for j in range(input_var.shape[2]):
 				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,i,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,i,:,:].data.cpu().numpy())
-				visualise3d(b,a,epoch,i)
-		
+				visualise3d(b,a,'%d'%(epoch),i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+
 		loss = 0
 		for k in range(opt.nStack):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
@@ -56,7 +55,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 
 		if opt.DEBUG == 3 and (float(tempAcc) < 0.80):
-			print("LEFT")
 			for j in range(input_var.shape[2]):
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))

@@ -44,7 +44,7 @@ def show_2d(img, points, c = 'g'):
 		cv2.line(img, (int(points[e[0], 0]), int(points[e[0], 1])), 
 									(int(points[e[1], 0]), int(points[e[1], 1])), c, 2)
 
-def Show3d(datas,dir_path,epoch,index,frame):
+def Show3d(datas,dir_path,epoch,index,frame, opt):
 	
 	if(type(datas)!=list):
 		datas = [datas]
@@ -83,7 +83,8 @@ def Show3d(datas,dir_path,epoch,index,frame):
 	bx = plt.imshow(frame)
 	#fig.set_dpi(100)
 	fig.savefig(dir_path+'epoch_'+str(epoch)+'index_'+str(index)+'show_3d.png')
-	#plt.show()
+	if opt.DEBUG==2:
+		plt.show()
 	plt.close()
 
 # if __name__ == '__main__':

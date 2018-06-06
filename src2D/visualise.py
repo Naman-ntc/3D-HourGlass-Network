@@ -8,8 +8,8 @@ import numpy as np
 
 
 
-def visualise3d(pred,gt,epoch,iter,frindex,frame):
-    
+def visualise3d(pred,gt,epoch,iter,frindex,frame, opt):
+
     pred_root_rel = pred[:,:3] - pred[ref.root,:3]
 #    gt_root_rel   = gt[:,:3]   - gt[ref.root, :3]
     gt_length=0
@@ -29,4 +29,4 @@ def visualise3d(pred,gt,epoch,iter,frindex,frame):
     data['joint']=pred_root_rel
     data['gt']=gt
     os.system("mkdir -p Plots/mp%d"%(iter))
-    Show3d(data,'./Plots/mp%d/'%(iter), epoch, frindex, frame)
+    Show3d(data,'./Plots/mp%d/'%(iter), epoch, frindex, frame, opt)

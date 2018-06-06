@@ -36,14 +36,17 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		reg = output[opt.nStack]
 
 		if opt.DEBUG == 2:
-			for i in range(input_var.shape[2]):
-				plt.imshow(input_var.data[0,:,i,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-
+			for j in range(input_var.shape[2]):
+				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+				test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
-				a[:,:2] = getPreds(targetMaps[:,:,i,:,:].cpu().numpy())
-				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,i,:,:].data.cpu().numpy())
-				visualise3d(b,a,epoch,i)
+				a[:,:2] = getPreds(targetMaps[:1,:,j,:,:].cpu().numpy())
+				b[:,:2] = getPreds(output[opt.nStack - 1][:1,:,j,:,:].data.cpu().numpy())
+				a[:,2] = target3D[0,:,j,0]
+				b[:,2] = reg[0,:,j,0].data.cpu().numpy()
+				print(a)
+				visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
 
 
 		if ((meta == -1).all()):
@@ -78,9 +81,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
-				b[:,2] = reg[0,:,j,:]
-				a[:,2] = target3D_var[0,:,j,:]
-				visualise3d(b,a,'val-errors',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+				b[:,2] = reg[0,:,j,0]
+				a[:,2] = target3D_var[0,:,j,0]
+				visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 
 

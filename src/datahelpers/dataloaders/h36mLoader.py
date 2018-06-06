@@ -84,14 +84,14 @@ class h36m(data.Dataset):
 		CountFramesInVid = self.countFrames[index]
 		if self.loadConsecutive:
 
-			fpsFac = 5
+			fpsFac = 1
 
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 
 			if self.split == 'val':
-				startPt = 0
+				startPt = 660
 				oldnFramesLoad = self.nFramesLoad
-				self.nFramesLoad = min(120, CountFramesInVid)
+				self.nFramesLoad = min(120, CountFramesInVid - 600)
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))

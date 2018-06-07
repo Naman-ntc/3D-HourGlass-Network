@@ -89,9 +89,9 @@ class h36m(data.Dataset):
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 
 			if self.split == 'val':
-				startPt = opts.startVal
+				startPt = self.opts.startVal
 				oldnFramesLoad = self.nFramesLoad
-				self.nFramesLoad = min(opts.nVal, CountFramesInVid - startPt)
+				self.nFramesLoad = min(self.opts.nVal, CountFramesInVid - startPt)
 				if (self.nFramesLoad <= 0):
 					startPt = CountFramesInVid - 1
 					self.nFramesLoad = 1

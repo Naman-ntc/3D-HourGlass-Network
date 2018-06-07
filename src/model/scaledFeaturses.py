@@ -1,19 +1,16 @@
 import torch.nn as nn
 from .Layers2D import *
+from .Layers3D import *
 
 class scaledFeaturesNet(object):
 	"""docstring for scaledFeaturesNet"""
-	def __init__(self, inChannels, inpScale, config):
+	def __init__(self, inChannels):
 		super(scaledFeaturesNet, self).__init__()
 		self.inChannels = inChannels
-		self.inpScale = inpScale
-		self.layers = []
-		for layer in config:
-			if layer == 'const':
-				self.layers.append(Residual2D(self.inChannels, self.inChannels))
-			if layer == 'half':
-				self.layers.append(Residual2D(self.inChannels, self.inChannels, stride = 2))
-				self.inpScale/=2
+		self.reduceTemporal = nn.AvgPool3d((3,1,1),(2,1,1))
+		self.res1 = Residual3D(inChannels,inChannels)
+		self.res2 = Residual3D(inChannels,inChannels)
+		self.mp = nn.MaxPool3D()
 		self.layers = nn.Sequential(* self.layers)
 
 	def forward(self, input):

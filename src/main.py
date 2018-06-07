@@ -55,9 +55,7 @@ def main():
 
 
 	train_loader = torch.utils.data.DataLoader(
-		h36m('train',opt),
-		#FusionDataset('train',opt),
-		#posetrack('train', opt),
+		FusionDataset('train',opt) if opt.loadMpii else h36m('train',opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,
 		num_workers = int(ref.nThreads)

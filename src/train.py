@@ -99,6 +99,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		bar.next()
 
 	bar.finish()
+	if (opt.completeTest):
+		print("Num Frames : %d"%(input_var.shape[0]*input_var.shape[3]))
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 
 

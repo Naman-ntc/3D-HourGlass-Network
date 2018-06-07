@@ -49,7 +49,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
 
 
-		if ((meta == -1).all()):
+		if ((meta == 0).all()):
 			loss = 0
 			oldloss = 0
 		else:
@@ -65,17 +65,13 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Acc.update(tempAcc)
 
 
-		if ((meta == -1).all()):
-			pass
-			tempMPJPE = 1
-		else:
-			mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
+		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
 
-			for l in mplist:
-				mpjpe, num3D = l
-				if num3D > 0:
-					Mpjpe.update(mpjpe, num3D)
-			tempMPJPE = (sum([x*y for x,y in mplist]))/(1.0*sum([y for x,y in mplist]))
+		for l in mplist:
+			mpjpe, num3D = l
+			if num3D > 0:
+				Mpjpe.update(mpjpe, num3D)
+		tempMPJPE = (sum([x*y for x,y in mplist and y>0]))/(1.0*sum([y for x,y in mplist and y>0]))
 
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
 			for j in range(input_var.shape[2]):

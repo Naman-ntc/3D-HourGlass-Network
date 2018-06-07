@@ -93,8 +93,8 @@ class h36m(data.Dataset):
 				oldnFramesLoad = self.nFramesLoad
 				self.nFramesLoad = min(self.opts.nVal, CountFramesInVid - startPt)
 				if (self.nFramesLoad <= 0):
-					startPt = CountFramesInVid - 1
-					self.nFramesLoad = 1
+					startPt = CountFramesInVid - opts.nRegFrames - 1
+					self.nFramesLoad = opts.nRegFrames
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))

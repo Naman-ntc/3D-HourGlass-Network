@@ -71,7 +71,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			mpjpe, num3D = l
 			if num3D > 0:
 				Mpjpe.update(mpjpe, num3D)
-		tempMPJPE = (sum([x*y for x,y in mplist and y>0]))/(1.0*sum([y for x,y in mplist and y>0]))
+		tempMPJPE = (sum([(x*y if y>0 else 0) for x,y in mplist]))/(1.0*sum([(y if y>0 else 0) for x,y in mplist])) if (1.0*sum([(y if y>0 else 0) for x,y in mplist])) > 0 else 0
 
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
 			for j in range(input_var.shape[2]):

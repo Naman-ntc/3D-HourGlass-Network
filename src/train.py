@@ -51,13 +51,15 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 		if ((meta == -1).all()):
 			loss = 0
+			oldloss = 0
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
+			oldloss = loss.item()
 			Loss3D.update(loss.item(), input.size(0))
 
 		for k in range(opt.nStack):
 			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
-		Loss2D.update(loss.item() - Loss3D.val, input.size(0))
+		Loss2D.update(loss.item() - oldloss, input.size(0))
 
 		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
 		Acc.update(tempAcc)

@@ -41,11 +41,11 @@ class opts():
 		self.parser.add_argument('-ratioHM', type = int, default = 5, help = 'weak label data ratio')
 		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
-		self.parser.add_argument('-loadMpii', type = int, default = 120, help = 'weak label data ratio')
+		self.parser.add_argument('-loadMpii', action = 'store_true', help = 'test')
 
 		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'weak label data ratio')
 		self.parser.add_argument('-startVal', type = int, default = 660, help = 'weak label data ratio')
-		self.parser.add_argument('-nVal', action = 'store_true', help = 'test')
+		self.parser.add_argument('-nVal', type = int, default = 120, help = 'weak label data ratio')
 
 	def parse(self):
 		self.init()

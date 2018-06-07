@@ -40,6 +40,15 @@ def main():
 		num_workers = int(ref.nThreads)
 	)
 
+	
+	if opt.completeTest:
+		for i in range(6000//opt.nVal):
+			opt.startVal = 120*i
+			opt.nVal = opt.nVal
+			val(0, opt, val_loader, model)
+		
+
+
 	if (opt.test):
 		val(0, opt, val_loader, model)
 		return

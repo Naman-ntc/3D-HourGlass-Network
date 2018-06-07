@@ -89,9 +89,12 @@ class h36m(data.Dataset):
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
 
 			if self.split == 'val':
-				startPt = 660
+				startPt = opts.startVal
 				oldnFramesLoad = self.nFramesLoad
-				self.nFramesLoad = min(120, CountFramesInVid - 600)
+				self.nFramesLoad = min(opts.nVal, CountFramesInVid - startPt)
+				if (self.nFramesLoad <= 0):
+					startPt = CountFramesInVid - 1
+					self.nFramesLoad = 1
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))

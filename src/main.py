@@ -30,7 +30,11 @@ def main():
 	elif opt.loadModel == 'scratch':
 		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
 	else :
-		model = torch.load(opt.loadModel).cuda()
+		if opt.isStateDict:
+			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
+			model.load_state_dict(torch.load(opt.loadModel)).cuda()
+		else:	
+			model = torch.load(opt.loadModel).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(

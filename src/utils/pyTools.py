@@ -83,7 +83,7 @@ def Show3d(datas,dir_path,epoch,index,frame):
 	bx = plt.imshow(frame)
 	#fig.set_dpi(100)
 	fig.savefig(dir_path+'epoch_'+str(epoch)+'index_'+str(index)+'show_3d.png')
-	plt.show()
+	#plt.show()
 	plt.close()
 
 # if __name__ == '__main__':

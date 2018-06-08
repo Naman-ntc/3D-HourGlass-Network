@@ -28,5 +28,5 @@ def visualise3d(pred,gt,epoch,iter,frindex,frame):
     data={}
     data['joint']=pred_root_rel
     data['gt']=gt
-    os.system("mkdir -p Plots/xingy%d"%(iter))
-    Show3d(data,'./Plots/xingy%d/'%(iter), epoch, frindex, frame)
+    os.system("mkdir -p Plots/weird%d"%(iter))
+    Show3d(data,'./Plots/weird%d/'%(iter), epoch, frindex, frame)

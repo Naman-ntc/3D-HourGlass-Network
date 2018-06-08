@@ -94,7 +94,7 @@ def main():
 		# 	logger.scalar_summary('acc_val', acc_val, epoch)
 			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
 			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
-			torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
+			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
 			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
 		else:
 			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))

@@ -57,8 +57,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 			oldloss = loss.item()
-			if loss > 10:
-				continue
+			#if loss > 10:
+			#	continue
 			"""
 			print(oldloss)
 			if oldloss > 500:

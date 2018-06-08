@@ -25,12 +25,13 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
-
+	totalFrames = 0
 	for i, (input, targetMaps, target2D, target3D, meta) in enumerate(dataLoader):
 		input_var = (input).float().cuda()
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
+		totalFrames += input_var.shape[0]*input_var.shape[2]
 		model = model.float()
 		output = model(input_var)
 		reg = output[opt.nStack]
@@ -38,23 +39,33 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		if opt.DEBUG == 2:
 			for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-				test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
+				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:1,:,j,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:1,:,j,:,:].data.cpu().numpy())
 				a[:,2] = target3D[0,:,j,0]
 				b[:,2] = reg[0,:,j,0].data.cpu().numpy()
-				print(a)
+				#print(a)
 				visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
 
 
 		if ((meta == 0).all()):
 			loss = 0
 			oldloss = 0
+			#print("Sorry")
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 			oldloss = loss.item()
+			if loss > 10:
+				continue
+			"""
+			print(oldloss)
+			if oldloss > 500:
+				print(target3D_var)
+				print(reg)
+				break
+			"""
 			Loss3D.update(loss.item(), input.size(0))
 
 		for k in range(opt.nStack):
@@ -98,7 +109,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	bar.finish()
 	if (opt.completeTest):
-		print("Num Frames : %d"%(input_var.shape[0]*input_var.shape[3]))
+		print("Num Frames : %d"%(totalFrames))
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 
 

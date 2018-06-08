@@ -1,3 +1,4 @@
+from  __future__ import print_function
 import cv2
 import ref
 import torch
@@ -27,14 +28,22 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	bar = Bar('==>', max=nIters)
 
 	for i, (input, targetMaps, target2D, target3D, meta) in enumerate(dataLoader):
-		input_var = torch.autograd.Variable(input).float().cuda()
-		targetMaps = torch.autograd.Variable(targetMaps).float().cuda()
-		target2D_var = torch.autograd.Variable(target2D).float().cuda()
-		target3D_var = torch.autograd.Variable(target3D).float().cuda()
-		model = model.float()
+		if split == 'train':
+			input_var = torch.autograd.Variable(input).float().cuda()
+			targetMaps = torch.autograd.Variable(targetMaps).float().cuda()
+			target2D_var = torch.autograd.Variable(target2D).float().cuda()
+			target3D_var = torch.autograd.Variable(target3D).float().cuda()
+		else:
+			input_var = torch.autograd.Variable(input,volatile=True).float().cuda()
+			targetMaps = torch.autograd.Variable(targetMaps,volatile=True).float().cuda()
+			target2D_var = torch.autograd.Variable(target2D,volatile=True).float().cuda()
+			target3D_var = torch.autograd.Variable(target3D,volatile=True).float().cuda()
+
+		model = model.float().cuda()
 		output = model(input_var)
 		reg = output[opt.nStack]
-
+		#print(reg.data.type())
+		#print([i.data.type() for i in output])
 		if opt.DEBUG == 2:
 			for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
@@ -50,18 +59,18 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 
 		if ((meta == 0).all()):
-			loss = 0
+			loss = torch.autograd.Variable(torch.Tensor([0])).cuda()
 			oldloss = 0
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
-			oldloss = loss.item()
-			Loss3D.update(loss.item(), input.size(0))
-
+			oldloss = float((loss).detach())
+			Loss3D.update(oldloss, input.size(0))
+		#print(loss.data.type())
 		for k in range(opt.nStack):
-			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
-		Loss2D.update(loss.item() - oldloss, input.size(0))
-
-		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
+			loss = loss + Joints2DHeatMapsSquaredError(output[k], targetMaps)
+		Loss2D.update(float(loss.detach()) - oldloss, input.size(0))
+		#print(loss.data.type())
+		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps.data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
 		Acc.update(tempAcc)
 
 
@@ -105,5 +114,5 @@ def train(epoch, opt, train_loader, model, optimizer):
 	return step('train', epoch, opt, train_loader, model, optimizer)
 
 def val(epoch, opt, val_loader, model):
-	with torch.no_grad():
-		return step('val', epoch, opt, val_loader, model)
+	#with torch.no_grad():
+	return step('val', epoch, opt, val_loader, model)

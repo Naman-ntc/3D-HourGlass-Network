@@ -45,4 +45,4 @@ def inflate(opt = None):
 	return model3d
 
 
-inflate()
+#inflate()

@@ -16,7 +16,7 @@ from datahelpers.dataloaders.posetrackLoader import posetrack
 from utils.utils import adjust_learning_rate
 from utils.logger import Logger
 
-from train import train,val
+from oldtrain import train,val
 from inflateScript import *
 
 
@@ -69,16 +69,6 @@ def main():
 		weight_decay = ref.weightDecay, 
 		momentum = ref.momentum
 	)
-	def hookdef(grad):
-		newgrad = grad
-		if (grad.shape[2]==1):
-			newgrad = 0
-		else:
-			newgrad[:,:,1,:,:] = 0
-
-	for i in (model.parameters()):
-		if len(i.shape)==5:
-			_ = i.register_hook(hookdef)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 

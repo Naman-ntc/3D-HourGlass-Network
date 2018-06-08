@@ -15,6 +15,7 @@ class opts():
 
 		self.parser.add_argument('-loadModel', default = 'none', help = 'Provide full path to a previously trained model')
 		self.parser.add_argument('-Model2D', default = 'models/hgreg-3d.pth', help = 'Provide full path to a model to inflate')
+		self.parser.add_argument('-isStateDict', default = 0, help = 'Whether the model to be loaded is stateDict')
 
 		self.parser.add_argument('-nChannels', type = int, default = 128, help = '# features in the hourglass')
 		self.parser.add_argument('-nStack', type = int, default = 2, help = '# hourglasses to stack')

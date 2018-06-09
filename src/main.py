@@ -48,11 +48,16 @@ def main():
 
 	
 	if opt.completeTest:
+		mp = 0.
+		cnt = 0.
 		for i in range(6000//opt.nVal):
 			opt.startVal = 120*i
 			opt.nVal = opt.nVal
-			val(0, opt, val_loader, model)
-
+			a,b = val(0, opt, val_loader, model)
+			mp += a*b
+			cnt += b
+		print("------Finally--------")
+		print("Final MPJPE ==> :" +  str(mp/cnt))	
 
 
 	if (opt.test):

@@ -32,8 +32,10 @@ def main():
 	else :
 		if opt.isStateDict:
 			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
-			model.load_state_dict(torch.load(opt.loadModel)).cuda()
-		else:	
+			model.load_state_dict(torch.load(opt.loadModel))
+			model = model.cuda()
+			print("yaya")
+		else:
 			model = torch.load(opt.loadModel).cuda()
 
 
@@ -50,7 +52,7 @@ def main():
 			opt.startVal = 120*i
 			opt.nVal = opt.nVal
 			val(0, opt, val_loader, model)
-		
+
 
 
 	if (opt.test):

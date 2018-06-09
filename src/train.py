@@ -19,6 +19,7 @@ SoftArgMaxLayer = SoftArgMax()
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	if split == 'train':
 		model.train()
+		model.apply(set_bn_eval)
 	else:
 		model.eval()
 	Loss2D, Loss3D, Mpjpe, Acc = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
@@ -35,7 +36,11 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		model = model.float()
 		output = model(input_var)
 		reg = output[opt.nStack]
-
+		#print(input_var.norm())
+		#print(model.hg.convStart(input_var).norm())
+		#print(reg.norm())
+		#print(model.hg.res1.cb.cbr2.conv.weight.norm())
+		#print(model.dr.fc.weight.norm())
 		if opt.DEBUG == 2:
 			for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
@@ -44,7 +49,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:1,:,j,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:1,:,j,:,:].data.cpu().numpy())
-				a[:,2] = target3D[0,:,j,0]
+				a[:,2] = target3D[0,:,j,0].cpu().numpy()
 				b[:,2] = reg[0,:,j,0].data.cpu().numpy()
 				#print(a)
 				visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
@@ -85,14 +90,16 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		tempMPJPE = (sum([(x*y if y>0 else 0) for x,y in mplist]))/(1.0*sum([(y if y>0 else 0) for x,y in mplist])) if (1.0*sum([(y if y>0 else 0) for x,y in mplist])) > 0 else 0
 
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
+			#print(i)
 			for j in range(input_var.shape[2]):
+				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
 				a = np.zeros((16,3))
 				b = np.zeros((16,3))
 				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
 				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
-				b[:,2] = reg[0,:,j,0]
-				a[:,2] = target3D_var[0,:,j,0]
-				visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+				b[:,2] = reg[0,:,j,0].detach().cpu().numpy()
+				a[:,2] = target3D_var[0,:,j,0].cpu().numpy()
+				#visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 
 
@@ -104,7 +111,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
 
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | PCKh {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe, PCKh = Acc)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | ACC {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe, PCKh = Acc)
 		bar.next()
 
 	bar.finish()

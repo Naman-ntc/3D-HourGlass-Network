@@ -76,7 +76,6 @@ class h36m(data.Dataset):
 	def __getitem__(self, index):
 		#if (self.split == 'train'):
 		#	index = int(torch.randint(self.nVideos, ()))
-			
 		vidFolder = self.vidFolders[index]
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
@@ -100,7 +99,6 @@ class h36m(data.Dataset):
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
 			outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
-
 
 			for i in range(self.nFramesLoad):
 				frameIndex = "{:06d}.jpg".format(fpsFac*(startPt//fpsFac + i) + 1)

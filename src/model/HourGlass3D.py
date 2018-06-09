@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 from .Layers3D import *
 
+def help(x):
+        print(x.std(dim=2).mean())
+
+
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
 	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = (1,2,2)):
@@ -70,22 +74,26 @@ class Hourglass3D(nn.Module):
 
 	def forward(self, input):
 		out1 = input
+		#help(out1)
 		out1 = self.skip(out1)
-
+		#print('skip %d'%(self.numReductions))
+		#help(out1)
 		out2 = input
 		
 		out2 = self.mp(out2)
 		
 		out2 = self.afterpool(out2)
-
+		#print('out2 %d'%(self.numReductions))
+		#help(out2)
 		if self.numReductions>1:
 			out2 = self.hg(out2)
 		else:
 			out2 = self.num1res(out2)
-
+		#help(out2)
 		out2 = self.lowres(out2)
+		#help(out2)
 		out2 = self.up(out2)
-
+		#help(out2)
 		# if (out2.size()[2] != out1.size()[2]):
 		# 	out2 = self.addTemporal(out2)
 

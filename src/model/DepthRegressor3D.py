@@ -22,6 +22,8 @@ class DepthRegressor3D(nn.Module):
 
 	def forward(self, input):
 		out = self.reg(input)
+		#print('regout')
+		#print(out.std(dim=2).mean())
 		N = out.size()[0]
 		D = out.size()[2]
 		slides = D/ self.nRegFrames

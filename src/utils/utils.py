@@ -35,3 +35,9 @@ def ShuffleLR(x):
   for e in ref.shuffleRef:
     x[e[0]], x[e[1]] = x[e[1]].copy(), x[e[0]].copy()
   return x
+
+
+def set_bn_eval(m):
+    classname = m.__class__.__name__
+    if classname.find('BatchNorm') != -1:
+      m.eval()

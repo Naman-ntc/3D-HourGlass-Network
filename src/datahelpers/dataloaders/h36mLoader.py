@@ -24,12 +24,11 @@ class h36m(data.Dataset):
 		self.root = 7
 
 		self.nVideos = (self.vidFolders).shape[0]
+		self.delList = [0]*self.nVideos
 
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
-		if self.split=='train':
-			index = np.random.randint(self.nVideos)
 		frame = cv2.imread(path+frameName)
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		
@@ -57,7 +56,6 @@ class h36m(data.Dataset):
 
 		pts_3d[7,:] = (pts_3d[12,:] + pts_3d[13,:]) / 2
 
-
 		frame = Crop(frame, c, s, 0, ref.inputRes) / 256.
 
 		outMap = np.zeros((ref.nJoints, ref.outputRes, ref.outputRes))
@@ -74,9 +72,18 @@ class h36m(data.Dataset):
 
 
 	def __getitem__(self, index):
-		#if (self.split == 'train'):
-		#	index = int(torch.randint(self.nVideos, ()))
+		# if (self.split == 'train'):
+		# 	index = int(torch.randint(self.nVideos, ()))
 		vidFolder = self.vidFolders[index]
+		if self.split == 'val':
+			if self.delList[index] == 1:
+				inpFrames = -1*np.ones((3,self.nFramesLoad,256,256))
+				outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
+				outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
+				outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
+				outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+				return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
+
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
@@ -94,9 +101,9 @@ class h36m(data.Dataset):
 				if (self.nFramesLoad <= 0):
 					startPt = CountFramesInVid -self. opts.nRegFrames - 1
 					self.nFramesLoad = self.opts.nRegFrames
-					#self.vidFolders = np.delete(self.vidFolders, index)
-					#self.countFrames = np.delete(self.countFrames, index)
-					#self.nVideos -= 1
+					if opts.completeTest:
+						self.delList[(index)] = 1
+					
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
@@ -141,3 +148,5 @@ class h36m(data.Dataset):
 
 	def __len__(self):
 		return self.nVideos
+
+	

@@ -28,6 +28,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	bar = Bar('==>', max=nIters)
 	totalFrames = 0
 	for i, (input, targetMaps, target2D, target3D, meta) in enumerate(dataLoader):
+		if (split == 'val'):
+			if (input == -1).all():
+				continue
 		input_var = (input).float().cuda()
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
@@ -36,41 +39,27 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		model = model.float()
 		output = model(input_var)
 		reg = output[opt.nStack]
-		#print(input_var.norm())
-		#print(model.hg.convStart(input_var).norm())
-		#print(reg.norm())
-		#print(model.hg.res1.cb.cbr2.conv.weight.norm())
-		#print(model.dr.fc.weight.norm())
 		if opt.DEBUG == 2:
-			for j in range(input_var.shape[2]):
+			writeCSV('../CSV/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta))
+			# for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
-				a = np.zeros((16,3))
-				b = np.zeros((16,3))
-				a[:,:2] = getPreds(targetMaps[:1,:,j,:,:].cpu().numpy())
-				b[:,:2] = getPreds(output[opt.nStack - 1][:1,:,j,:,:].data.cpu().numpy())
-				a[:,2] = target3D[0,:,j,0].cpu().numpy()
-				b[:,2] = reg[0,:,j,0].data.cpu().numpy()
-				#print(a)
-				visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
+				# a = np.zeros((16,3))
+				# b = np.zeros((16,3))
+				# a[:,:2] = getPreds(targetMaps[:1,:,j,:,:].cpu().numpy())
+				# b[:,:2] = getPreds(output[opt.nStack - 1][:1,:,j,:,:].data.cpu().numpy())
+				# a[:,2] = target3D[0,:,j,0].cpu().numpy()
+				# b[:,2] = reg[0,:,j,0].data.cpu().numpy()
+				# visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
+
 
 
 		if ((meta == 0).all()):
 			loss = 0
 			oldloss = 0
-			#print("Sorry")
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
 			oldloss = loss.item()
-			#if loss > 10:
-			#	continue
-			"""
-			print(oldloss)
-			if oldloss > 500:
-				print(target3D_var)
-				print(reg)
-				break
-			"""
 			Loss3D.update(loss.item(), input.size(0))
 
 		for k in range(opt.nStack):
@@ -90,16 +79,15 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		tempMPJPE = (sum([(x*y if y>0 else 0) for x,y in mplist]))/(1.0*sum([(y if y>0 else 0) for x,y in mplist])) if (1.0*sum([(y if y>0 else 0) for x,y in mplist])) > 0 else 0
 
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
-			#print(i)
-			for j in range(input_var.shape[2]):
-				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
-				a = np.zeros((16,3))
-				b = np.zeros((16,3))
-				a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
-				b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
-				b[:,2] = reg[0,:,j,0].detach().cpu().numpy()
-				a[:,2] = target3D_var[0,:,j,0].cpu().numpy()
-				#visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
+			# for j in range(input_var.shape[2]):
+			# 	#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)
+			# 	a = np.zeros((16,3))
+			# 	b = np.zeros((16,3))
+			# 	a[:,:2] = getPreds(targetMaps[:,:,j,:,:].cpu().numpy())
+			# 	b[:,:2] = getPreds(output[opt.nStack - 1][:,:,j,:,:].data.cpu().numpy())
+			# 	b[:,2] = reg[0,:,j,0].detach().cpu().numpy()
+			# 	a[:,2] = target3D_var[0,:,j,0].cpu().numpy()
+			# 	visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 
 
 
@@ -117,6 +105,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	bar.finish()
 	if (opt.completeTest):
 		print("Num Frames : %d"%(totalFrames))
+		#dataLoader.recycle()
 		return Mpjpe.avg, totalFrames
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 

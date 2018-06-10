@@ -94,8 +94,9 @@ class h36m(data.Dataset):
 				if (self.nFramesLoad <= 0):
 					startPt = CountFramesInVid -self. opts.nRegFrames - 1
 					self.nFramesLoad = self.opts.nRegFrames
-					self.vidFolders = np.delete(self.vidFolders, index)
-					self.nVideos -= 1
+					#self.vidFolders = np.delete(self.vidFolders, index)
+					#self.countFrames = np.delete(self.countFrames, index)
+					#self.nVideos -= 1
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))

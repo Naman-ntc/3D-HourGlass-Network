@@ -53,12 +53,12 @@ def main():
 		for i in range(6000//opt.nVal):
 			opt.startVal = 120*i
 			opt.nVal = opt.nVal
-			a,b = val(0, opt, val_loader, model)
+			a,b = val(i, opt, val_loader, model)
 			mp += a*b
 			cnt += b
 		print("------Finally--------")
 		print("Final MPJPE ==> :" +  str(mp/cnt))	
-
+		return
 
 	if (opt.test):
 		val(0, opt, val_loader, model)

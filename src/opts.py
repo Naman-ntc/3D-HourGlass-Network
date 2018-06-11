@@ -28,11 +28,11 @@ class opts():
 		self.parser.add_argument('-freezeBN', type = int, default = 1, help = '# freeze the BatchNorm Layers')
 		
 		self.parser.add_argument('-nEpochs', type = int, default = 120, help = '#training epochs')
-		self.parser.add_argument('-valIntervals', type = int, default = 2, help = '#valid intervel')
-		self.parser.add_argument('-trainBatch', type = int, default = 2, help = '#Mini-batch size')
-		self.parser.add_argument('-dataloaderSize', type = int, default = 2, help = '#Mini-batch size')
+		self.parser.add_argument('-valIntervals', type = int, default = 4, help = '#valid intervel')
+		self.parser.add_argument('-trainBatch', type = int, default = 1, help = '#Mini-batch size')
+		self.parser.add_argument('-dataloaderSize', type = int, default = 1, help = '#Mini-batch size')
 
-		self.parser.add_argument('-nFramesLoad', type = int, default = 16, help = '#Frames per video to consider')
+		self.parser.add_argument('-nFramesLoad', type = int, default = 6, help = '#Frames per video to consider')
 		self.parser.add_argument('-loadConsecutive', default=1, type = int, help = '#Load frames consecutively or sampling')
 
 		self.parser.add_argument('-LRhg', type = float, default = 2.5e-5, help = 'Learning Rate')
@@ -42,7 +42,7 @@ class opts():
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
 		self.parser.add_argument('-scheduler', type = int, default = 3, help = 'drop LR')
 
-		self.parser.add_argument('-ratioHM', type = int, default = 5, help = 'weak label data ratio')
+		self.parser.add_argument('-ratioHM', type = int, default = 1, help = 'weak label data ratio')
 		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
 		self.parser.add_argument('-loadMpii', action = 'store_true', help = 'test')

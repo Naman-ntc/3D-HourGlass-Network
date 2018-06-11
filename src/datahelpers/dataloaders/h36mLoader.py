@@ -5,7 +5,7 @@ import random
 import numpy as np
 import torch.utils.data as data
 import pickle
-
+import matplotlib.pyplot as plt
 from utils.utils import Rnd, Flip, ShuffleLR
 from utils.img import Crop, DrawGaussian, Transform3D
 
@@ -15,6 +15,7 @@ class h36m(data.Dataset):
 		super(h36m, self).__init__()
 		print("==> Initializing 3D %s data for h36m data" %(split))
 		self.split = split
+		self.opts = opts
 		self.nFramesLoad = opts.nFramesLoad
 		self.loadConsecutive = opts.loadConsecutive
 		self.vidFolders = np.load(ref.h36mDataDir + "/vid_" + split + ".npy")
@@ -23,12 +24,12 @@ class h36m(data.Dataset):
 		self.root = 7
 
 		self.nVideos = (self.vidFolders).shape[0]
+		self.delList = [0]*self.nVideos
 
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
 		frame = cv2.imread(path+frameName)
-		
 		pts_2d, pts_3d, pts_3d_mono = pickle.load(open(path + "data.pkl",'rb'))[int(frameName[-10:-4])]
 		
 
@@ -55,7 +56,6 @@ class h36m(data.Dataset):
 
 		pts_3d[7,:] = (pts_3d[12,:] + pts_3d[13,:]) / 2
 
-
 		frame = Crop(frame, c, s, 0, ref.inputRes) / 256.
 
 		outMap = np.zeros((ref.nJoints, ref.outputRes, ref.outputRes))
@@ -64,6 +64,7 @@ class h36m(data.Dataset):
 			pt = Transform3D(pts_3d[i], c, s, 0, ref.outputRes)
 			if pts_2d[i][0] > 1:
 				outMap[i] = DrawGaussian(outMap[i], pt[:2], ref.hmGauss)
+
 			outReg[i, 2] = pt[2] / ref.outputRes * 2 - 1
 
 		return frame, outMap, pts_2d, outReg, pts_3d_mono
@@ -71,21 +72,38 @@ class h36m(data.Dataset):
 
 
 	def __getitem__(self, index):
-
-		if (self.split == 'train'):
-			index = np.random.randint(self.nVideos)
-
+		# if (self.split == 'train'):
+		# 	index = int(torch.randint(self.nVideos, ()))
 		vidFolder = self.vidFolders[index]
+		if self.split == 'val':
+			if self.delList[index] == 1:
+				inpFrames = -1*np.ones((3,self.nFramesLoad,256,256))
+				outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
+				outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
+				outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
+				outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
+				return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
+
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
 		CountFramesInVid = self.countFrames[index]
-
 		if self.loadConsecutive:
 
 			fpsFac = 1
 
 			startPt = random.randint(1, CountFramesInVid - fpsFac*(self.nFramesLoad + 2))
+
+			if self.split == 'val':
+				startPt = self.opts.startVal
+				oldnFramesLoad = self.nFramesLoad
+				self.nFramesLoad = min(self.opts.nVal, self.opts.nRegFrames*((CountFramesInVid - startPt)//self.opts.nRegFrames))
+				if (self.nFramesLoad <= 0):
+					startPt = CountFramesInVid -self. opts.nRegFrames - 1
+					self.nFramesLoad = self.opts.nRegFrames
+					if opts.completeTest:
+						self.delList[(index)] = 1
+					
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
 			outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
@@ -100,6 +118,10 @@ class h36m(data.Dataset):
 				outPts_2ds[:,i,:] = pts_2d
 				outOutRegs[:,i,:] = outReg
 				outPts_3d_monos[:,i,:] = pts_3d_mono
+			
+			if self.split == 'val':
+				self.nFramesLoad = oldnFramesLoad
+
 		else :
 
 			frameIndices = np.random.permutation(CountFramesInVid)
@@ -121,7 +143,10 @@ class h36m(data.Dataset):
 				outPts_3d_monos[:,i,:] = pts_3d_mono
 			
 		outOutRegs = outOutRegs[:,:,2:]
+
 		return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
 
 	def __len__(self):
 		return self.nVideos
+
+	

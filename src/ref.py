@@ -34,3 +34,4 @@ h36mDataDir = dataDir + 'h36m'
 mpiiDataDir = dataDir + 'mpii'
 posetrackDataDir = dataDir + 'posetrack'
 nThreads = 4
+root = 7

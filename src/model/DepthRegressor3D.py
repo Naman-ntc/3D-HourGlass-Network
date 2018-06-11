@@ -22,10 +22,12 @@ class DepthRegressor3D(nn.Module):
 
 	def forward(self, input):
 		out = self.reg(input)
+		#print('regout')
+		#print(out.std(dim=2).mean())
 		N = out.size()[0]
 		D = out.size()[2]
 		slides = D/ self.nRegFrames
-		z = torch.zeros(N, self.nJoints, D, 1)
+		z = torch.autograd.Variable(torch.zeros(N, self.nJoints, D, 1)).cuda()
 		for i in range(int(slides)):
 			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].transpose(1,2).contiguous().view(N, -1)
 			temp2 = self.fc(temp1).view(N,self.nRegFrames, self.nJoints).transpose(1,2).unsqueeze(-1)

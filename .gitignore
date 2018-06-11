@@ -2,6 +2,7 @@ models/
 data/
 *.pth
 exp/
+Plots/
 
 #Byte-compiled / optimized / DLL files
 __pycache__/

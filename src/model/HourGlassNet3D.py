@@ -1,7 +1,13 @@
+from __future__ import print_function
 import torch
 import torch.nn as nn
 from .Layers3D import *
 from .HourGlass3D import *
+
+
+def help(x):
+	print(x.std(dim=2).mean())
+
 
 class HourglassNet3D(nn.Module):
 	"""docstring for HourglassNet3D"""
@@ -47,21 +53,33 @@ class HourglassNet3D(nn.Module):
 
 	def forward(self, input):
 		x = input
+		#help(x)
 		x = self.convStart(x)
 		x = self.bnStart(x)
 		x = self.reluStart(x)
+		#print('res1')
 		x = self.res1(x)
 		x = self.mp(x)
+		#print('res2')
 		x = self.res2(x)
+		#print('res3')
 		x = self.res3(x)
-		
+		#help(x)
 		out = []
 
 		for i in range(self.nStack):
 			x1 = self.hourglass[i](x)
+			#print('hourglass -stack')
+			#help(x1)
 			x1 = self.Residual[i](x1)
+			#print("Residual GP")
+			#help(x1)
 			x1 = self.lin1[i](x1)
+			#print('lin1')
+			#help(x1)
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
 			x = x + x1 + self.jointstochan[i](out[i])
+		#print('before-dr')
+		#help(x)
 		return (out,x)

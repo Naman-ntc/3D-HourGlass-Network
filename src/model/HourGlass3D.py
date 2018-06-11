@@ -2,9 +2,13 @@ import torch
 import torch.nn as nn
 from .Layers3D import *
 
+def help(x):
+        print(x.std(dim=2).mean())
+
+
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (2,2,2), poolStride = (2,2,2), upSampleKernel = 2):
+	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = (1,2,2)):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules
@@ -60,32 +64,37 @@ class Hourglass3D(nn.Module):
 		Upsampling Layer (Can we change this??????)  
 		As per Newell's paper upsamping recommended
 		"""
-		self.up = nn.Upsample(scale_factor = self.upSampleKernel)
+		self.up = nn.Upsample(scale_factor = self.upSampleKernel, mode = 'trilinear')
 		
 		"""
 		If temporal dimension is odd then after upsampling add a dimension temporally
 		doing this via 2 kernel 1D convolution with 1 padding along the temporal direction
 		"""
-		self.addTemporal = nn.ReplicationPad3d((0,0,0,0,0,1))
+		#self.addTemporal = nn.ReplicationPad3d((0,0,0,0,0,1))
 
 	def forward(self, input):
 		out1 = input
+		#help(out1)
 		out1 = self.skip(out1)
-
+		#print('skip %d'%(self.numReductions))
+		#help(out1)
 		out2 = input
+		
 		out2 = self.mp(out2)
-
+		
 		out2 = self.afterpool(out2)
-
+		#print('out2 %d'%(self.numReductions))
+		#help(out2)
 		if self.numReductions>1:
 			out2 = self.hg(out2)
 		else:
 			out2 = self.num1res(out2)
-
+		#help(out2)
 		out2 = self.lowres(out2)
+		#help(out2)
 		out2 = self.up(out2)
-
-		if (out2.size()[2] != out1.size()[2]):
-			out2 = self.addTemporal(out2)
+		#help(out2)
+		# if (out2.size()[2] != out1.size()[2]):
+		# 	out2 = self.addTemporal(out2)
 
 		return out2 + out1	

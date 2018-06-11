@@ -72,7 +72,10 @@ def inflatehourglass(model3d, model):
 	return
 
 def inflateconv(conv3d, conv):
-	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()) * (1./(conv3d.weight.data.shape[2]))
+	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() #* (1./(conv3d.weight.data.shape[2]))
+	if conv3d.weight.data.shape[2] == 3:
+		conv3d.weight.data[:,:,0,:,:] *= 0.1
+		conv3d.weight.data[:,:,2,:,:] *= -0.1
 	conv3d.bias.data = conv.bias.data
 	conv3d.weight.data = conv3d.weight.data.contiguous()
 	conv3d.bias.data = conv3d.bias.data.contiguous()
@@ -89,6 +92,7 @@ def inflatebn(bn3d, bn):
 	bn3d.bn.running_mean = bn3d.bn.running_mean.contiguous()
 	bn3d.bn.running_var = bn3d.bn.running_var.contiguous()
 	"""
+	bn.track_running_stats = True
 	return bn
 
 def inflaterelu(relu3d, relu):

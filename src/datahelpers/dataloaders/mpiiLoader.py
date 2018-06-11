@@ -81,7 +81,7 @@ class mpii(data.Dataset):
 		b = np.repeat(b[:,None,:,:],self.nFramesLoad,axis=1)
 		c = np.repeat(c[:,None,2:],self.nFramesLoad,axis=1)
 		d = np.repeat(d[:,None,:2],self.nFramesLoad,axis=1)
-		e = -1*np.ones((ref.nJoints,self.nFramesLoad,3))
+		e = np.zeros((ref.nJoints,self.nFramesLoad,3))
 		return (a,b,d,c,e)
 
 	def __len__(self):

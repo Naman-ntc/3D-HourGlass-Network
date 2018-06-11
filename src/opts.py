@@ -15,6 +15,7 @@ class opts():
 
 		self.parser.add_argument('-loadModel', default = 'none', help = 'Provide full path to a previously trained model')
 		self.parser.add_argument('-Model2D', default = 'models/hgreg-3d.pth', help = 'Provide full path to a model to inflate')
+		self.parser.add_argument('-isStateDict', default = 0, help = 'Whether the model to be loaded is stateDict')
 
 		self.parser.add_argument('-nChannels', type = int, default = 128, help = '# features in the hourglass')
 		self.parser.add_argument('-nStack', type = int, default = 2, help = '# hourglasses to stack')
@@ -36,12 +37,16 @@ class opts():
 		self.parser.add_argument('-patience', type = int, default = 13, help = 'patience for LR scheduler')
 		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler')
-		self.parser.add_argument('-scheduler', type = int, default = 1, help = 'drop LR')
+		self.parser.add_argument('-scheduler', type = int, default = 3, help = 'drop LR')
 
 		self.parser.add_argument('-ratioHM', type = int, default = 5, help = 'weak label data ratio')
 		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
 		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
+		self.parser.add_argument('-loadMpii', action = 'store_true', help = 'test')
 
+		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'weak label data ratio')
+		self.parser.add_argument('-startVal', type = int, default = 660, help = 'weak label data ratio')
+		self.parser.add_argument('-nVal', type = int, default = 120, help = 'weak label data ratio')
 
 	def parse(self):
 		self.init()

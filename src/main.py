@@ -30,7 +30,13 @@ def main():
 	elif opt.loadModel == 'scratch':
 		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
 	else :
-		model = torch.load(opt.loadModel).cuda()
+		if opt.isStateDict:
+			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
+			model.load_state_dict(torch.load(opt.loadModel))
+			model = model.cuda()
+			print("yaya")
+		else:
+			model = torch.load(opt.loadModel).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(
@@ -40,14 +46,27 @@ def main():
 		num_workers = int(ref.nThreads)
 	)
 
+	
+	if opt.completeTest:
+		mp = 0.
+		cnt = 0.
+		for i in range(6000//opt.nVal):
+			opt.startVal = 120*i
+			opt.nVal = opt.nVal
+			a,b = val(i, opt, val_loader, model)
+			mp += a*b
+			cnt += b
+		print("------Finally--------")
+		print("Final MPJPE ==> :" +  str(mp/cnt))	
+		return
+
 	if (opt.test):
 		val(0, opt, val_loader, model)
-		pass
+		return
 
 
 	train_loader = torch.utils.data.DataLoader(
-		FusionDataset('train',opt),
-		#posetrack('train', opt),
+		FusionDataset('train',opt) if opt.loadMpii else h36m('train',opt),
 		batch_size = opt.dataloaderSize,
 		shuffle = True,
 		num_workers = int(ref.nThreads)
@@ -61,6 +80,16 @@ def main():
 		weight_decay = ref.weightDecay, 
 		momentum = ref.momentum
 	)
+	def hookdef(grad):
+		newgrad = grad
+		if (grad.shape[2]==1):
+			newgrad = 0
+		else:
+			newgrad[:,:,1,:,:] = 0
+
+	for i in (model.parameters()):
+		if len(i.shape)==5:
+			_ = i.register_hook(hookdef)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 
@@ -76,7 +105,7 @@ def main():
 		# 	logger.scalar_summary('acc_val', acc_val, epoch)
 			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
 			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
-			torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
+			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
 			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
 		else:
 			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))

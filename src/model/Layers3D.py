@@ -34,11 +34,15 @@ class ConvBnRelu3D(nn.Module):
 
 	def forward(self, input):
 		out = input
+		#print("0)",out.std(dim=2).mean())
 		out = self.bn(out)
+		#print("1)",out.std(dim=2).mean())
 		out = self.relu(out)
+		#print("2)",out.std(dim=2).mean())
 		if (self.padLayer is not None):
 			out = self.padLayer(out)
 		out = self.conv(out)
+		#print("3)",out.std(dim=2).mean())
 		return out
 
 
@@ -55,9 +59,15 @@ class ConvBlock3D(nn.Module):
 
 	def forward(self, input):
 		out = input
+		#print('cbr1')
 		out = self.cbr1(out)
+		#print('cbr2')
+		#print(out.std(dim=1).mean())
 		out = self.cbr2(out)
+		#print('cbr3')
+		#print(out.std(dim=1).mean())
 		out = self.cbr3(out)
+		#print(out.std(dim=1).mean())
 		return out
 
 class SkipLayer3D(nn.Module):

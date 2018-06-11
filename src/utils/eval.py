@@ -1,5 +1,5 @@
-import numpy as np
 import ref
+import numpy as np
 
 def getPreds(hm):
 	assert len(hm.shape) == 4, 'Input must be a 4-D tensor'

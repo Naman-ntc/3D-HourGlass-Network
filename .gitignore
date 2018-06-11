@@ -2,6 +2,7 @@ models/
 data/
 *.pth
 exp/
+CSV/
 Plots/
 
 #Byte-compiled / optimized / DLL files

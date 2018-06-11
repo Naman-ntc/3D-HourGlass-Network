@@ -89,7 +89,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			# 	b[:,2] = reg[0,:,j,0].detach().cpu().numpy()
 			# 	a[:,2] = target3D_var[0,:,j,0].cpu().numpy()
 			# 	visualise3d(b,a,'val-errors-great',i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
-
+			pass
 
 
 		if split == 'train':

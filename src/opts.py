@@ -24,6 +24,9 @@ class opts():
 		self.parser.add_argument('-nRegModules', type = int, default = 2, help = '# depth regression modules')
 		self.parser.add_argument('-nRegFrames', type = int, default = 8, help = '# number of frames temporally for regressor module')
 
+		self.parser.add_argument('-freezeCenter', type = int, default = 1, help = '# freeze the central network')
+		self.parser.add_argument('-freezeBN', type = int, default = 1, help = '# freeze the BatchNorm Layers')
+		
 		self.parser.add_argument('-nEpochs', type = int, default = 120, help = '#training epochs')
 		self.parser.add_argument('-valIntervals', type = int, default = 2, help = '#valid intervel')
 		self.parser.add_argument('-trainBatch', type = int, default = 2, help = '#Mini-batch size')

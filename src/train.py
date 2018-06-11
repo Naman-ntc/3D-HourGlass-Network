@@ -19,7 +19,8 @@ SoftArgMaxLayer = SoftArgMax()
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
 	if split == 'train':
 		model.train()
-		model.apply(set_bn_eval)
+		if opt.freezeBN:
+			model.apply(set_bn_eval)
 	else:
 		model.eval()
 	Loss2D, Loss3D, Mpjpe, Acc = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()

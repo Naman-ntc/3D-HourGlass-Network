@@ -35,3 +35,46 @@ def JointsDepthSquaredError(input, target):
 	assert len(input.shape) == 4
 	input = input.cuda()
 	return lossfunc(input, target)
+
+"""
+Temporal Losses Below
+
+
+s1 = u * t + 0.5 * a * t^2
+s2 = u * 2 * t + 0.5 * a * (2*t)^2
+
+s2 - 2 * s1 = 0.5 * a * 2 * t^2
+
+a = (s2 - 2 * s1)/(t^2)
+"""
+
+def DistanceMatchingError(input, target):
+	global lossfunc
+	"""
+	Takes input as (N,C,D,3) 3D coordinates and similiar targets (Here C is number of channels equivalent to number of joints)
+	"""
+	assert input.shape == target.shape
+	assert len(input.shape) == 4
+	input = input.cuda()
+	inputdistances = input[:,:,1:,:] - input[:,:,:-1,:]
+	inputdistances = torch.norm(inputdistances, dim=3)
+	targetdistances = target[:,:,1:,:] - target[:,:,:-1,:]
+	targetdistances = torch.norm(targetdistances, dim=3)
+	return lossfunc(inputdistances, targetdistances)
+
+
+def AccelerationMatchingError(input, target):
+	global lossfunc
+	"""
+	Takes input as (N,C,D,3) 3D coordinates and similiar targets (Here C is number of channels equivalent to number of joints)
+	"""
+	assert input.shape == target.shape
+	assert len(input.shape) == 4
+	input = input.cuda()
+	inputdistances = input[:,:,1:,:] - input[:,:,:-1,:]
+	inputdistances = torch.norm(inputdistances, dim=3)
+	inputdistances = inputdistances[:,:,1:] - 2*(inputdistances[:,:,:-1])
+	targetdistances = target[:,:,1:,:] - target[:,:,:-1,:]
+	targetdistances = torch.norm(targetdistances, dim=3)
+	targetdistances = targetdistances[:,:,1:] - 2*(targetdistances[:,:,:-1])
+	return lossfunc(inputdistances, targetdistances)

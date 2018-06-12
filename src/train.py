@@ -12,8 +12,7 @@ from utils.eval import *
 from visualise import *
 from utils.utils import *
 
-from model.SoftArgMax import *
-SoftArgMaxLayer = SoftArgMax()
+
 
 
 def step(split, epoch, opt, dataLoader, model, optimizer = None):
@@ -23,7 +22,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			model.apply(set_bn_eval)
 	else:
 		model.eval()
-	Loss2D, Loss3D, Mpjpe, Acc = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
+	Loss2D, Loss3D, LossTemp, Mpjpe, Acc = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
 
 	nIters = len(dataLoader)
 	bar = Bar('==>', max=nIters)
@@ -53,9 +52,14 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				# b[:,2] = reg[0,:,j,0].data.cpu().numpy()
 				# visualise3d(b,a,"3D",i,j,input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu())
 
-
+		"""
+		Depth Squared Error loss here
+		"""
 
 		if ((meta == 0).all()):
+			"""
+			USE BATCH SIZE ONE ONLY!!!
+			"""
 			loss = 0
 			oldloss = 0
 		else:
@@ -63,10 +67,15 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			oldloss = loss.item()
 			Loss3D.update(loss.item(), input.size(0))
 
+		"""
+		HeatMap squared Error loss here
+		"""
+		
 		for k in range(opt.nStack):
-			loss += Joints2DHeatMapsSquaredError(output[k], targetMaps)
+			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k], targetMaps)
+		
 		Loss2D.update(loss.item() - oldloss, input.size(0))
-
+	
 		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
 		Acc.update(tempAcc)
 
@@ -92,6 +101,14 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			pass
 
 
+		"""
+		Temporal Losses here
+		"""
+		
+		rootRelative = give3D(output[opt.nStack - 1], reg, meta)
+		loss += opt.tempWeight * AccelerationMatchingError(rootRelative, meta)
+
+
 		if split == 'train':
 			loss = loss/opt.trainBatch
 			loss.backward()
@@ -100,13 +117,12 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 				optimizer.zero_grad()
 
 
-		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | ACC {PCKh.avg:.6f} | Mpjpe {Mpjpe.avg:.6f} ({Mpjpe.val:.6f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split = split, loss3d = Loss3D, Mpjpe=Mpjpe, PCKh = Acc)
+		Bar.suffix = '{split} Epoch: [{0}][{1}/{2}]| Total: {total:} | ETA: {eta:} | Loss2D {loss.avg:.6f} | Loss3D {loss3d.avg:.6f} | LossTemp {losstemp.avg:.6f} | ACC {PCKh.avg:.3f} | Mpjpe {Mpjpe.avg:.3f} ({Mpjpe.val:.3f})'.format(epoch, i, nIters, total=bar.elapsed_td, eta=bar.eta_td, loss=Loss2D, split=split, loss3d=Loss3D, losstemp=LossTemp, Mpjpe=Mpjpe, PCKh=Acc)
 		bar.next()
 
 	bar.finish()
 	if (opt.completeTest):
 		print("Num Frames : %d"%(totalFrames))
-		#dataLoader.recycle()
 		return Mpjpe.avg, totalFrames
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 

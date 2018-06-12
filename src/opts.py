@@ -43,9 +43,11 @@ class opts():
 		self.parser.add_argument('-scheduler', type = int, default = 3, help = 'drop LR')
 
 		self.parser.add_argument('-ratioHM', type = int, default = 1, help = 'weak label data ratio')
-		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'depth regression loss weight')
-		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
 		self.parser.add_argument('-loadMpii', action = 'store_true', help = 'test')
+		self.parser.add_argument('-regWeight', type = float, default = 0.2, help = 'Depth regression loss weight')
+		self.parser.add_argument('-hmWeight', type = float, default = 1, help = 'HeatMap loss weight')
+		self.parser.add_argument('-varWeight', type = float, default = 0, help = 'Variance loss weight')
+		self.parser.add_argument('-tempWeight', type = float, default = 0, help = 'Acceleration loss weight')
 
 		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'weak label data ratio')
 		self.parser.add_argument('-startVal', type = int, default = 660, help = 'weak label data ratio')

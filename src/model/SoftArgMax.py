@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
 class SoftArgMax(nn.Module):
 	"""docstring for SoftArgMax"""
@@ -12,10 +11,7 @@ class SoftArgMax(nn.Module):
 		N,C,D,H,W = input.size()
 		reshapedInput = input.view(N,C,D,-1)
 		weights = self.softmaxLayer(reshapedInput)
-		#print(input.size())
-		#print(weights.size())
-		#print(torch.arange(H*W).unsqueeze(0).unsqueeze(0).size())
-		semiIndices = ((weights) * Variable(torch.arange(H*W).expand(weights.size())).cuda()).sum(dim=-1)
+		semiIndices = ((weights) * (torch.arange(H*W).expand(weights.size())).cuda()).sum(dim=-1)
 		indicesX = semiIndices % H
 		indicesY = semiIndices / H
 		indices = torch.cat((indicesX.unsqueeze(-1), indicesY.unsqueeze(-1)), dim=-1)

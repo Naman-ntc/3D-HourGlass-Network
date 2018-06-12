@@ -1,9 +1,11 @@
 import ref
 import numpy as np
+		
 
 def getPreds(hm):
 	assert len(hm.shape) == 4, 'Input must be a 4-D tensor'
 	res = hm.shape[2]
+
 	hm = hm.reshape(hm.shape[0], hm.shape[1], hm.shape[2] * hm.shape[3])
 	idx = np.argmax(hm, axis = 2)
 	preds = np.zeros((hm.shape[0], hm.shape[1], 2))
@@ -72,6 +74,7 @@ def MPJPE(output2D, output3D, meta):
 	root = 6
 	err = 0
 	num3D = 0
+	
 	for i in range(p.shape[0]):
 		s = meta[i].sum()
 		if not (s > - ref.eps and s < ref.eps):

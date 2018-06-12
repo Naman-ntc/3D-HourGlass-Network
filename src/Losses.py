@@ -73,8 +73,9 @@ def AccelerationMatchingError(input, target):
 	input = input.cuda()
 	inputdistances = input[:,:,1:,:] - input[:,:,:-1,:]
 	inputdistances = torch.norm(inputdistances, dim=3)
-	inputdistances = inputdistances[:,:,1:] - 2*(inputdistances[:,:,:-1])
+	inputaccn = inputdistances[:,:,2:] + inputdistances[:,:,:-2] - 2*inputdistances[:,:,1:-1]
 	targetdistances = target[:,:,1:,:] - target[:,:,:-1,:]
 	targetdistances = torch.norm(targetdistances, dim=3)
 	targetdistances = targetdistances[:,:,1:] - 2*(targetdistances[:,:,:-1])
-	return lossfunc(inputdistances, targetdistances)
+	targetaccn = targetdistances[:,:,2:] + targetdistances[:,:,:-2] - 2*targetdistances[:,:,1:-1]	
+	return lossfunc(inputaccn, targetaccn)

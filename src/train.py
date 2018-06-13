@@ -11,7 +11,7 @@ from Losses import *
 from utils.eval import *
 from visualise import *
 from utils.utils import *
-
+from myutils import *
 
 
 
@@ -35,6 +35,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
 		target3D_var = (target3D).float().cuda()
+		meta = meta.float().cuda()
 		totalFrames += input_var.shape[0]*input_var.shape[2]
 		model = model.float()
 		output = model(input_var)
@@ -64,23 +65,23 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			oldloss = 0
 		else:
 			loss = opt.regWeight * JointsDepthSquaredError(reg,target3D_var)
-			oldloss = loss.item()
-			Loss3D.update(loss.item(), input.size(0))
+			oldloss = (loss.item())
+			Loss3D.update((loss.item()), input.size(0))
 
 		"""
 		HeatMap squared Error loss here
 		"""
-		
+
 		for k in range(opt.nStack):
 			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k], targetMaps)
-		
+
 		Loss2D.update(loss.item() - oldloss, input.size(0))
-	
+		oldloss = (loss.item())
+
 		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
 		Acc.update(tempAcc)
 
-
-		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta)
+		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta.cpu())
 
 		for l in mplist:
 			mpjpe, num3D = l
@@ -104,10 +105,10 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		"""
 		Temporal Losses here
 		"""
-		
-		rootRelative = give3D(output[opt.nStack - 1], reg, meta)
-		loss += opt.tempWeight * AccelerationMatchingError(rootRelative, meta)
 
+		rootRelative = give3D(output[opt.nStack -1], reg, meta)
+		loss += opt.tempWeight * AccelerationMatchingError(rootRelative, meta)
+		LossTemp.update(loss.item() - oldloss, input.size(0))
 
 		if split == 'train':
 			loss = loss/opt.trainBatch

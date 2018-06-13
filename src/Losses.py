@@ -70,12 +70,14 @@ def AccelerationMatchingError(input, target):
 	"""
 	assert input.shape == target.shape
 	assert len(input.shape) == 4
+	#print('\n')
+	#print(input[0,:8,0,:])
+	#print(target[0,:8,0,:])
 	input = input.cuda()
 	inputdistances = input[:,:,1:,:] - input[:,:,:-1,:]
 	inputdistances = torch.norm(inputdistances, dim=3)
 	inputaccn = inputdistances[:,:,2:] + inputdistances[:,:,:-2] - 2*inputdistances[:,:,1:-1]
 	targetdistances = target[:,:,1:,:] - target[:,:,:-1,:]
 	targetdistances = torch.norm(targetdistances, dim=3)
-	targetdistances = targetdistances[:,:,1:] - 2*(targetdistances[:,:,:-1])
-	targetaccn = targetdistances[:,:,2:] + targetdistances[:,:,:-2] - 2*targetdistances[:,:,1:-1]	
+	targetaccn = targetdistances[:,:,2:] + targetdistances[:,:,:-2] - 2*targetdistances[:,:,1:-1]
 	return lossfunc(inputaccn, targetaccn)

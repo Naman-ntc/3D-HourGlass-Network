@@ -7,12 +7,12 @@ class SoftArgMax(nn.Module):
 		super(SoftArgMax, self).__init__()
 		self.softmaxLayer = nn.Softmax(dim=-1)
 
-	def forward(self, input):
+	def forward(self, input, factor = 10000):
 		N,C,D,H,W = input.size()
-		reshapedInput = input.view(N,C,D,-1)
+		reshapedInput = factor*input.view(N,C,D,-1)
 		weights = self.softmaxLayer(reshapedInput)
 		semiIndices = ((weights) * (torch.arange(H*W).expand(weights.size())).cuda()).sum(dim=-1)
-		indicesX = semiIndices % H
-		indicesY = semiIndices / H
+		indicesX = semiIndices % W
+		indicesY = semiIndices / W
 		indices = torch.cat((indicesX.unsqueeze(-1), indicesY.unsqueeze(-1)), dim=-1)
 		return indices

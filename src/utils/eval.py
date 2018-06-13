@@ -1,6 +1,6 @@
 import ref
 import numpy as np
-		
+
 
 def getPreds(hm):
 	assert len(hm.shape) == 4, 'Input must be a 4-D tensor'
@@ -12,7 +12,6 @@ def getPreds(hm):
 	for i in range(hm.shape[0]):
 		for j in range(hm.shape[1]):
 			preds[i, j, 0], preds[i, j, 1] = idx[i, j] % res, idx[i, j] / res
-	
 	return preds
 
 def calcDists(preds, gt, normalize):
@@ -39,14 +38,14 @@ def Accuracy(output, target):
 	acc = np.zeros(len(ref.accIdxs))
 	avgAcc = 0
 	badIdxCount = 0
-	
+
 	for i in range(len(ref.accIdxs)):
 		acc[i] = distAccuracy(dists[ref.accIdxs[i]])
 		if acc[i] >= 0:
 			avgAcc = avgAcc + acc[i]
 		else:
 			badIdxCount = badIdxCount + 1
-	
+
 	if badIdxCount == len(ref.accIdxs):
 		return 0
 	else:
@@ -56,7 +55,7 @@ def MPJPE(output2D, output3D, meta):
 	meta = meta.numpy()
 	p = np.zeros((output2D.shape[0], ref.nJoints, 3))
 	p[:, :, :2] = getPreds(output2D).copy()
-	
+
 	hm = output2D.reshape(output2D.shape[0], output2D.shape[1], ref.outputRes, ref.outputRes)
 	for i in range(hm.shape[0]):
 		for j in range(hm.shape[1]):
@@ -68,20 +67,20 @@ def MPJPE(output2D, output3D, meta):
 				p[i, j, 0] = p[i, j, 0] + 0.25 * (1 if diffX >=0 else -1)
 				p[i, j, 1] = p[i, j, 1] + 0.25 * (1 if diffY >=0 else -1)
 	p = p + 0.5
-	
 	p[:, :, 2] = (output3D.copy() + 1) / 2 * ref.outputRes
 	h36mSumLen = 4296.99233013
 	root = 6
 	err = 0
 	num3D = 0
-	
+
 	for i in range(p.shape[0]):
 		s = meta[i].sum()
 		if not (s > - ref.eps and s < ref.eps):
 			num3D += 1
 			lenPred = 0
 			for e in ref.edges:
-				lenPred += ((p[i, e[0]] - p[i, e[1]]) ** 2).sum() ** 0.5 
+				lenPred += ((p[i, e[0]] - p[i, e[1]]) ** 2).sum() ** 0.5
+			#print(lenPred)
 			pRoot = p[i, root].copy()
 			for j in range(ref.nJoints):
 				p[i, j] = (p[i, j] - pRoot) / lenPred * h36mSumLen + meta[i, root]
@@ -93,9 +92,8 @@ def MPJPE(output2D, output3D, meta):
 		return err / num3D, num3D
 	else:
 		return 0, 0
-		
 
-	
+
 def myMPJPE(output2Ds, output3Ds, metas):
 	nFrames = output2Ds.shape[2]
 	out = []

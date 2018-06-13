@@ -23,6 +23,7 @@ def inflate(opt = None):
 		Inflate.nModules = opt.nModules
 		Inflate.nRegFrames = opt.nRegFrames
 		Inflate.nJoints = ref.nJoints
+		Inflate.scheme = opt.scheme
 	else :
 		opt = opts().parse()
 		Inflate.nChannels = opt.nChannels
@@ -30,6 +31,7 @@ def inflate(opt = None):
 		Inflate.nModules = opt.nModules
 		Inflate.nRegFrames = opt.nRegFrames
 		Inflate.nJoints = ref.nJoints
+		Inflate.scheme = opt.scheme
 		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 	pickle.load = partial(pickle.load, encoding="latin1")

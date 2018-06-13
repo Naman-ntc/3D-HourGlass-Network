@@ -81,17 +81,16 @@ def main():
 		momentum = ref.momentum
 	)
 	
-	if opt.freezeCenter:
-		def hookdef(grad):
-			newgrad = grad
-			if (grad.shape[2]==1):
-				newgrad = 0
-			else:
-				newgrad[:,:,1,:,:] = 0
 
-		for i in (model.parameters()):
-			if len(i.shape)==5:
-				_ = i.register_hook(hookdef)
+	def hookdef(grad):
+		newgrad = grad.clone()
+		if (grad.shape[2]==1):
+			newgrad = grad*opt.freezefac
+		else:
+			newgrad[:,:,1,:,:] = grad[:,:,1,:,:]*opt.freezefac
+	for i in (model.parameters()):
+		if len(i.shape)==5:
+			_ = i.register_hook(hookdef)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 

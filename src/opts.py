@@ -15,6 +15,7 @@ class opts():
 
 		self.parser.add_argument('-loadModel', default = 'none', help = 'Provide full path to a previously trained model')
 		self.parser.add_argument('-Model2D', default = 'models/hgreg-3d.pth', help = 'Provide full path to a model to inflate')
+		self.parser.add_argument('-scheme', type = int, default = 1, help = 'inflation scheme')
 		self.parser.add_argument('-isStateDict', default = 0, help = 'Whether the model to be loaded is stateDict')
 
 		self.parser.add_argument('-nChannels', type = int, default = 128, help = '# features in the hourglass')
@@ -24,7 +25,7 @@ class opts():
 		self.parser.add_argument('-nRegModules', type = int, default = 2, help = '# depth regression modules')
 		self.parser.add_argument('-nRegFrames', type = int, default = 8, help = '# number of frames temporally for regressor module')
 
-		self.parser.add_argument('-freezeCenter', type = int, default = 1, help = '# freeze the central network')
+		self.parser.add_argument('-freezefac', type = int, default = 1, help = '# freeze the central network')
 		self.parser.add_argument('-freezeBN', type = int, default = 1, help = '# freeze the BatchNorm Layers')
 		
 		self.parser.add_argument('-nEpochs', type = int, default = 120, help = '#training epochs')

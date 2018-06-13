@@ -6,6 +6,8 @@ nStack = 2
 nModules = 2
 nRegFrames = 8
 nJoints = 16
+scheme = 1
+tempKernel = 3
 
 def inflatePose3D(model3d, model):
 	inflateHourglassNet(model3d.hg, model)
@@ -72,10 +74,17 @@ def inflatehourglass(model3d, model):
 	return
 
 def inflateconv(conv3d, conv):
-	conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() #* (1./(conv3d.weight.data.shape[2]))
-	if conv3d.weight.data.shape[2] == 3:
-		conv3d.weight.data[:,:,0,:,:] *= 0.1
-		conv3d.weight.data[:,:,2,:,:] *= -0.1
+	if scheme==1:
+		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
+		if conv3d.weight.data.shape[2] == tempKernel:
+			numadd = (tempKernel -1)/2.
+			conv3d.weight.data[:,:,0:numadd,:,:] *= -0.1/numadd
+			conv3d.weight.data[:,:,numadd+1:,:,:] *= 0.1/numadd
+	elif scheme==2:
+		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone()
+		## incomplete
+	elif scheme==3:
+		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() * (1./(conv3d.weight.data.shape[2]))
 	conv3d.bias.data = conv.bias.data
 	conv3d.weight.data = conv3d.weight.data.contiguous()
 	conv3d.bias.data = conv3d.bias.data.contiguous()

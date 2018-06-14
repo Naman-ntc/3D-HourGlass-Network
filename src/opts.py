@@ -54,6 +54,7 @@ class opts():
 		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'if you want to test on complete data')
 		self.parser.add_argument('-startVal', type = int, default = 660, help = 'which frame in all videos to consider')
 		self.parser.add_argument('-nVal', type = int, default = 120, help = 'number of frames to load from each video during validation')
+		self.parser.add_argument('-gpu_id', type = int, default = 0, help = 'GPU ID for setting device')
 
 	def parse(self):
 		self.init()

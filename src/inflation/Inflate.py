@@ -8,6 +8,7 @@ nRegFrames = 8
 nJoints = 16
 scheme = 1
 tempKernel = 3
+mult = 0.1
 
 def inflatePose3D(model3d, model):
 	inflateHourglassNet(model3d.hg, model)
@@ -77,9 +78,9 @@ def inflateconv(conv3d, conv):
 	if scheme==1:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
 		if conv3d.weight.data.shape[2] == tempKernel:
-			numadd = (tempKernel -1)/2.
-			conv3d.weight.data[:,:,0:numadd,:,:] *= -0.1/numadd
-			conv3d.weight.data[:,:,numadd+1:,:,:] *= 0.1/numadd
+			numadd = (tempKernel -1)//2
+			conv3d.weight.data[:,:,0:numadd,:,:] *= -mult/numadd
+			conv3d.weight.data[:,:,numadd+1:,:,:] *= mult/numadd
 	elif scheme==2:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone()
 		## incomplete

@@ -24,6 +24,7 @@ def inflate(opt = None):
 		Inflate.nRegFrames = opt.nRegFrames
 		Inflate.nJoints = ref.nJoints
 		Inflate.scheme = opt.scheme
+		Inflate.mult = opt.mult
 	else :
 		opt = opts().parse()
 		Inflate.nChannels = opt.nChannels

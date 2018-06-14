@@ -1,12 +1,24 @@
 # 3D-HourGlass
 3D HourGlass Networks for multitask training of Human Joint Locations and Human Activity Recognition
 
-testScript Instructions `python testScript.py -imageFolder ...`
 
-|nStacks | nChannels | numReductions | Time (per frame)  | Memory (per 64 frames)| Memory (per 32 frames)| Memory (per 16 frames) |
-|--------|-----------|---------------|-------------------|-----------------------|-----------------------|------------------------|
-|2		 |		256  |		4		 |		41 ms 		 |		~12 GB			 |		 ~8.2 GB		 |			~4.3 GB		  |
-|2		 |		128  |		4		 |		24 ms 		 |		~8 GB			 |
-|2		 |		064  |		4		 |		17 ms 		 |		~6.3 GB			 |
-|1		 |		128  |		4		 |		19 ms 		 |		~6.7 GB			 |
-|1		 |		256  |		4		 |		2.8 ms 		 |		~8.7 GB			 |
+
+## Instructions
+
+python version : 3.6
+pytorch 0.4
+
+`python main.py -expID "NAME TO PUT FOR EXPERIMENT" -scheme INIT_SCHEME -nRegFrames REG_FRAMES -freezefac FACTOR -valIntervals HOW_MANY_EPOCHS_BEFORE_VAL -nFramesLoad HOW_MANY_TO_LOAD -regWeight DEPTH_WEIGHT
+
+
+In the top REPO directory run `mkdir exp`
+
+1.) expID forms a folder for current experiment with logs and trained models 
+2.) scheme refers to intialization scheme, keep it either to 1 or 3 (hyperparameter)
+3.) REG_FRAMES keep between 1-6
+4.) Freeze the old 2D CNN network by FACTOR, (reduce LR for old network). Keep 0 or 0.01 or 0.05 or 0.1 or 0.5 or 1
+5.) valIntervals : validates after these many iterations and also saves models...
+6.) nFramesLoad  Frames per video to consider furing training, IMPORTANT, keep integer multiple of REG_FRAMES
+7.) regWeight weight of the second loss function, 0.05, 0.1 0.2 0.3 0.35
+
+for learning rate use flags -LRhg -LRdr, defualt to 2e-5, feel free to change

@@ -77,10 +77,10 @@ def inflatehourglass(model3d, model):
 def inflateconv(conv3d, conv):
 	if scheme==1:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
-		if conv3d.weight.data.shape[2] == tempKernel:
+		if conv3d.weight.data.shape[2] == 3:
 			numadd = (tempKernel -1)//2
-			conv3d.weight.data[:,:,0:numadd,:,:] *= -mult/numadd
-			conv3d.weight.data[:,:,numadd+1:,:,:] *= mult/numadd
+			conv3d.weight.data[:,:,0:numadd,:,:] *= -mult
+			conv3d.weight.data[:,:,numadd+1:,:,:] *= mult
 	elif scheme==2:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone()
 		## incomplete

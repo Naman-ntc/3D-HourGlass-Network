@@ -79,11 +79,18 @@ def inflateconv(conv3d, conv):
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
 		if conv3d.weight.data.shape[2] == tempKernel:
 			numadd = (tempKernel -1)//2
-			conv3d.weight.data[:,:,0:numadd,:,:] *= -mult/numadd
-			conv3d.weight.data[:,:,numadd+1:,:,:] *= mult/numadd
+			conv3d.weight.data[:,:,0,:,:] *= -mult/numadd
+			conv3d.weight.data[:,:,1,:,:] *= -mult/numadd
+			conv3d.weight.data[:,:,3,:,:] *= mult/numadd
+			conv3d.weight.data[:,:,4,:,:] *= mult/numadd
 	elif scheme==2:
-		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone()
-		## incomplete
+		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
+		if conv3d.weight.data.shape[2] == tempKernel:
+			numadd = (tempKernel -1)//2
+			conv3d.weight.data[:,:,0,:,:] *= -mult/numadd
+			conv3d.weight.data[:,:,1,:,:] *= mult/numadd
+			conv3d.weight.data[:,:,3,:,:] *= -mult/numadd
+			conv3d.weight.data[:,:,4,:,:] *= mult/numadd
 	elif scheme==3:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() * (1./(conv3d.weight.data.shape[2]))
 	conv3d.bias.data = conv.bias.data

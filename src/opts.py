@@ -53,6 +53,7 @@ class opts():
 		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'weak label data ratio')
 		self.parser.add_argument('-startVal', type = int, default = 660, help = 'weak label data ratio')
 		self.parser.add_argument('-nVal', type = int, default = 120, help = 'weak label data ratio')
+		self.parser.add_argument('-gpu_id', type = int, default = 0, help = 'GPU ID for setting device')
 
 	def parse(self):
 		self.init()

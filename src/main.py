@@ -22,6 +22,8 @@ from inflateScript import *
 
 def main():
 	opt = opts().parse()
+	torch.cuda.set_device(opt.gpu_id)
+	print('Using GPU ID: ' ,str(torch.cuda.current_device()))
 	now = datetime.datetime.now()
 	logger = Logger(opt.saveDir + '/logs_{}'.format(now.isoformat()))
 

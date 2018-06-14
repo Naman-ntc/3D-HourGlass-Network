@@ -101,7 +101,7 @@ class h36m(data.Dataset):
 				if (self.nFramesLoad <= 0):
 					startPt = CountFramesInVid -self. opts.nRegFrames - 1
 					self.nFramesLoad = self.opts.nRegFrames
-					if opts.completeTest:
+					if self.opts.completeTest:
 						self.delList[(index)] = 1
 					
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))

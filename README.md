@@ -8,7 +8,7 @@
 python version : 3.6
 pytorch 0.4
 
-`python main.py -expID "NAME TO PUT FOR EXPERIMENT" -scheme INIT_SCHEME -nRegFrames REG_FRAMES -freezefac FACTOR -valIntervals HOW_MANY_EPOCHS_BEFORE_VAL -nFramesLoad HOW_MANY_TO_LOAD -regWeight DEPTH_WEIGHT -mult MULT_FACTOR
+`python main.py -expID "NAME TO PUT FOR EXPERIMENT" -scheme INIT_SCHEME -nRegFrames REG_FRAMES -freezefac FACTOR -valIntervals HOW_MANY_EPOCHS_BEFORE_VAL -nFramesLoad HOW_MANY_TO_LOAD -regWeight DEPTH_WEIGHT -mult MULT_FACTOR`
 
 
 In the top REPO directory run `mkdir exp`

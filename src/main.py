@@ -90,6 +90,13 @@ def main():
 			newgrad = grad*opt.freezefac
 		else:
 			newgrad[:,:,1,:,:] = grad[:,:,1,:,:]*opt.freezefac
+		return newgrad
+			
+	def hookdef1(grad):
+		newgrad = grad.clone()
+		newgrad[:,4096:8192] = newgrad*opt.freezefac
+		return newgrad
+				
 	for i in (model.parameters()):
 		if len(i.shape)==5:
 			_ = i.register_hook(hookdef)

@@ -18,28 +18,19 @@ class DepthRegressor3D(nn.Module):
 
 		self.reg = nn.Sequential(* reg_)
 
-		self.fc = nn.Linear(self.nChannels*self.nRegFrames*4*4, self.nJoints*self.nRegFrames)
+		self.fc = nn.Linear(self.nChannels*self.nRegFrames*4*4, self.nJoints)
 
 	def forward(self, input):
 		out = self.reg(input)
-		#print('regout')
-		#print(out.std(dim=2).mean())
 		N = out.size()[0]
 		D = out.size()[2]
-		slides = D/ self.nRegFrames
-		z = torch.autograd.Variable(torch.zeros(N, self.nJoints, D, 1)).cuda()
-		for i in range(int(slides)):
-			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].transpose(1,2).contiguous().view(N, -1)
-			temp2 = self.fc(temp1).view(N,self.nRegFrames, self.nJoints).transpose(1,2).unsqueeze(-1)
-			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
-		rem = D % self.nRegFrames
-
-		if (rem != 0):
-			"""
-			INCORRECT XXXXXXXX
-			"""
-			temp1 = out[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:,:].transpose(1,2).view(N, -1)
-			temp2 = self.fc(temp1).view(N,self.nRegFrames, self.nJoints).transpose(1,2).unsqueeze(-1)
-			z[:,:,self.nRegFrames*i:self.nRegFrames*(i+1),:] = temp2
-			z[:,:,self.nRegFrames*int(slides):D,:] = self.fc(out[:,:,D-self.nRegFrames:D,:,:].reshape(-1, self.nJoints*self.nRegFrames*self.nChannels)).reshape(self.nRegFrames, self.nJoints).t().reshape(self.nJoints, self.nRegFrames).unsqueeze(0).unsqueeze(-1)[:,:,self.nRegFrames + self.nRegFrames*int(slides) - D:self.nRegFrames,:]
-		return z
+		reg = torch.zeros(N,self.nJoints,D,1).float().cuda()
+		for i in range(self.nRegFrames-1):
+			fcin = torch.cat((out[:,:,:i+1,:,:], out.expand(N,self.nChannels,self.nRegFrames-(i+1),4,4).contiguous())).contiguous()
+			fcin = fcin.transpose(1,2).contiguous().view(N, -1)
+			reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1).unsqueeze(-1)
+		for i in range(self.nRegFrames-1, D):
+			fcin = out[:,:,i-self.nRegFrames+1:i,:,:]
+			fcin = fcin.transpose(1,2).contiguous().view(N, -1)
+			reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1).unsqueeze(-1)
+		return reg	

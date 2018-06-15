@@ -25,7 +25,7 @@ def inflateFullyConnected(model3d, model):
 	val = 4*4*nChannels
 	for i in range(nRegFrames):
 		model3d.bias.data[nJoints*i:nJoints*(i+1)] = model.bias.data
-		for j in range(nRegFrames):
+		for j in range(1):
 			if (i == j) :
 				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data / (1.0*nRegFrames)
 			else :

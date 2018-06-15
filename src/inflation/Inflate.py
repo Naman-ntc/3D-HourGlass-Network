@@ -85,7 +85,7 @@ def inflateconv(conv3d, conv):
 			conv3d.weight.data[:,:,4,:,:] *= mult
 	elif scheme==2:
 		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
-		if conv3d.weight.data.shape[2] == tempKernel:
+		if conv3d.weight.data.shape[2] == 5:
 			numadd = (tempKernel -1)//2
 			conv3d.weight.data[:,:,0,:,:] *= -mult
 			conv3d.weight.data[:,:,1,:,:] *= mult

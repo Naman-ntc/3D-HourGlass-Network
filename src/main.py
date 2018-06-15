@@ -96,10 +96,12 @@ def main():
 		newgrad = grad.clone()
 		newgrad[:,4096:8192] = newgrad*opt.freezefac
 		return newgrad
-				
+
 	for i in (model.parameters()):
 		if len(i.shape)==5:
 			_ = i.register_hook(hookdef)
+		if len(i.shape)==2:
+			_ = i.register_hook(hookdef1)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 

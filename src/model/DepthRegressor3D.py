@@ -38,15 +38,15 @@ class DepthRegressor3D(nn.Module):
 		# 	fcin = fcin.transpose(1,2).contiguous().view(N, -1)
 		# 	reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
 		for i in range(1):
-			fcin = torch.stack((out[:,:,i:i+1,:,:], out[:,:,i:i+2,:,:]), dim=2).contiguous()
+			fcin = torch.cat((out[:,:,i:i+1,:,:], out[:,:,i:i+2,:,:]), dim=2).contiguous()
 			fcin = fcin.transpose(1,2).contiguous().view(N, -1)
 			reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
 		for i in range(1,D-1):
-			fcin = out[:,:,i-1:i+1,:,:]
+			fcin = out[:,:,i-1:i+2:,:]
 			fcin = fcin.transpose(1,2).contiguous().view(N, -1)
 			reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
 		for i in range(D-1,D):
-			fcin = torch.stack((out[:,:,i-1:i+1,:,:], out[:,:,i:i+1,:,:]), dim=2).contiguous()
+			fcin = torch.cat((out[:,:,i-1:i+1,:,:], out[:,:,i:i+1,:,:]), dim=2).contiguous()
 			fcin = fcin.transpose(1,2).contiguous().view(N, -1)
 			reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)	
 		return reg	

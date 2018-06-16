@@ -58,8 +58,8 @@ def main():
 			a,b = val(i, opt, val_loader, model)
 			mp += a*b
 			cnt += b
-			print("Current Estimates ::")
-			print(mp/cnt)
+			print("This Round " + str(a) + " MPJPE in " + str(b) + " frames!!")
+			print("Average MPJPE so far " + str(mp/cnt))
 			print("")
 		print("------Finally--------")
 		print("Final MPJPE ==> :" +  str(mp/cnt))	

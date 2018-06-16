@@ -24,8 +24,7 @@ class h36m(data.Dataset):
 		self.root = 7
 
 		self.nVideos = (self.vidFolders).shape[0]
-		self.delList = [0]*self.nVideos
-
+		
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
@@ -75,15 +74,6 @@ class h36m(data.Dataset):
 		# if (self.split == 'train'):
 		# 	index = int(torch.randint(self.nVideos, ()))
 		vidFolder = self.vidFolders[index]
-		if self.split == 'val':
-			if self.delList[index] == 1:
-				inpFrames = -1*np.ones((3,self.nFramesLoad,256,256))
-				outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))
-				outOutRegs = np.zeros((ref.nJoints,self.nFramesLoad,3))
-				outPts_3d_monos = np.zeros((ref.nJoints,self.nFramesLoad,3))
-				outOutMaps = np.zeros((ref.nJoints, self.nFramesLoad, ref.outputRes, ref.outputRes))
-				return (inpFrames, outOutMaps, outPts_2ds, outOutRegs, outPts_3d_monos)
-
 
 		path = ref.h36mDataDir + "/" + vidFolder + "/"
 
@@ -99,10 +89,9 @@ class h36m(data.Dataset):
 				oldnFramesLoad = self.nFramesLoad
 				self.nFramesLoad = min(self.opts.nVal, self.opts.nRegFrames*((CountFramesInVid - startPt)//self.opts.nRegFrames))
 				if (self.nFramesLoad <= 0):
-					startPt = CountFramesInVid -self. opts.nRegFrames - 1
-					self.nFramesLoad = self.opts.nRegFrames
-					if self.opts.completeTest:
-						self.delList[(index)] = 1
+					startPt = 0
+					self.nFramesLoad = 1
+					
 					
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))

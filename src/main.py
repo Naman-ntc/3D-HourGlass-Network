@@ -94,7 +94,7 @@ def main():
 			
 	def hookdef1(grad):
 		newgrad = grad.clone()
-		newgrad[:,4096:8192] = newgrad*opt.freezefac
+		newgrad[:,4096:8192] = newgrad[:,4096:8192]*opt.freezefac
 		return newgrad
 
 	for i in (model.parameters()):

@@ -60,6 +60,7 @@ def main():
 			cnt += b
 			print("Current Estimates ::")
 			print(mp/cnt)
+			print("")
 		print("------Finally--------")
 		print("Final MPJPE ==> :" +  str(mp/cnt))	
 		return

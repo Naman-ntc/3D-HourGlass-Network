@@ -29,8 +29,8 @@ out = torch.autograd.Variable(img)
 model3d = torch.load('inflatedModel.pth').cuda().float()
 
 
-out = model3d(out)[2]
-print(out[0,:,0,:])
+out = model3d.hg(out)[1]
+print(out[0,:,0,:,:])
 
 """
 out = model3d.hg.convStart(out)

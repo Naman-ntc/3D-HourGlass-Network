@@ -39,7 +39,7 @@ x = torch.autograd.Variable(img)
 model = torch.load('models/xingy.pth').cuda().float()
 
 
-
+"""
 x = model(x)
 print(x[2][0,:])
 
@@ -87,7 +87,7 @@ for i in range(4):
 
 print(x[0,:,:,:])
 print("")	
-
+"""
 x = x.view(x.size(0), -1)
 reg = model.reg(x)
 out.append(reg)

@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 from utils.img import Crop, DrawGaussian, Transform3D
-torch.set_printoptions(precision=10)
+torch.set_printoptions(precision=5)
 
 
 c = np.ones(2) * ref.h36mImgSize / 2

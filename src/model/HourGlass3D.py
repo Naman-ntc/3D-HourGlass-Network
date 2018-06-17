@@ -8,7 +8,7 @@ def help(x):
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = (1,2,2)):
+	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = 2):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules
@@ -64,7 +64,7 @@ class Hourglass3D(nn.Module):
 		Upsampling Layer (Can we change this??????)  
 		As per Newell's paper upsamping recommended
 		"""
-		self.up = nn.Upsample(scale_factor = self.upSampleKernel, mode = 'trilinear')
+		self.up = nn.Upsample(scale_factor = self.upSampleKernel)
 		
 		"""
 		If temporal dimension is odd then after upsampling add a dimension temporally
@@ -93,7 +93,11 @@ class Hourglass3D(nn.Module):
 		out2 = self.lowres(out2)
 		#help(out2)	
 		print('downup2 : ', out2)
+		N,C,D,H,W = out2.size()
+		out2 = out2.transpose(1,2).contiguous().view(N*D,C,H,W).contiguous()
 		out2 = self.up(out2)
+		N1,C1,H1,W1 = out2.size()
+		out2 = out2.view(N,D,C1,H1,W1).contiguous().transpose(1,2).contiguous()
 		#help(out2)
 		# if (out2.size()[2] != out1.size()[2]):
 		# 	out2 = self.addTemporal(out2)

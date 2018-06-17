@@ -2,7 +2,7 @@ import ref
 import cv2
 import torch
 import numpy as np
-torch.set_printoptions(precision=10)
+torch.set_printoptions(precision=5)
 
 import pickle
 from functools import partial

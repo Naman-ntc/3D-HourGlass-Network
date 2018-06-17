@@ -15,7 +15,7 @@ img1 = Crop(img1, c, s, 0, ref.inputRes) / 256.
 img2 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000112.jpg')
 img2 = Crop(img2, c, s, 0, ref.inputRes) / 256.
 img3 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000113.jpg')
-img3 = Crop(img2, c, s, 0, ref.inputRes) / 256.
+img3 = Crop(img3, c, s, 0, ref.inputRes) / 256.0
 
 img1 = torch.from_numpy(img1).cuda().float().unsqueeze(1)
 img2 = torch.from_numpy(img2).cuda().float().unsqueeze(1)
@@ -29,26 +29,25 @@ out = torch.autograd.Variable(img)
 model3d = torch.load('inflatedModel.pth').cuda().float()
 
 
-out = model3d.hg(out)[1]
-print(out[0,:,0,:,:])
-
-"""
-out = model3d.hg.convStart(out)
+#out = model3d.hg(out)[1]
 #print(out[0,:,0,:,:])
-#print("")
+
+out = model3d.hg.convStart(out)
+print(out[0,:,2,:,:])
+print("")
 
 out = model3d.hg.bnStart(out)
-#print(out[0,:,0,:,:])
-#print("")
+print(out[0,:,2,:,:])
+print("")
 
 out = model3d.hg.reluStart(out)
-#print(out[0,:,0,:,:])
-#print("")
+print(out[0,:,2,:,:])
+print("")
 
 out = model3d.hg.res1(out)
-#print(out[0,:,0,:,:])
-#print("")
-
+print(out[0,:,2,:,:])
+print("")
+"""
 out = model3d.hg.mp(out)
 print(out[0,:,0,:,:])
 print("")

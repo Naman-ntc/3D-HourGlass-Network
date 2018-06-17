@@ -22,7 +22,7 @@ img2 = Crop(img2, c, s, 0, ref.inputRes) / 256.
 
 img3 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000113.jpg')
 img3 = Crop(img3, c, s, 0, ref.inputRes) / 256.
-
+print(img3)
 img1 = torch.from_numpy(img1).cuda().float()
 img2 = torch.from_numpy(img2).cuda().float()
 img3 = torch.from_numpy(img3).cuda().float()
@@ -44,18 +44,23 @@ x = model(x)
 print(x[2][0,:])
 
 """
+print(x[2,:,:,:])
+print("")
+
+
+
 x = model.conv1_(x)
-#print(x[0,:,:,:])
-#print("")
+print(x[2,:,:,:])
+print("")
 x = model.bn1(x)
-#print(x[0,:,:,:])
-#print("")
+print(x[2,:,:,:])
+print("")
 x = model.relu(x)
-#print(x[0,:,:,:])
-#print("")
+print(x[2,:,:,:])
+print("")
 x = model.r1(x)
-#print(x[0,:,:,:])
-#print("")
+print(x[2,:,:,:])
+print("")
 
 
 x = model.maxpool(x)

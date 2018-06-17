@@ -16,7 +16,7 @@ from datahelpers.dataloaders.posetrackLoader import posetrack
 from utils.utils import adjust_learning_rate
 from utils.logger import Logger
 
-from train import train,val
+from oldtrain import train,val
 from inflateScript import *
 
 

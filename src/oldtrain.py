@@ -85,10 +85,10 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(float((loss).detach()) - oldloss, input.size(0))
 		oldloss = float((loss).detach())
 
-		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy(), (targetMaps.data).transpose(1,2).reshape(-1,ref.nJoints,ref.outputRes,ref.outputRes).cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps.data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
 		Acc.update(tempAcc)
 
-		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta.cpu())
+		mplist = myMPJPE((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta.data.cpu())
 
 		for l in mplist:
 			mpjpe, num3D = l
@@ -113,9 +113,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Temporal Losses here
 		"""
 
-		rootRelative = give3D(output[opt.nStack -1], reg, meta)
-		loss += opt.tempWeight * AccelerationMatchingError(rootRelative, meta)
-		LossTemp.update(float((loss).detach()) - oldloss, input.size(0))
+		#rootRelative = give3D(output[opt.nStack -1], reg, meta)
+		#loss += opt.tempWeight * AccelerationMatchingError(rootRelative, meta)
+		#LossTemp.update(float((loss).detach()) - oldloss, input.size(0))
 
 		if split == 'train':
 			loss = loss/opt.trainBatch

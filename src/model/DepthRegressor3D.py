@@ -24,7 +24,7 @@ class DepthRegressor3D(nn.Module):
 		out = self.reg(input)
 		N = out.size()[0]
 		D = out.size()[2]
-		reg = torch.zeros(N,self.nJoints,D,1).float().cuda()
+		reg = torch.autograd.Variable(torch.zeros(N,self.nJoints,D,1).float().cuda())
 		# for i in range(1):
 		# 	fcin = out[:,:,i:i+1,:,:].expand(N,self.nChannels,self.nRegFrames-(i),4,4).contiguous()
 		# 	fcin = fcin.transpose(1,2).contiguous().view(N, -1)

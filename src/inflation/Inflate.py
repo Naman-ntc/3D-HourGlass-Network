@@ -26,11 +26,11 @@ def inflateFullyConnected(model3d, model):
 	for i in range(1):
 		model3d.bias.data[nJoints*i:nJoints*(i+1)] = model.bias.data
 		for j in range(nRegFrames):
-			if (i == j) :
+			if (j == 1) :
 				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data #/ (1.0*nRegFrames)
-			elif i<j :
+			elif j<1 :
 				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data * mult#/ (1.0*nRegFrames)
-			elif i>j :
+			elif j>1 :
 				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data * mult#/ (1.0*nRegFrames)
 
 def inflateHourglassNet(model3d, model):

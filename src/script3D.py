@@ -2,6 +2,7 @@ import ref
 import cv2
 import torch
 import numpy as np
+torch.set_printoptions(precision=10)
 
 import pickle
 from functools import partial
@@ -34,19 +35,29 @@ img3.unsqueeze_(0)
 img = torch.cat((img1,img2,img3),0).contiguous()
 
 
-out = torch.autograd.Variable(img)
-model = torch.load('models/xingy.pth').cuda()
+x = torch.autograd.Variable(img)
+model = torch.load('models/xingy.pth').cuda().float()
 
 
 
-out = model(out)
-print(out[2][0,:])
+x = model(x)
+print(x[2][0,:])
 
 """
 x = model.conv1_(x)
+#print(x[0,:,:,:])
+#print("")
 x = model.bn1(x)
+#print(x[0,:,:,:])
+#print("")
 x = model.relu(x)
+#print(x[0,:,:,:])
+#print("")
 x = model.r1(x)
+#print(x[0,:,:,:])
+#print("")
+
+
 x = model.maxpool(x)
 x = model.r4(x)
 x = model.r5(x)

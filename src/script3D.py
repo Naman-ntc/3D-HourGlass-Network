@@ -50,38 +50,39 @@ print(x[2][0,:])
 
 
 x = model.conv1_(x)
-print(x[2,:,:,:])
-print("")
 x = model.bn1(x)
-print(x[2,:,:,:])
-print("")
 x = model.relu(x)
-print(x[2,:,:,:])
-print("")
 x = model.r1(x)
-print(x[2,:,:,:])
-print("")
-
+print("Res1 Done")
 
 x = model.maxpool(x)
 x = model.r4(x)
+print("Res2 Done")
+
 x = model.r5(x)
+print("Res3 Done")
 
 out = []
 
 for i in range(model.nStack):
 	hg = model.hourglass[i](x)
+	print("Hourglass Done", i)
+
 	ll = hg
 	for j in range(model.nModules):
 		ll = model.Residual[i * model.nModules + j](ll)
+	print("Res j Done", i)
+
 	ll = model.lin_[i](ll)
 	tmpOut = model.tmpOut[i](ll)
 	out.append(tmpOut)
-	
+	print("out append Done")
 	ll_ = model.ll_[i](ll)
+	print("ll_ Done")
 	tmpOut_ = model.tmpOut_[i](tmpOut)
+	print("tmpout_ Done")
 	x = x + ll_ + tmpOut_
-
+"""
 print(x[0,:,:,:])
 print("")
 
@@ -92,7 +93,7 @@ for i in range(4):
 
 print(x[0,:,:,:])
 print("")	
-"""
+
 x = x.view(x.size(0), -1)
 reg = model.reg(x)
 out.append(reg)

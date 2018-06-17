@@ -21,5 +21,6 @@ class Pose3D(nn.Module):
 
 	def forward(self, input):
 		heatmaps, regInput = self.hg(input)
+		#print(regInput[0,:,2,:,:])
 		z = self.dr(regInput)
 		return heatmaps + [z]

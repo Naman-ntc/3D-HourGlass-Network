@@ -2,6 +2,7 @@ import ref
 import cv2
 import torch
 import numpy as np
+torch.set_printoptions(precision=5)
 
 import pickle
 from functools import partial
@@ -34,36 +35,52 @@ img3.unsqueeze_(0)
 img = torch.cat((img1,img2,img3),0).contiguous()
 
 
-out = torch.autograd.Variable(img)
-model = torch.load('models/xingy.pth').cuda()
+x = torch.autograd.Variable(img)
+model = torch.load('models/xingy.pth').cuda().float()
 
 
 
-out = model(out)
-print(out[2][0,:])
+x = model(x)
+print(x[2][:,:].t())
 
 """
+
+
+
+
+
 x = model.conv1_(x)
 x = model.bn1(x)
 x = model.relu(x)
 x = model.r1(x)
+print("Res1 Done")
+
 x = model.maxpool(x)
 x = model.r4(x)
+print("Res2 Done")
+
 x = model.r5(x)
+print("Res3 Done")
 
 out = []
 
 for i in range(model.nStack):
 	hg = model.hourglass[i](x)
+	print("Hourglass Done", i)
+
 	ll = hg
 	for j in range(model.nModules):
 		ll = model.Residual[i * model.nModules + j](ll)
+	print("Res j Done", i)
+
 	ll = model.lin_[i](ll)
 	tmpOut = model.tmpOut[i](ll)
 	out.append(tmpOut)
-	
+	print("out append Done")
 	ll_ = model.ll_[i](ll)
+	print("ll_ Done")
 	tmpOut_ = model.tmpOut_[i](tmpOut)
+	print("tmpout_ Done")
 	x = x + ll_ + tmpOut_
 
 print(x[0,:,:,:])

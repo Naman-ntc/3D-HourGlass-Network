@@ -92,15 +92,10 @@ class Hourglass3D(nn.Module):
 		#help(out2)
 		out2 = self.lowres(out2)
 		#help(out2)	
-		print('downup2 : ', out2)
+		
 		N,C,D,H,W = out2.size()
 		out2 = out2.transpose(1,2).contiguous().view(N*D,C,H,W).contiguous()
 		out2 = self.up(out2)
 		N1,C1,H1,W1 = out2.size()
 		out2 = out2.view(N,D,C1,H1,W1).contiguous().transpose(1,2).contiguous()
-		#help(out2)
-		# if (out2.size()[2] != out1.size()[2]):
-		# 	out2 = self.addTemporal(out2)
-		print('up1 :', out1)
-		print('up2 :', out2)
 		return out2 + out1	

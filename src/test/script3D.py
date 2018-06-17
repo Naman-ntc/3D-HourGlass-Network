@@ -3,43 +3,36 @@ import cv2
 import torch
 import numpy as np
 
+import pickle
+from functools import partial
+pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+pickle.load = partial(pickle.load, encoding="latin1")
 from utils.img import Crop, DrawGaussian, Transform3D
 
 c = np.ones(2) * ref.h36mImgSize / 2
 s = ref.h36mImgSize * 1.0
 
-img = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000111.jpg')
 
-img = Crop(img, c, s, 0, ref.inputRes) / 256.
-img.shape
+img1 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000111.jpg')
+img1 = Crop(img, c, s, 0, ref.inputRes) / 256.
+img1 = img1.unsqeeze(0)
+img2 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000112.jpg')
+img2 = Crop(img, c, s, 0, ref.inputRes) / 256.
+img2 = img2.unsqeeze(0)
+img3 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000113.jpg')
+img3 = Crop(img, c, s, 0, ref.inputRes) / 256.
+img3 = img3.unsqeeze(0)
+
+img = torch.cat((img1,img2,img3),0).contiguous()
 
 
-img = torch.from_numpy(img).unsqueeze(0).cuda()
-
-
-
-x = img.expand(32,3,256,256).cuda()
-import pickle
-from functools import partial
-
-pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
-pickle.load = partial(pickle.load, encoding="latin1")
-
-model = torch.load('models/hgreg-3d.pth').cuda()
+out = img
+model = torch.load('models/xingy.pth').cuda()
 
 
 
-
-
-
-
-
-print("Script3D")
-
-
-x = model(x)[2]
-print(x[0,:])
-print("")
+out = model(model)
+out[2][0,:]
 
 """
 x = model.conv1_(x)

@@ -8,17 +8,19 @@ from utils.img import Crop, DrawGaussian, Transform3D
 c = np.ones(2) * ref.h36mImgSize / 2
 s = ref.h36mImgSize * 1.0
 
-img = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000111.jpg')
+img1 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000111.jpg')
+img1 = Crop(img, c, s, 0, ref.inputRes) / 256.
 
-img = Crop(img, c, s, 0, ref.inputRes) / 256.
-img.shape
+img2 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000112.jpg')
+img2 = Crop(img, c, s, 0, ref.inputRes) / 256.
+
+img3 = cv2.imread('../data/h36m/s_01_act_02_subact_01_ca_03/s_01_act_02_subact_01_ca_03_000113.jpg')
+img3 = Crop(img, c, s, 0, ref.inputRes) / 256.
 
 
-img = torch.from_numpy(img).unsqueeze(0).cuda()
+img = torch.cat((img1,img2,img3),2).contiguous()
 
-
-
-out = img[:,:,None,:,:].expand(1,3,32,256,256).cuda()
+out = img
 model3d = torch.load('inflatedModel.pth').cuda()
 
 

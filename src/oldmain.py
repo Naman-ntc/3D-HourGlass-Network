@@ -16,12 +16,14 @@ from datahelpers.dataloaders.posetrackLoader import posetrack
 from utils.utils import adjust_learning_rate
 from utils.logger import Logger
 
-from oldtrain import train,val
+from train import train,val
 from inflateScript import *
 
 
 def main():
 	opt = opts().parse()
+	torch.cuda.set_device(opt.gpu_id) 
+	print('Using GPU ID: ' ,str(torch.cuda.current_device())) 
 	now = datetime.datetime.now()
 	logger = Logger(opt.saveDir + '/logs_{}'.format(now.isoformat()))
 
@@ -30,7 +32,13 @@ def main():
 	elif opt.loadModel == 'scratch':
 		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
 	else :
-		model = torch.load(opt.loadModel).cuda()
+		if opt.isStateDict:
+			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
+			model.load_state_dict(torch.load(opt.loadModel))
+			model = model.cuda()
+			print("yaya")
+		else:
+			model = torch.load(opt.loadModel).cuda()
 
 
 	val_loader = torch.utils.data.DataLoader(
@@ -42,12 +50,17 @@ def main():
 
 	
 	if opt.completeTest:
+		mp = 0.
+		cnt = 0.
 		for i in range(6000//opt.nVal):
 			opt.startVal = 120*i
 			opt.nVal = opt.nVal
-			val(0, opt, val_loader, model)
-		
-
+			a,b = val(i, opt, val_loader, model)
+			mp += a*b
+			cnt += b
+		print("------Finally--------")
+		print("Final MPJPE ==> :" +  str(mp/cnt))	
+		return
 
 	if (opt.test):
 		val(0, opt, val_loader, model)
@@ -69,6 +82,26 @@ def main():
 		weight_decay = ref.weightDecay, 
 		momentum = ref.momentum
 	)
+	
+
+	def hookdef(grad):
+		newgrad = grad.clone()
+		if (grad.shape[2]==1):
+			newgrad = grad*opt.freezefac
+		else:
+			newgrad[:,:,1,:,:] = grad[:,:,1,:,:]*opt.freezefac
+		return newgrad
+			
+	def hookdef1(grad):
+		newgrad = grad.clone()
+		newgrad[:,4096:8192] = newgrad[:,4096:8192]*opt.freezefac
+		return newgrad
+
+	for i in (model.parameters()):
+		if len(i.shape)==5:
+			_ = i.register_hook(hookdef)
+		if len(i.shape)==2:
+			_ = i.register_hook(hookdef1)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 
@@ -84,7 +117,7 @@ def main():
 		# 	logger.scalar_summary('acc_val', acc_val, epoch)
 			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
 			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
-			torch.save(model, os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
+			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
 			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
 		else:
 			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))

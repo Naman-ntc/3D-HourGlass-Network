@@ -91,7 +91,8 @@ class Hourglass3D(nn.Module):
 			out2 = self.num1res(out2)
 		#help(out2)
 		out2 = self.lowres(out2)
-		#help(out2)
+		#help(out2)	
+		print('downup2 : ', out2)
 		out2 = self.up(out2)
 		#help(out2)
 		# if (out2.size()[2] != out1.size()[2]):

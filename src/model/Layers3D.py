@@ -41,13 +41,13 @@ class ConvBnRelu3D(nn.Module):
 		#	print(out)
 		out = self.relu(out)
 		#print("2)",out.std(dim=2).mean())
-		if self.kernelSize==3:
-                        print(out)
+		#if self.kernelSize==3:
+                #        print(out)
 		if (self.padLayer is not None):
 			out = self.padLayer(out)
 		out = self.conv(out)
-		#if self.kernelSize==3:
-                #        print(out)
+		if self.kernelSize==3:
+                        print(out)
 		#print("3)",out.std(dim=2).mean())
 		return out
 

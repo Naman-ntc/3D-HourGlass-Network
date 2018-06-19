@@ -50,7 +50,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)
 		reg = output[opt.nStack]
 		if opt.DEBUG == 2:
-			writeCSV('../CSV1/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta))
+			writeCSV('../CSV/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), (meta.data).cpu().numpy()))
 			# for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)

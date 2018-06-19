@@ -31,6 +31,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		if (split == 'val'):
 			if (input == -1).all():
 				continue
+			if input.shape[2]==1: 
+				continue 
 			input_var = torch.autograd.Variable(input,volatile=True).float().cuda()
 			targetMaps = torch.autograd.Variable(targetMaps,volatile=True).float().cuda()
 			target2D_var = torch.autograd.Variable(target2D,volatile=True).float().cuda()

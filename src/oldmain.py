@@ -58,6 +58,8 @@ def main():
 			a,b = val(i, opt, val_loader, model)
 			mp += a*b
 			cnt += b
+			print("------Finally--------")
+			print("Final MPJPE ==> :" +  str(mp/cnt))
 		print("------Finally--------")
 		print("Final MPJPE ==> :" +  str(mp/cnt))	
 		return

@@ -31,6 +31,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		if (split == 'val'):
 			if (input == -1).all():
 				continue
+			if input.shape[2]==1:
+				continue
 			input_var = torch.autograd.Variable(input,volatile=True).float().cuda()
 			targetMaps = torch.autograd.Variable(targetMaps,volatile=True).float().cuda()
 			target2D_var = torch.autograd.Variable(target2D,volatile=True).float().cuda()
@@ -48,7 +50,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		output = model(input_var)
 		reg = output[opt.nStack]
 		if opt.DEBUG == 2:
-			writeCSV('../CSV/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta))
+			writeCSV('../CSV1/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), meta))
 			# for j in range(input_var.shape[2]):
 				#plt.imshow(input_var.data[0,:,j,:,:].transpose(0,1).transpose(1,2).cpu().numpy())
 				#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)

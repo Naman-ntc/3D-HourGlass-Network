@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from .Layers3D import *
 from .HourGlass3D import *
-
+import ref
 
 def help(x):
 	print(x.std(dim=2).mean())
@@ -11,11 +11,12 @@ def help(x):
 flatten=lambda l: sum(map(flatten,l),[]) if isinstance(l,list) else [l]
 
 def robust(x, temporal):
-	M = max(flatten(temporal))
-	D = x.size()
+	M = max(max(flatten(temporal)),max(flatten(ref.temporal[1])))
+	D = int(x.size()[2])
 	if D>M:
 		diff = (D-M)//2
 		x = x[:,:,diff:-diff,:,:]
+		print("robusting")
 	return x
 
 class HourglassNet3D(nn.Module):
@@ -62,19 +63,26 @@ class HourglassNet3D(nn.Module):
 	def forward(self, input):
 		x = input
 		x = self.convStart(x)
+		x = robust(x, self.temporal[1:])
 		x = self.bnStart(x)
 		x = self.reluStart(x)
 		x = self.res1(x)
+		x = robust(x, self.temporal[2:])
 		x = self.mp(x)
 		x = self.res2(x)
+		x = robust(x, self.temporal[3:])
 		x = self.res3(x)
+		x = robust(x, self.temporal[4:])
 		out = []
 
 		for i in range(self.nStack):
 			x1 = self.hourglass[i](x)
+			x1 = robust(x1, self.temporal[min(5+i,5):])
 			x1 = self.Residual[i](x1)
+			x1 = robust(x1, self.temporal[min(5+i,5):])
 			x1 = self.lin1[i](x1)
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
 			x = x + x1 + self.jointstochan[i](out[i])
+		x = robust(x, [1])
 		return (out,x)

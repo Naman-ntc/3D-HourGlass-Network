@@ -4,16 +4,16 @@ from .Layers3D import *
 
 class DepthRegressor3D(nn.Module):
 	"""docstring for DepthRegressor3D"""
-	def __init__(self, nChannels = 128, nRegModules = 2, nRegFrames = 8, nJoints = 16):
+	def __init__(self, nChannels = 128, nRegModules = 2, nRegFrames = 8, nJoints = 16, temporal):
 		super(DepthRegressor3D, self).__init__()
 		self.nChannels = nChannels
 		self.nRegModules = nRegModules
 		self.nRegFrames = nRegFrames
 		self.nJoints = nJoints
 		reg_ = []
-		for _ in range(4):
-			for _ in range(self.nRegModules):
-				reg_.append(Residual3D(self.nChannels,self.nChannels))
+		for i in range(4):
+			for j in range(self.nRegModules):
+				reg_.append(Residual3D(self.nChannels,self.nChannels, temporal[i][j]))
 			reg_.append(nn.MaxPool3d((1,2,2), (1,2,2)))
 
 		self.reg = nn.Sequential(* reg_)
@@ -24,20 +24,7 @@ class DepthRegressor3D(nn.Module):
 		out = self.reg(input)
 		N = out.size()[0]
 		D = out.size()[2]
-		###print(out[0,:,2,:,:])
 		reg = torch.autograd.Variable(torch.zeros(N,self.nJoints,D,1).float().cuda())
-		# for i in range(1):
-		# 	fcin = out[:,:,i:i+1,:,:].expand(N,self.nChannels,self.nRegFrames-(i),4,4).contiguous()
-		# 	fcin = fcin.transpose(1,2).contiguous().view(N, -1)
-		# 	reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
-		# for i in range(1,self.nRegFrames-1):
-		# 	fcin = torch.stack((out[:,:,:i,:,:], out[:,:,i:i+1,:,:].expand(N,self.nChannels,self.nRegFrames-(i),4,4).contiguous()), dim=2).contiguous()
-		# 	fcin = fcin.transpose(1,2).contiguous().view(N, -1)
-		# 	reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
-		# for i in range(self.nRegFrames-1, D):
-		# 	fcin = out[:,:,i-self.nRegFrames+1:i+1,:,:]
-		# 	fcin = fcin.transpose(1,2).contiguous().view(N, -1)
-		# 	reg[:,:,i,:] = self.fc(fcin).unsqueeze(-1)
 		for i in range(1):
 			fcin = torch.cat((out[:,:,i:i+1,:,:], out[:,:,i:i+2,:,:]), dim=2).contiguous()
 			fcin = fcin.transpose(1,2).contiguous().view(N, -1)

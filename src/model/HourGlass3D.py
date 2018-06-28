@@ -8,7 +8,7 @@ def help(x):
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = 2):
+	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = 2, temporal):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules
@@ -21,8 +21,8 @@ class Hourglass3D(nn.Module):
 		"""
 		
 		_skip = []
-		for _ in range(self.nModules):
-			_skip.append(Residual3D(self.nChannels, self.nChannels))
+		for i in range(self.nModules):
+			_skip.append(Residual3D(self.nChannels, self.nChannels, temporal[0][i]))
 
 		self.skip = nn.Sequential(*_skip)
 		
@@ -36,17 +36,17 @@ class Hourglass3D(nn.Module):
 		self.mp = nn.MaxPool3d(self.poolKernel, self.poolStride)
 		
 		_afterpool = []
-		for _ in range(self.nModules):
-			_afterpool.append(Residual3D(self.nChannels, self.nChannels))
+		for i in range(self.nModules):
+			_afterpool.append(Residual3D(self.nChannels, self.nChannels, temporal[1][i]))
 
 		self.afterpool = nn.Sequential(*_afterpool)	
 
 		if (numReductions > 1):
-			self.hg = Hourglass3D(self.nChannels, self.numReductions-1, self.nModules, self.poolKernel, self.poolStride)
+			self.hg = Hourglass3D(self.nChannels, self.numReductions-1, self.nModules, self.poolKernel, self.poolStride, temporal[2])
 		else:
 			_num1res = []
-			for _ in range(self.nModules):
-				_num1res.append(Residual3D(self.nChannels,self.nChannels))
+			for i in range(self.nModules):
+				_num1res.append(Residual3D(self.nChannels,self.nChannels, temporal[2][i]))
 			
 			self.num1res = nn.Sequential(*_num1res)  # doesnt seem that important ?
 		
@@ -56,7 +56,7 @@ class Hourglass3D(nn.Module):
 		
 		_lowres = []
 		for _ in range(self.nModules):
-			_lowres.append(Residual3D(self.nChannels,self.nChannels))
+			_lowres.append(Residual3D(self.nChannels,self.nChannels, temporal[3]))
 
 		self.lowres = nn.Sequential(*_lowres)
 

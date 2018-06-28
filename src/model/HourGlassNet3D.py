@@ -20,7 +20,7 @@ def robust(x, temporal):
 
 class HourglassNet3D(nn.Module):
 	"""docstring for HourglassNet3D"""
-	def __init__(self, nChannels = 128, nStack = 2, nModules = 2, numReductions = 4, nJoints = 16, temporal):
+	def __init__(self, nChannels = 128, nStack = 2, nModules = 2, numReductions = 4, nJoints = 16, temporal=-1):
 		super(HourglassNet3D, self).__init__()
 		self.nChannels = nChannels
 		self.nStack = nStack
@@ -40,7 +40,7 @@ class HourglassNet3D(nn.Module):
 
 		_hourglass, _Residual, _lin1, _chantojoints, _lin2, _jointstochan = [],[],[],[],[],[]
 		for i in range(self.nStack):
-			_hourglass.append(Hourglass3D(self.nChannels, self.numReductions, self.nModules, temporal[4+i][0]))
+			_hourglass.append(Hourglass3D(self.nChannels, self.numReductions, self.nModules, (1,2,2), (1,2,2), 2, temporal[4+i][0]))
 			_ResidualModules = []
 			for j in range(self.nModules):
 				_ResidualModules.append(Residual3D(self.nChannels, self.nChannels, temporal[4+i][1][j]))

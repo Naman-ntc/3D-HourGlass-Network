@@ -8,7 +8,7 @@ def help(x):
 
 class Hourglass3D(nn.Module):
 	"""docstring for Hourglass3D"""
-	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = 2, temporal):
+	def __init__(self, nChannels = 128, numReductions = 4, nModules = 2, poolKernel = (1,2,2), poolStride = (1,2,2), upSampleKernel = 2, temporal=-1):
 		super(Hourglass3D, self).__init__()
 		self.numReductions = numReductions
 		self.nModules = nModules
@@ -19,7 +19,7 @@ class Hourglass3D(nn.Module):
 		"""
 		For the skip connection, a residual3D module (or sequence of residuaql modules)
 		"""
-		
+
 		_skip = []
 		for i in range(self.nModules):
 			_skip.append(Residual3D(self.nChannels, self.nChannels, temporal[0][i]))
@@ -42,7 +42,7 @@ class Hourglass3D(nn.Module):
 		self.afterpool = nn.Sequential(*_afterpool)	
 
 		if (numReductions > 1):
-			self.hg = Hourglass3D(self.nChannels, self.numReductions-1, self.nModules, self.poolKernel, self.poolStride, temporal[2])
+			self.hg = Hourglass3D(self.nChannels, self.numReductions-1, self.nModules, self.poolKernel, self.poolStride, self.upSampleKernel, temporal[2])
 		else:
 			_num1res = []
 			for i in range(self.nModules):
@@ -55,8 +55,8 @@ class Hourglass3D(nn.Module):
 		"""
 		
 		_lowres = []
-		for _ in range(self.nModules):
-			_lowres.append(Residual3D(self.nChannels,self.nChannels, temporal[3]))
+		for i in range(self.nModules):
+			_lowres.append(Residual3D(self.nChannels,self.nChannels, temporal[3][i]))
 
 		self.lowres = nn.Sequential(*_lowres)
 

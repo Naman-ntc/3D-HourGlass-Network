@@ -17,7 +17,7 @@ from opts import opts
 
 def inflate(opt = None):
 	if opt is not None:
-		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
+		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal)
 		Inflate.nChannels = opt.nChannels
 		Inflate.nStack = opt.nStack
 		Inflate.nModules = opt.nModules
@@ -33,7 +33,7 @@ def inflate(opt = None):
 		Inflate.nRegFrames = opt.nRegFrames
 		Inflate.nJoints = ref.nJoints
 		Inflate.scheme = opt.scheme
-		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints)
+		model3d = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal)
 	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 	pickle.load = partial(pickle.load, encoding="latin1")
 	if opt is not None:

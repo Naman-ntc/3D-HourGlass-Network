@@ -73,7 +73,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss = torch.autograd.Variable(torch.Tensor([0])).cuda()
 			oldloss = 0
 		else:
-			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,1:2,:,:],,target3D_var[:,:,1:2,:,:],)
+			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,1:2,:],target3D_var[:,:,1:2,:])
 			oldloss = float((loss).detach())
 			Loss3D.update(float((loss).detach()), input.size(0))
 
@@ -87,10 +87,10 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(float((loss).detach()) - oldloss, input.size(0))
 		oldloss = float((loss).detach())
 
-		tempAcc = Accuracy((output[opt.nStack - 1][:,:,1:2,:,:],.data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,1:2,:,:],.data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1][:,:,1:2,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,1:2,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
 		Acc.update(tempAcc)
 
-		mplist = myMPJPE((output[opt.nStack - 1][:,:,1:2,:,:],.data).cpu().numpy(), (reg[:,:,1:2,:,:],.data).cpu().numpy(), meta.data.cpu())
+		mplist = myMPJPE((output[opt.nStack - 1][:,:,1:2,:,:].data).cpu().numpy(), (reg[:,:,1:2,:].data).cpu().numpy(), meta[:,:,1:2,:].data.cpu())
 
 		for l in mplist:
 			mpjpe, num3D = l

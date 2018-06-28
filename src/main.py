@@ -30,10 +30,10 @@ def main():
 	if opt.loadModel == 'none':
 		model = inflate(opt).cuda()
 	elif opt.loadModel == 'scratch':
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
+		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal).cuda()
 	else :
 		if opt.isStateDict:
-			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
+			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal).cuda() 
 			model.load_state_dict(torch.load(opt.loadModel))
 			model = model.cuda()
 			print("yaya")

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from math import *
 
 class myBatchNorm3D(nn.Module):
 	"""docstring for myBatchNorm3D"""
@@ -26,7 +27,7 @@ class myConv3d(nn.Module):
 		self.stride = stride
 		self.padding = (0,) + padding
 		self.tempPad = (kernelSize[0]-1)/2
-		self.padLayer = nn.ReplicationPad3d((0,0,0,0,floor(tempPad),ceil(tempPad)))
+		self.padLayer = nn.ReplicationPad3d((0,0,0,0,floor(self.tempPad),ceil(self.tempPad)))
 		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
 	def forward(self, input):
@@ -44,7 +45,7 @@ class ConvBnRelu3D(nn.Module):
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
-		self.bn = BatchNorm3D(self.inChannels)
+		self.bn = nn.BatchNorm3d(self.inChannels)
 		self.relu = nn.ReLU()
 		self.conv = myConv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
@@ -62,6 +63,7 @@ class ConvBlock3D(nn.Module):
 		super(ConvBlock3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
+		
 		self.cbr1 = ConvBnRelu3D(self.inChannels, self.outChannels//2, (temporal[0],1,1), 1, (0,0))
 		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, (temporal[1],3,3), 1, (1,1))
 		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, (temporal[2],1,1), 1, (0,0))

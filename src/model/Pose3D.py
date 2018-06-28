@@ -5,7 +5,7 @@ from .DepthRegressor3D import *
 
 class Pose3D(nn.Module):
 	"""docstring for Pose3D"""
-	def __init__(self, nChannels = 128, nStack = 2, nModules = 2, numReductions = 4, nRegModules = 2, nRegFrames = 8, nJoints = 16, temporal):
+	def __init__(self, nChannels = 128, nStack = 2, nModules = 2, numReductions = 4, nRegModules = 2, nRegFrames = 8, nJoints = 16, temporal=-1):
 		super(Pose3D, self).__init__()
 		self.nChannels = nChannels
 		self.nStack = nStack

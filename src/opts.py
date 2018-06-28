@@ -2,6 +2,9 @@ import argparse
 import os
 import ref
 
+flatten=lambda l: sum(map(flatten,l),[]) if isinstance(l,list) else [l]
+
+
 class opts():
 	def __init__(self):
 		self.parser = argparse.ArgumentParser()
@@ -62,7 +65,9 @@ class opts():
 		self.opt.saveDir = os.path.join(ref.expDir, self.opt.expID)
 		if self.opt.DEBUG > 0:
 			ref.nThreads = 1
-
+		temp = flatten(ref.temporal)
+		self.opt.nFramesLoad = max(temp)
+		
 		args = dict((name, getattr(self.opt, name)) for name in dir(self.opt) if not name.startswith('_'))
 		refs = dict((name, getattr(ref, name)) for name in dir(ref) if not name.startswith('_'))
 

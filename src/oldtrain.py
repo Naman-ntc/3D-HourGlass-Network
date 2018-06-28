@@ -90,8 +90,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		Loss2D.update(float((loss).detach()) - oldloss, input.size(0))
 		oldloss = float((loss).detach())
 
-		tempAcc = Accuracy((output[opt.nStack - 1][:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (targetMaps[:,:,center,:,:].data).cpu().numpy())
 		Acc.update(tempAcc)
+
 
 		mpjpe,num3D = MPJPE((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (reg[:,:,center,0].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
 		Mpjpe.update(mpjpe, num3D)

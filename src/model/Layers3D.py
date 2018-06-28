@@ -45,7 +45,7 @@ class ConvBnRelu3D(nn.Module):
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
-		self.bn = nn.BatchNorm3d(self.inChannels)
+		self.bn = myBatchNorm3D(self.inChannels)
 		self.relu = nn.ReLU()
 		self.conv = myConv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 

@@ -12,7 +12,7 @@ def Joints2DHeatMapsSquaredError(input, target):
 	and H,W are equal to the input image dimensions (i.e. 256 each))
 	"""
 	assert input.shape == target.shape
-	assert len(input.shape) == 5
+	#assert len(input.shape) == 5
 	input = input.cuda()
 	return lossfunc(input, target)
 
@@ -22,7 +22,7 @@ def Joints2DArgMaxSquaredError(input, target):
 	Takes input as (N,C,D,2) and similar target (Here C is number of channels equivalent to number of joints)
 	"""
 	assert input.shape == target.shape
-	assert len(input.shape) == 4
+	#assert len(input.shape) == 4
 	input = input.cuda()
 	return lossfunc(input, target)
 
@@ -32,7 +32,7 @@ def JointsDepthSquaredError(input, target):
 	Takes input as (N,C,D,1) and similar target (Here C is number of channels equivalent to number of joints)
 	"""
 	assert input.shape == target.shape
-	assert len(input.shape) == 4
+	#assert len(input.shape) == 4
 	input = input.cuda()
 	return lossfunc(input, target)
 

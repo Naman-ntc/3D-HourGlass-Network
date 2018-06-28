@@ -80,9 +80,10 @@ def inflateconv(conv3d, conv):
 	tempSize = conv3d.conv.weight.data.size()[2]
 	center = (tempSize-1)//2
 	if scheme==1:
-		conv3d.conv.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d).clone() * torch.FloatTensor([copysign(mult**abs(center-i), center-i) for i in range(tempSize)]).expand_as(conv3d)
+		factor = torch.FloatTensor([copysign(mult**abs(center-i), center-i) for i in range(tempSize)]).unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).expand_as(conv3d.conv.weight).cuda()
+		conv3d.conv.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d.conv.weight).clone() * factor
 	elif scheme==3:
-		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d).clone() * (1./tempSize)
+		conv3d.conv.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d.conv.weight).clone() * (1./tempSize)
 	conv3d.conv.bias.data = conv.bias.data
 	conv3d.conv.weight.data = conv3d.conv.weight.data.contiguous()
 	conv3d.conv.bias.data = conv3d.conv.bias.data.contiguous()

@@ -28,7 +28,7 @@ class HourglassNet3D(nn.Module):
 		self.numReductions = numReductions
 		self.nJoints = nJoints
 		self.temporal = temporal
-		self.convStart = myConv3d(3, 64, (1,7,7), (1,2,2), (temporal[0],3,3))
+		self.convStart = myConv3d(3, 64, (1,7,7), (1,2,2), (3,3))
 		self.bnStart = myBatchNorm3D(64)
 		self.reluStart = nn.ReLU()
 

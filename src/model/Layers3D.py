@@ -84,7 +84,7 @@ class SkipLayer3D(nn.Module):
 		if (self.inChannels == self.outChannels):
 			self.conv = None
 		else:
-			self.conv = nn.Conv3d(self.inChannels, self.outChannels, 1)
+			self.conv = myConv3d(self.inChannels, self.outChannels)
 
 	def forward(self, input):
 		out = input

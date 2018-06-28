@@ -93,7 +93,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		tempAcc = Accuracy((output[opt.nStack - 1][:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
 		Acc.update(tempAcc)
 
-		mpjpe,num3D = myMPJPE((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (reg[:,:,center,:].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
+		mpjpe,num3D = MPJPE((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (reg[:,:,center,0].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
 		Mpjpe.update(mpjpe, num3D)
 
 		

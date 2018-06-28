@@ -45,6 +45,9 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			target3D_var = torch.autograd.Variable(target3D).float().cuda()
 			meta = torch.autograd.Variable(meta).float().cuda()
 		
+		tempSize = input_var.shape[2]
+		center = (tempSize-1)//2
+
 		totalFrames += input_var.shape[0]*input_var.shape[2]
 		model = model.float()
 		output = model(input_var)
@@ -73,7 +76,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss = torch.autograd.Variable(torch.Tensor([0])).cuda()
 			oldloss = 0
 		else:
-			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,1:2,:],target3D_var[:,:,1:2,:])
+			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,center,:],target3D_var[:,:,center,:])
 			oldloss = float((loss).detach())
 			Loss3D.update(float((loss).detach()), input.size(0))
 
@@ -82,22 +85,18 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		"""
 
 		for k in range(opt.nStack):
-			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k][:,:,1:2,:,:], targetMaps[:,:,1:2,:,:])
+			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k][:,:,center,:,:], targetMaps[:,:,center,:,:])
 
 		Loss2D.update(float((loss).detach()) - oldloss, input.size(0))
 		oldloss = float((loss).detach())
 
-		tempAcc = Accuracy((output[opt.nStack - 1][:,:,1:2,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,1:2,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1][:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy(), (targetMaps[:,:,center,:,:].data).transpose(1,2).contiguous().view(-1,ref.nJoints,ref.outputRes,ref.outputRes).contiguous().cpu().numpy())
 		Acc.update(tempAcc)
 
-		mplist = myMPJPE((output[opt.nStack - 1][:,:,1:2,:,:].data).cpu().numpy(), (reg[:,:,1:2,:].data).cpu().numpy(), meta[:,:,1:2,:].data.cpu())
+		mpjpe,num3D = myMPJPE((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (reg[:,:,center,:].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
+		Mpjpe.update(mpjpe, num3D)
 
-		for l in mplist:
-			mpjpe, num3D = l
-			if num3D > 0:
-				Mpjpe.update(mpjpe, num3D)
-		tempMPJPE = (sum([(x*y if y>0 else 0) for x,y in mplist]))/(1.0*sum([(y if y>0 else 0) for x,y in mplist])) if (1.0*sum([(y if y>0 else 0) for x,y in mplist])) > 0 else 0
-
+		
 		if opt.DEBUG == 3 and (float(tempMPJPE) > 80):
 			# for j in range(input_var.shape[2]):
 			# 	#test_heatmaps(targetMaps[0,:,j,:,:].cpu(),input_var[0,:,j,:,:].cpu(),6)

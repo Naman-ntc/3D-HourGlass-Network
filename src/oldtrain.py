@@ -47,11 +47,15 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		
 		tempSize = input_var.shape[2]
 		center = (tempSize-1)//2
-
+		
 		totalFrames += input_var.shape[0]*input_var.shape[2]
 		model = model.float()
 		output = model(input_var)
 		reg = output[opt.nStack]
+		
+		outSize = reg.shape[2]
+		outcen = (outSize-1)//2
+
 		if opt.DEBUG == 2:
 			writeCSV('../CSV/%d.csv'%(i),csvFrame((output[opt.nStack - 1].data).cpu().numpy(), (reg.data).cpu().numpy(), (meta.data).cpu().numpy()))
 			# for j in range(input_var.shape[2]):
@@ -76,7 +80,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 			loss = torch.autograd.Variable(torch.Tensor([0])).cuda()
 			oldloss = 0
 		else:
-			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,center,:],target3D_var[:,:,center,:])
+			loss = opt.regWeight * JointsDepthSquaredError(reg[:,:,outcen,:],target3D_var[:,:,center,:])
 			oldloss = float((loss).detach())
 			Loss3D.update(float((loss).detach()), input.size(0))
 
@@ -85,16 +89,16 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		"""
 
 		for k in range(opt.nStack):
-			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k][:,:,center,:,:], targetMaps[:,:,center,:,:])
+			loss += opt.hmWeight * Joints2DHeatMapsSquaredError(output[k][:,:,outcen,:,:], targetMaps[:,:,center,:,:])
 
 		Loss2D.update(float((loss).detach()) - oldloss, input.size(0))
 		oldloss = float((loss).detach())
 
-		tempAcc = Accuracy((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (targetMaps[:,:,center,:,:].data).cpu().numpy())
+		tempAcc = Accuracy((output[opt.nStack - 1][:,:,outcen,:,:].data).cpu().numpy(), (targetMaps[:,:,center,:,:].data).cpu().numpy())
 		Acc.update(tempAcc)
 
 
-		mpjpe,num3D = MPJPE((output[opt.nStack - 1][:,:,center,:,:].data).cpu().numpy(), (reg[:,:,center,0].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
+		mpjpe,num3D = MPJPE((output[opt.nStack - 1][:,:,outcen,:,:].data).cpu().numpy(), (reg[:,:,outcen,0].data).cpu().numpy(), meta[:,:,center,:].data.cpu())
 		Mpjpe.update(mpjpe, num3D)
 
 		

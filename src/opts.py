@@ -33,7 +33,7 @@ class opts():
 		self.parser.add_argument('-freezeBN', type = int, default = 1, help = '# freeze the BatchNorm Layers')
 
 		self.parser.add_argument('-nEpochs', type = int, default = 900, help = '# training epochs')
-		self.parser.add_argument('-valIntervals', type = int, default = 4, help = '# valid intervel')
+		self.parser.add_argument('-valIntervals', type = int, default = 30, help = '# valid intervel')
 		self.parser.add_argument('-trainBatch', type = int, default = 1, help = '# mini-batch size')
 		self.parser.add_argument('-dataloaderSize', type = int, default = 1, help = '# How many videos to load')
 
@@ -56,7 +56,7 @@ class opts():
 
 		self.parser.add_argument('-completeTest', type = int, default = 0, help = 'if you want to test on complete data')
 		self.parser.add_argument('-startVal', type = int, default = 660, help = 'which frame in all videos to consider')
-		self.parser.add_argument('-nVal', type = int, default = 120, help = 'number of frames to load from each video during validation')
+		self.parser.add_argument('-nVal', type = int, default = 3, help = 'number of frames to load from each video during validation')
 		self.parser.add_argument('-gpu_id', type = int, default = 0, help = 'GPU ID for setting device')
 
 	def parse(self):
@@ -67,7 +67,8 @@ class opts():
 			ref.nThreads = 1
 		temp = flatten(ref.temporal)
 		self.opt.nFramesLoad = max(temp)
-		
+		self.opt.nVal = max(temp)
+
 		args = dict((name, getattr(self.opt, name)) for name in dir(self.opt) if not name.startswith('_'))
 		refs = dict((name, getattr(ref, name)) for name in dir(ref) if not name.startswith('_'))
 

@@ -16,7 +16,7 @@ def robust(x, temporal):
 	if D>M:
 		diff = (D-M)//2
 		x = x[:,:,diff:-diff,:,:]
-		print("robusting")
+		#print("robusting", D, M)
 	return x
 
 class HourglassNet3D(nn.Module):
@@ -74,15 +74,18 @@ class HourglassNet3D(nn.Module):
 		x = self.res3(x)
 		x = robust(x, self.temporal[4:])
 		out = []
-
+		
 		for i in range(self.nStack):
 			x1 = self.hourglass[i](x)
 			x1 = robust(x1, self.temporal[min(5+i,5):])
 			x1 = self.Residual[i](x1)
 			x1 = robust(x1, self.temporal[min(5+i,5):])
 			x1 = self.lin1[i](x1)
+			x1 = robust(x1, self.temporal[min(5+i,5):])
 			out.append(self.chantojoints[i](x1))
 			x1 = self.lin2[i](x1)
+			x1 = robust(x1, self.temporal[min(5+i,5):])
+			x = robust(x, self.temporal[min(5+i,5):])
 			x = x + x1 + self.jointstochan[i](out[i])
 		x = robust(x, [1])
 		return (out,x)

@@ -67,7 +67,10 @@ class opts():
 			ref.nThreads = 1
 		temp = flatten(ref.temporal)
 		self.opt.nFramesLoad = max(temp)
-		
+		self.opt.nVal = max(temp)
+
+		ref.mult = self.opt.mult
+				
 		args = dict((name, getattr(self.opt, name)) for name in dir(self.opt) if not name.startswith('_'))
 		refs = dict((name, getattr(ref, name)) for name in dir(ref) if not name.startswith('_'))
 

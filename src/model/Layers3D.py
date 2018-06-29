@@ -28,12 +28,16 @@ class myConv3d(nn.Module):
 		self.padding = (0,) + padding
 		self.tempPad = (kernelSize[0]-1)/2
 		self.padLayer = nn.ReplicationPad3d((0,0,0,0,floor(self.tempPad),ceil(self.tempPad)))
-		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
+		self.W = torch.zeros(self.inChannels, self.outChannels, self.kernelSize[0], self.kernelSize[1], self.kernelSize[2])
+		tempSize = self.kernelSize[0]
+		center = (tempSize-1)//2
+		self.K = nn.Parameter(torch.FloatTensor([copysign(ref.mult, center-i) for i in range(tempSize)]).unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).expand_as(conv3d.conv.weight).cuda())
+		self.B = None
 
 	def forward(self, input):
 		out = input
 		out = self.padLayer(out)
-		out = self.conv(out)
+		out = nn.functional.Conv3d(out,W*K,self.B,self.stride,self.padding)
 		return out
 
 class ConvBnRelu3D(nn.Module):

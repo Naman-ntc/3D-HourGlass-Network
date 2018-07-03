@@ -29,7 +29,7 @@ class opts():
 		self.parser.add_argument('-nRegModules', type = int, default = 2, help = '# depth regression modules')
 		self.parser.add_argument('-nRegFrames', type = int, default = 3, help = '# number of frames temporally for regressor module')
 
-		self.parser.add_argument('-freezefac', type = float, default = 0, help = '# freeze the central network by what factor')
+		self.parser.add_argument('-freezefac', type = float, default = 1e-3, help = '# freeze the central network by what factor')
 		self.parser.add_argument('-freezeBN', type = int, default = 1, help = '# freeze the BatchNorm Layers')
 
 		self.parser.add_argument('-nEpochs', type = int, default = 900, help = '# training epochs')
@@ -42,7 +42,7 @@ class opts():
 
 		self.parser.add_argument('-LRhg', type = float, default = 2.5e-5, help = '# Learning Rate for the Hourglass')
 		self.parser.add_argument('-LRdr', type = float, default = 2.5e-5, help = '# Learning Rate for the depth regressor')
-		self.parser.add_argument('-patience', type = int, default = 150, help = '# patience for LR scheduler, kind of drop LR after \'patience\' number of frames' )
+		self.parser.add_argument('-patience', type = int, default = 80, help = '# patience for LR scheduler, kind of drop LR after \'patience\' number of frames' )
 		self.parser.add_argument('-threshold', type = float, default = 0.0005, help = 'threshold for LR scheduler')
 		self.parser.add_argument('-dropMag', type = float, default = 0.15, help = 'factor for LR scheduler, decrease LR by this factor')
 		self.parser.add_argument('-scheduler', type = int, default = 3, help = 'drop LR')

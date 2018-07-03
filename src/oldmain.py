@@ -13,7 +13,7 @@ from datahelpers.dataloaders.h36mLoader import h36m
 from datahelpers.dataloaders.mpiiLoader import mpii
 from datahelpers.dataloaders.posetrackLoader import posetrack
 
-from utils.utils import adjust_learning_rate
+from utils.utils import adjust_learning_rate, AverageMeter
 from utils.logger import Logger
 
 from oldtrain import train,val
@@ -52,16 +52,17 @@ def main():
 	if opt.completeTest:
 		mp = 0.
 		cnt = 0.
-		for i in range(6000//opt.nVal):
-			opt.startVal = 120*i
+		MPJPE = AverageMeter()
+		for i in range(6000):
+			opt.startVal = i
 			opt.nVal = opt.nVal
 			a,b = val(i, opt, val_loader, model)
-			mp += a*b
-			cnt += b
-			print("------Finally--------")
-			print("Final MPJPE ==> :" +  str(mp/cnt))
+			MPJPE.update(a,b)
+			if i%50 == 0:
+				print("-----Running Average-------")
+				print("Running MPJPE ==> :" +  MPJPE.avg + " over " + MPJPE.count + " frames")
 		print("------Finally--------")
-		print("Final MPJPE ==> :" +  str(mp/cnt))	
+		print("Final MPJPE ==> :" +  MPJPE.avg)	
 		return
 
 	if (opt.test):
@@ -110,19 +111,24 @@ def main():
 	for epoch in range(1, opt.nEpochs + 1):
 		loss_train, loss3d_train, mpjpe_train, acc_train = train(epoch, opt, train_loader, model, optimizer)
 		logger.scalar_summary('loss_train', loss_train, epoch)
-		#logger.scalar_summary('acc_train', acc_train, epoch)
+		logger.scalar_summary('acc_train', acc_train, epoch)
 		logger.scalar_summary('mpjpe_train', mpjpe_train, epoch)
 		logger.scalar_summary('loss3d_train', loss3d_train, epoch)
 		if epoch % opt.valIntervals == 0:
-			loss_val, loss3d_val, mpjpe_val, acc_val = val(epoch, opt, val_loader, model)
-			logger.scalar_summary('loss_val', loss_val, epoch)
-		# 	logger.scalar_summary('acc_val', acc_val, epoch)
-			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
-			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
+			loss_val, loss3d_val, mpjpe_val, acc_val = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
+			startVal = opt.startVal
+			for i in range(50):
+				opt.startVal += 1
+				loss_val, loss3d_val, mpjpe_val, acc_val = val(epoch, opt, val_loader, model)
+			opt.startVal = startVal	
+			logger.scalar_summary('loss_val', loss_val.avg, epoch)
+			logger.scalar_summary('acc_val', acc_val.avg, epoch)
+			logger.scalar_summary('mpjpe_val', mpjpe_val.avg, epoch)
+			logger.scalar_summary('loss3d_val', loss3d_val.avg, epoch)
 			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
-			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
+			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
 		else:
-			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))
+			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))
 		#adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)
 		if opt.scheduler == 1:
 			scheduler.step(int(loss_train))

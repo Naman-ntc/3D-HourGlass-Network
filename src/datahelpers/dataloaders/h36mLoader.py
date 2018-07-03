@@ -89,7 +89,7 @@ class h36m(data.Dataset):
 				oldnFramesLoad = self.nFramesLoad
 				self.nFramesLoad = min(self.opts.nVal, self.opts.nRegFrames*((CountFramesInVid - startPt)//self.opts.nRegFrames))
 				if (self.nFramesLoad <= 0):
-					startPt = CountFramesInVid -self. opts.nRegFrames - 1
+					startPt = CountFramesInVid - self.opts.nRegFrames - 1
 					self.nFramesLoad = self.opts.nRegFrames
 					startPt = 0 
 					self.nFramesLoad = 1 

@@ -136,7 +136,6 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	bar.finish()
 	if (opt.completeTest):
-		print("Num Frames : %d"%(totalFrames))
 		return Mpjpe.avg, totalFrames
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 

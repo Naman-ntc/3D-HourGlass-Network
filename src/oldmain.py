@@ -119,7 +119,11 @@ def main():
 			startVal = opt.startVal
 			for i in range(50):
 				opt.startVal += 1
-				loss_val, loss3d_val, mpjpe_val, acc_val = val(epoch, opt, val_loader, model)
+				loss_valt, loss3d_valt, mpjpe_valt, acc_valt = val(epoch, opt, val_loader, model)
+				loss_val.update(loss_valt)
+				loss3d_val.update(loss3d_valt)
+				mpjpe_val.update(mpjpe_valt)
+				acc_val.update(acc_valt)
 			opt.startVal = startVal	
 			logger.scalar_summary('loss_val', loss_val.avg, epoch)
 			logger.scalar_summary('acc_val', acc_val.avg, epoch)

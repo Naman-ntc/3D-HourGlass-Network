@@ -121,12 +121,12 @@ def main():
 				opt.startVal += 1
 				loss_val, loss3d_val, mpjpe_val, acc_val = val(epoch, opt, val_loader, model)
 			opt.startVal = startVal	
-			logger.scalar_summary('loss_val', loss_val, epoch)
-			logger.scalar_summary('acc_val', acc_val, epoch)
-			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
-			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
+			logger.scalar_summary('loss_val', loss_val.avg, epoch)
+			logger.scalar_summary('acc_val', acc_val.avg, epoch)
+			logger.scalar_summary('mpjpe_val', mpjpe_val.avg, epoch)
+			logger.scalar_summary('loss3d_val', loss3d_val.avg, epoch)
 			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
-			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
+			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train, loss_val.avg, mpjpe_val.avg, loss3d_val.avg, acc_val.avg))
 		else:
 			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))
 		#adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)

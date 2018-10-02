@@ -31,6 +31,8 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 		if (split == 'val'):
 			if (input == -1).all():
 				continue
+			if input.shape[2]==1:
+				continue	
 		input_var = (input).float().cuda()
 		targetMaps = (targetMaps).float().cuda()
 		target2D_var = (target2D).float().cuda()
@@ -123,7 +125,7 @@ def step(split, epoch, opt, dataLoader, model, optimizer = None):
 
 	bar.finish()
 	if (opt.completeTest):
-		print("Num Frames : %d"%(totalFrames))
+		#print("Num Frames : %d"%(totalFrames))
 		return Mpjpe.avg, totalFrames
 	return Loss2D.avg, Loss3D.avg, Mpjpe.avg, Acc.avg
 

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from math import *
 
 class myBatchNorm3D(nn.Module):
 	"""docstring for myBatchNorm3D"""
@@ -16,58 +17,62 @@ class myBatchNorm3D(nn.Module):
 		out = out.view(N,D,C,H,W).transpose(1,2)
 		return out
 
+class myConv3d(nn.Module):
+	"""docstring for myConv3d"""
+	def __init__(self, inChannels, outChannels, kernelSize = (1,1,1), stride = 1, padding = (0,0)):
+		super(myConv3d, self).__init__()
+		self.inChannels = inChannels
+		self.outChannels = outChannels
+		self.kernelSize = kernelSize
+		self.stride = stride
+		self.padding = (0,) + padding
+		self.tempPad = (kernelSize[0]-1)/2
+		self.padLayer = nn.ReplicationPad3d((0,0,0,0,floor(self.tempPad),ceil(self.tempPad)))
+		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
+	def forward(self, input):
+		out = input
+		out = self.padLayer(out)
+		out = self.conv(out)
+		return out
 
 class ConvBnRelu3D(nn.Module):
 	"""docstring for ConvBnRelu3D"""
-	def __init__(self, inChannels, outChannels, kernelSize = 1, stride = 1, padding = 0, padLayer=None):
+	def __init__(self, inChannels, outChannels, kernelSize = (1,1,1), stride = 1, padding = (0,0)):
 		super(ConvBnRelu3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
 		self.kernelSize = kernelSize
 		self.stride = stride
 		self.padding = padding
-		self.padLayer = padLayer
 		self.bn = myBatchNorm3D(self.inChannels)
 		self.relu = nn.ReLU()
-		self.conv = nn.Conv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
+		self.conv = myConv3d(self.inChannels, self.outChannels, self.kernelSize, self.stride, self.padding)
 
 	def forward(self, input):
 		out = input
-		#print("0)",out.std(dim=2).mean())
 		out = self.bn(out)
-		#print("1)",out.std(dim=2).mean())
 		out = self.relu(out)
-		#print("2)",out.std(dim=2).mean())
-		if (self.padLayer is not None):
-			out = self.padLayer(out)
 		out = self.conv(out)
-		#print("3)",out.std(dim=2).mean())
 		return out
 
 
 class ConvBlock3D(nn.Module):
 	"""docstring for convBlock3D"""
-	def __init__(self, inChannels, outChannels):
+	def __init__(self, inChannels, outChannels, temporal):
 		super(ConvBlock3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
-		self.cbr1 = ConvBnRelu3D(self.inChannels, self.outChannels//2, 1, 1, 0)
-		self.padded = nn.ReplicationPad3d((0,0,0,0,1,1))
-		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, 3, 1, (0,1,1), self.padded)
-		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, 1, 1, 0)
+		
+		self.cbr1 = ConvBnRelu3D(self.inChannels, self.outChannels//2, (temporal[0],1,1), 1, (0,0))
+		self.cbr2 = ConvBnRelu3D(self.outChannels//2, self.outChannels//2, (temporal[1],3,3), 1, (1,1))
+		self.cbr3 = ConvBnRelu3D(self.outChannels//2, self.outChannels, (temporal[2],1,1), 1, (0,0))
 
 	def forward(self, input):
 		out = input
-		#print('cbr1')
 		out = self.cbr1(out)
-		#print('cbr2')
-		#print(out.std(dim=1).mean())
 		out = self.cbr2(out)
-		#print('cbr3')
-		#print(out.std(dim=1).mean())
 		out = self.cbr3(out)
-		#print(out.std(dim=1).mean())
 		return out
 
 class SkipLayer3D(nn.Module):
@@ -79,7 +84,7 @@ class SkipLayer3D(nn.Module):
 		if (self.inChannels == self.outChannels):
 			self.conv = None
 		else:
-			self.conv = nn.Conv3d(self.inChannels, self.outChannels, 1)
+			self.conv = myConv3d(self.inChannels, self.outChannels)
 
 	def forward(self, input):
 		out = input
@@ -89,11 +94,11 @@ class SkipLayer3D(nn.Module):
 
 class Residual3D(nn.Module):
 	"""docstring for Residual3D"""
-	def __init__(self, inChannels, outChannels):
+	def __init__(self, inChannels, outChannels, temporal):
 		super(Residual3D, self).__init__()
 		self.inChannels = inChannels
 		self.outChannels = outChannels
-		self.cb = ConvBlock3D(inChannels, outChannels)
+		self.cb = ConvBlock3D(inChannels, outChannels, temporal[0])
 		self.skip = SkipLayer3D(inChannels, outChannels)
 
 	def forward(self, input):

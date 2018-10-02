@@ -30,10 +30,10 @@ def main():
 	if opt.loadModel == 'none':
 		model = inflate(opt).cuda()
 	elif opt.loadModel == 'scratch':
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
+		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal).cuda()
 	else :
 		if opt.isStateDict:
-			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
+			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints, ref.temporal).cuda() 
 			model.load_state_dict(torch.load(opt.loadModel))
 			model = model.cuda()
 			print("yaya")
@@ -93,9 +93,18 @@ def main():
 			newgrad = grad*opt.freezefac
 		else:
 			newgrad[:,:,1,:,:] = grad[:,:,1,:,:]*opt.freezefac
+		return newgrad
+			
+	def hookdef1(grad):
+		newgrad = grad.clone()
+		newgrad[:,4096:8192] = newgrad[:,4096:8192]*opt.freezefac
+		return newgrad
+
 	for i in (model.parameters()):
 		if len(i.shape)==5:
 			_ = i.register_hook(hookdef)
+		if len(i.shape)==2:
+			_ = i.register_hook(hookdef1)
 
 	scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor = opt.dropMag, patience = opt.patience, verbose = True, threshold = opt.threshold)
 

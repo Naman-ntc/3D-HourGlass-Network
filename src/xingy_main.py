@@ -13,10 +13,10 @@ from datahelpers.dataloaders.h36mLoader import h36m
 from datahelpers.dataloaders.mpiiLoader import mpii
 from datahelpers.dataloaders.posetrackLoader import posetrack
 
-from utils.utils import adjust_learning_rate, AverageMeter
+from utils.utils import adjust_learning_rate
 from utils.logger import Logger
 
-from oldtrain import train,val
+from xingy_train import train,val
 from inflateScript import *
 
 
@@ -27,19 +27,11 @@ def main():
 	now = datetime.datetime.now()
 	logger = Logger(opt.saveDir + '/logs_{}'.format(now.isoformat()))
 
-	if opt.loadModel == 'none':
-		model = inflate(opt).cuda()
-	elif opt.loadModel == 'scratch':
-		model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda()
-	else :
-		if opt.isStateDict:
-			model = Pose3D(opt.nChannels, opt.nStack, opt.nModules, opt.numReductions, opt.nRegModules, opt.nRegFrames, ref.nJoints).cuda() 
-			model.load_state_dict(torch.load(opt.loadModel))
-			model = model.cuda()
-			print("yaya")
-		else:
-			model = torch.load(opt.loadModel).cuda()
-
+	import pickle
+	from functools import partial
+	pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+	pickle.load = partial(pickle.load, encoding="latin1")
+	model = torch.load('models/xingy.pth').cuda()
 
 	val_loader = torch.utils.data.DataLoader(
 		h36m('val', opt),
@@ -52,17 +44,17 @@ def main():
 	if opt.completeTest:
 		mp = 0.
 		cnt = 0.
-		MPJPE = AverageMeter()
-		for i in range(6000):
-			opt.startVal = i
+		for i in range(6000//opt.nVal):
+			opt.startVal = 120*i
 			opt.nVal = opt.nVal
 			a,b = val(i, opt, val_loader, model)
-			MPJPE.update(a,b)
-			if i%50 == 0:
-				print("-----Running Average-------")
-				print("Running MPJPE ==> :" +  MPJPE.avg + " over " + MPJPE.count + " frames")
+			mp += a*b
+			cnt += b
+			print("This Round " + str(a) + " MPJPE in " + str(b) + " frames!!") 
+			print("Average MPJPE so far " + str(mp/cnt)) 
+			print("")
 		print("------Finally--------")
-		print("Final MPJPE ==> :" +  MPJPE.avg)	
+		print("Final MPJPE ==> :" +  str(mp/cnt))	
 		return
 
 	if (opt.test):
@@ -111,28 +103,19 @@ def main():
 	for epoch in range(1, opt.nEpochs + 1):
 		loss_train, loss3d_train, mpjpe_train, acc_train = train(epoch, opt, train_loader, model, optimizer)
 		logger.scalar_summary('loss_train', loss_train, epoch)
-		logger.scalar_summary('acc_train', acc_train, epoch)
+		#logger.scalar_summary('acc_train', acc_train, epoch)
 		logger.scalar_summary('mpjpe_train', mpjpe_train, epoch)
 		logger.scalar_summary('loss3d_train', loss3d_train, epoch)
 		if epoch % opt.valIntervals == 0:
-			loss_val, loss3d_val, mpjpe_val, acc_val = AverageMeter(), AverageMeter(), AverageMeter(), AverageMeter()
-			startVal = opt.startVal
-			for i in range(50):
-				opt.startVal += 1
-				loss_valt, loss3d_valt, mpjpe_valt, acc_valt = val(epoch, opt, val_loader, model)
-				loss_val.update(loss_valt)
-				loss3d_val.update(loss3d_valt)
-				mpjpe_val.update(mpjpe_valt)
-				acc_val.update(acc_valt)
-			opt.startVal = startVal	
-			logger.scalar_summary('loss_val', loss_val.avg, epoch)
-			logger.scalar_summary('acc_val', acc_val.avg, epoch)
-			logger.scalar_summary('mpjpe_val', mpjpe_val.avg, epoch)
-			logger.scalar_summary('loss3d_val', loss3d_val.avg, epoch)
+			loss_val, loss3d_val, mpjpe_val, acc_val = val(epoch, opt, val_loader, model)
+			logger.scalar_summary('loss_val', loss_val, epoch)
+		# 	logger.scalar_summary('acc_val', acc_val, epoch)
+			logger.scalar_summary('mpjpe_val', mpjpe_val, epoch)
+			logger.scalar_summary('loss3d_val', loss3d_val, epoch)
 			torch.save(model.state_dict(), os.path.join(opt.saveDir, 'model_{}.pth'.format(epoch)))
-			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train, loss_val.avg, mpjpe_val.avg, loss3d_val.avg, acc_val.avg))
+			logger.write('{:8f} {:8f} {:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_val, loss_val, mpjpe_val, loss3d_val, acc_train))
 		else:
-			logger.write('{:8f} {:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))
+			logger.write('{:8f} {:8f} {:8f} \n'.format(loss_train, mpjpe_train, loss3d_train, acc_train))
 		#adjust_learning_rate(optimizer, epoch, opt.dropLR, opt.LR)
 		if opt.scheduler == 1:
 			scheduler.step(int(loss_train))

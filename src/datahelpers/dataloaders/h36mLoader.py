@@ -24,7 +24,7 @@ class h36m(data.Dataset):
 		self.root = 7
 
 		self.nVideos = (self.vidFolders).shape[0]
-		
+
 		print("Loaded %d %s videos for h36m data" %(self.nVideos, split))
 
 	def LoadFrameAndData(self, path, frameName):
@@ -89,9 +89,11 @@ class h36m(data.Dataset):
 				oldnFramesLoad = self.nFramesLoad
 				self.nFramesLoad = min(self.opts.nVal, self.opts.nRegFrames*((CountFramesInVid - startPt)//self.opts.nRegFrames))
 				if (self.nFramesLoad <= 0):
-					startPt = 0
-					self.nFramesLoad = 1
-					
+					startPt = CountFramesInVid - self.opts.nRegFrames - 1
+					self.nFramesLoad = self.opts.nRegFrames
+					startPt = 0 
+					self.nFramesLoad = 1 
+
 					
 			inpFrames = np.zeros((3,self.nFramesLoad,256,256))
 			outPts_2ds = np.zeros((ref.nJoints,self.nFramesLoad,2))

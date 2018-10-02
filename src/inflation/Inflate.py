@@ -1,5 +1,5 @@
 import torch
-
+from math import copysign
 
 nChannels = 128
 nStack = 2
@@ -23,13 +23,15 @@ def inflateDepthRegressor(model3d, model):
 
 def inflateFullyConnected(model3d, model):
 	val = 4*4*nChannels
-	for i in range(nRegFrames):
+	for i in range(1):
 		model3d.bias.data[nJoints*i:nJoints*(i+1)] = model.bias.data
 		for j in range(nRegFrames):
-			if (i == j) :
-				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data / (1.0*nRegFrames)
-			else :
-				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data / (1.0*nRegFrames)
+			if (j == 1) :
+				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data #/ (1.0*nRegFrames)
+			elif j<1 :
+				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data * mult#/ (1.0*nRegFrames)
+			elif j>1 :
+				model3d.weight.data[nJoints*(i):nJoints*(i+1), val*(j):val*(j+1)] = model.weight.data * mult#/ (1.0*nRegFrames)
 
 def inflateHourglassNet(model3d, model):
 	inflateconv(model3d.convStart, model.conv1_)
@@ -75,20 +77,16 @@ def inflatehourglass(model3d, model):
 	return
 
 def inflateconv(conv3d, conv):
+	tempSize = conv3d.conv.weight.data.size()[2]
+	center = (tempSize-1)//2
 	if scheme==1:
-		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() 
-		if conv3d.weight.data.shape[2] == 3:
-			numadd = (tempKernel -1)//2
-			conv3d.weight.data[:,:,0:numadd,:,:] *= -mult
-			conv3d.weight.data[:,:,numadd+1:,:,:] *= mult
-	elif scheme==2:
-		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone()
-		## incomplete
+		factor = torch.FloatTensor([copysign(mult**abs(center-i), center-i) for i in range(tempSize)]).unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).expand_as(conv3d.conv.weight).cuda()
+		conv3d.conv.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d.conv.weight).clone() * factor
 	elif scheme==3:
-		conv3d.weight.data = conv.weight.data[:,:,None,:,:].expand(conv3d.weight.data.size()).clone() * (1./(conv3d.weight.data.shape[2]))
-	conv3d.bias.data = conv.bias.data
-	conv3d.weight.data = conv3d.weight.data.contiguous()
-	conv3d.bias.data = conv3d.bias.data.contiguous()
+		conv3d.conv.weight.data = conv.weight.data[:,:,None,:,:].expand_as(conv3d.conv.weight).clone() * (1./tempSize)
+	conv3d.conv.bias.data = conv.bias.data
+	conv3d.conv.weight.data = conv3d.conv.weight.data.contiguous()
+	conv3d.conv.bias.data = conv3d.conv.bias.data.contiguous()
 	return
 
 def inflatebn(bn3d, bn):
